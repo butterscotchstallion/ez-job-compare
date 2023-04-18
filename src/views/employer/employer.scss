@@ -1,0 +1,11 @@
+.employer-list-page-card {
+    a {
+        color: pink;
+
+        &.avatar-link {
+            color: #000;
+            text-decoration: none;
+        }
+    }
+}
+
