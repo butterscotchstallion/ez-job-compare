@@ -4,6 +4,7 @@ import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import { ITag } from './i-tag.interface';
 import getTagIconElement from './getTagIconElement';
+import './tagList.scss';
 
 const ListItem = styled('li')(({ theme }) => ({
   margin: theme.spacing(0.5),
@@ -26,7 +27,7 @@ export default function TagList(props: any) {
       {chipData.map((tag: ITag) => {
         const iconEl = getTagIconElement(tag.icon);
         return (
-          <ListItem key={tag.slug}>
+          <ListItem key={tag.slug} className="tagListItem">
             <Chip
               icon={iconEl}
               label={tag.name}
