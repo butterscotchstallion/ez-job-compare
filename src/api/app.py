@@ -31,6 +31,8 @@ def handle_exception(e):
 ##############
 ### Routes ###
 ##############
+
+### Employers
 @cross_origin()
 @app.route("/api/v1/employers", methods=['GET'])
 def list_employers():
@@ -58,6 +60,7 @@ def get_employers():
     finally:
         close_connection(conn)
 
+### Tags
 @cross_origin()
 @app.route("/api/v1/tags", methods=['GET'])
 def list_tags():
@@ -85,6 +88,7 @@ def get_tags():
     finally:
         close_connection(conn)
 
+### Employers tags
 @cross_origin()
 @app.route("/api/v1/employers/tagsMap", methods=['GET'])
 def list_employer_tags_map():

@@ -55,10 +55,8 @@ export default function EmployerListPage(props: any) {
                     const tagsEmployersMap = getTagsEmployersMap(response.data.results, tagResults);
                     const employersWithTags = employersResults.map((e: any) => {
                         e.tags = tagsEmployersMap[e.id] || [];
-                        debugger;
                         return e;
                     });
-                    debugger;
                     setEmployers(employersWithTags);
                 });
                 
