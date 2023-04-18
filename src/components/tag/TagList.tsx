@@ -10,7 +10,6 @@ const ListItem = styled('li')(({ theme }) => ({
 }));
 
 export default function TagList(props: any) {
-  debugger;
   const [chipData, setChipData] = React.useState<readonly ITag[]>(props.tags);
   return (
     <Paper
@@ -30,7 +29,7 @@ export default function TagList(props: any) {
           <ListItem key={tag.slug}>
             <Chip
               icon={iconEl}
-              label={tag.label}
+              label={tag.name}
               variant="outlined"
               color="primary"
               size="small"

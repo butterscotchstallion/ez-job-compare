@@ -16,7 +16,7 @@ export default function TagFilterCheckboxWithLabel(props: any) {
         <label key={tag.slug}>
             <input  type="checkbox"
                     checked={isChecked}
-                    onChange={() => onChange(tag)} /> {tag.label}
+                    onChange={() => onChange(tag)} /> {tag.name}
         </label>
     );
 }

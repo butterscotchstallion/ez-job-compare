@@ -6,7 +6,7 @@ export default function createTag(props?: any) {
     const tag: ITag = {
         id: slug,
         key: slug,
-        label: props && props.label ? props.label : 'New Tag',
+        name: props.name,
         slug: slug,
         icon: props.icon
     };

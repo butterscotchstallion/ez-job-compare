@@ -94,9 +94,11 @@ def get_employers_tags():
     try:
         conn = connect_db()
         query = '''
-            SELECT  e.employer_id AS employerId,
-                    t.tag_id AS tagId
-            FROM employers_tags
+            SELECT  et.employer_id AS employerId,
+                    et.tag_id AS tagId
+            FROM employers_tags et
+            JOIN employers e ON e.id = et.employer_id
+            JOIN tags t ON t.id = et.tag_id
         '''
         cursor = conn.execute(query)
         results = get_list_from_rows(cursor)

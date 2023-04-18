@@ -13,6 +13,8 @@ import getTags from "../../components/tag/getTags";
 import getTagSlugMap from "../../components/tag/getTagSlugMap";
 import { ITag } from "../../components/tag/i-tag.interface";
 import TagFilterList from "../../components/tag/TagFilterList";
+import getTagsEmployersMap from "../../components/tag/getTagsEmployersMap";
+import getTagsEmployersList from "../../components/tag/getTagsEmployersList";
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -31,31 +33,45 @@ export default function EmployerListPage(props: any) {
             getEmployers(),
             getTags()
         ]).then((response: any) => {
+            // Employers - populate tags initially
+            let employersResults = response[0].data.results.map((e: any) => {
+                e.tags = [];
+                return e;
+            });
+            if (tagSlug) {
+                const filtered = filterByTagSlug(employersResults, tagSlug);
+                setEmployers(filtered);
+            } else {
+                setEmployers(employersResults);
+                setFilterSlugName('');
+            }
+
             // Tags
             const tagResults = response[1].data.results;
-            
             if (tagResults.length > 0) {
                 setTags(tagResults);
+
+                getTagsEmployersList().then((response: any) => {
+                    const tagsEmployersMap = getTagsEmployersMap(response.data.results, tagResults);
+                    const employersWithTags = employersResults.map((e: any) => {
+                        e.tags = tagsEmployersMap[e.id] || [];
+                        debugger;
+                        return e;
+                    });
+                    debugger;
+                    setEmployers(employersWithTags);
+                });
+                
                 if (isFiltering) {
                     const tagSlugMap = getTagSlugMap(tags);
                     const tag: ITag = isFiltering ? tagSlugMap[(tagSlug || '')] : null;
                     if (tag) {
-                        console.log('setting filter slug to '+tag.label);
-                        setFilterSlugName(tag.label);
+                        console.log('setting filter slug to '+tag.name);
+                        setFilterSlugName(tag.name);
                     } else {
                         console.warn(tagSlug + ' not in tag map: '+tagSlugMap);
                     }
                 }
-            }
-
-            // Employers
-            let results = response[0].data.results;
-            if (tagSlug) {
-                //const filtered = filterByTagSlug(results, tagSlug);
-                setEmployers(results);
-            } else {
-                setEmployers(results);
-                setFilterSlugName('');
             }
 
             setErrorMsg('');

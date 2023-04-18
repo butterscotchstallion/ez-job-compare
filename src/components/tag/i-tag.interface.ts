@@ -1,6 +1,6 @@
 export interface ITag {
     id: number;
-    label: string;
+    name: string;
     slug: string;
     key: string;
     icon: string;

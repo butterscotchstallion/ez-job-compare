@@ -1,14 +1,21 @@
 import { ITag } from "./i-tag.interface";
 
-interface ITagsEmpoyersMap {
+interface ITagsEmployersMap {
     [employerId: number]: ITag[]
 };
 interface ITagIdTagsMap {
     [tagId: number]: ITag
 };
 
-export default function getTagsEmployersMap(employersTagsList: any, tags: ITag[]): ITagsEmpoyersMap {
-    const tagsEmployersMap: ITagsEmpoyersMap = {};
+/**
+ * Creates a map of tags that belong to employers
+ * 
+ * @param employersTagsList 
+ * @param tags 
+ * @returns ITagsEmployersMap
+ */
+export default function getTagsEmployersMap(employersTagsList: any, tags: ITag[]): ITagsEmployersMap {
+    const tagsEmployersMap: ITagsEmployersMap = {};
     const tagIdTagsMap: ITagIdTagsMap = {};
 
     tags.map((t: ITag) => {
