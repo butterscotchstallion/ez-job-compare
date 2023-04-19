@@ -1,18 +1,31 @@
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { Box, Grid, styled } from '@mui/material';
+import { IJob } from '../../components/job/i-job.interface';
+import { Stack } from '@mui/material';
+import Paper from '@mui/material/Paper';
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: '#1A2027',
+    ...theme.typography.body2,
+    padding: theme.spacing(2),
+    color: theme.palette.text.secondary,
+}));
 
 export default function JobsDataGrid(props: any) {
-    const columns: GridColDef[] = [
-        { field: 'title', headerName: 'Title', width: 70 },
-        { field: 'description', headerName: 'Description' },
-        { field: 'createdAt', headerName: 'Added On', width: 100 },
-    ];
     return (
-        <div style={{ width: '100%' }}>
-          <DataGrid
-            rows={props.jobs}
-            columns={columns}
-            checkboxSelection
-          />
-        </div>
-      );
+        <Box sx={{ width: '100%' }}>
+            <Grid container spacing={3}>
+                <Grid item xs={6}>
+                    <Stack spacing={2}>
+                        {props.jobs.map((job: IJob, index: number) => (
+                            <Item key={index} className="jobs-list-item">
+                                <h4>{job.title}</h4>
+                                <p><small>Added {job.createdAt}</small></p>
+                                <p>{job.description}</p>
+                            </Item>
+                        ))}
+                    </Stack>
+                </Grid>
+            </Grid>
+        </Box>
+    );
 };

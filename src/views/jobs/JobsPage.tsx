@@ -3,6 +3,7 @@ import Layout from "../Layout";
 import getJobs from "../../components/job/getJobs";
 import { IJob } from "../../components/job/i-job.interface";
 import JobsDataGrid from "./JobsDataGrid";
+import './jobs.scss';
 
 export default function JobsPage(props: any) {
     const [jobs, setJobs] = useState<IJob[]>([]);
@@ -20,9 +21,9 @@ export default function JobsPage(props: any) {
     return (
         <>
             <Layout theme={props.theme} areaTitle="Jobs">
-                {jobs.length && (
+                {jobs.length > 0 ? (
                     <JobsDataGrid jobs={jobs} />
-                )}
+                ) : <p>Loading...</p>}
             </Layout>
         </>
     );
