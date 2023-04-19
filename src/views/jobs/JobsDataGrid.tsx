@@ -24,6 +24,7 @@ export default function JobsDataGrid(props: any) {
                                     <CardHeader 
                                         className="jobs-card-header"
                                         title={job.title}
+                                        subheader={job.employerName}
                                         action={
                                             <IconButton aria-label="settings">
                                               <MoreVertIcon />
