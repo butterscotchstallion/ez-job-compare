@@ -151,6 +151,33 @@ def get_jobs():
     finally:
         close_connection(conn)
 
+### Jobs tags
+@cross_origin()
+@app.route("/api/v1/jobs/tagsMap", methods=['GET'])
+def list_jobs_tags_map():
+    return jsonify(get_jobs_tags())
+
+def get_jobs_tags():
+    try:
+        conn = connect_db()
+        query = '''
+            SELECT  jt.job_id AS jobId,
+                    jt.tag_id AS tagId
+            FROM jobs_tags jt
+            JOIN jobs j ON j.id = jt.job_id
+            JOIN tags t ON t.id = jt.tag_id
+        '''
+        cursor = conn.execute(query)
+        results = get_list_from_rows(cursor)
+        return {
+            'status': 'OK',
+            'results': results
+        }
+    except sqlite3.Error as er:
+        log.error('get_jobs_tags error: %s' % (' '.join(er.args)))
+    finally:
+        close_connection(conn)
+
 ##############
 ## Private ###
 ##############

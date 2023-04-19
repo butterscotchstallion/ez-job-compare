@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import formatDate from '../../utils/formatDate';
 import { dateFormatTypes } from '../../utils/formatDate';
 import ReactTimeAgo from 'react-time-ago'
+import TagList from '../../components/tag/TagList';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#1A2027',
@@ -46,6 +47,7 @@ export default function JobsDataGrid(props: any) {
                                     >
                                     </CardHeader>
                                     <CardContent className="jobs-card-content">
+                                        <TagList tags={job.tags} />
                                         <Typography variant="body2" color="text.secondary">
                                             {job.shortDescription}
                                         </Typography>

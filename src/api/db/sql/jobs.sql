@@ -34,3 +34,5 @@ CREATE TABLE jobs_tags(
 	FOREIGN KEY(job_id) REFERENCES jobs(id)
 	FOREIGN KEY(tag_id) REFERENCES tags(id)
 );
+
+INSERT INTO jobs_tags(job_id, tag_id) VALUES(1, 3);
