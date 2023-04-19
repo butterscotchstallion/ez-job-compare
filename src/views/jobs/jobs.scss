@@ -27,6 +27,11 @@ $padding: 10px;
     .jobs-card-actions {
         padding: $padding;
         font-size: .25rem;
+
+        time {
+            cursor: help;
+            border-bottom: 1px dotted #ddd; 
+        }
     }
 
     .MuiCardHeader-subheader {

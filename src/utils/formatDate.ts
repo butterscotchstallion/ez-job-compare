@@ -14,7 +14,7 @@ export default function formatDate(formatMe: string, formatType?: dateFormatType
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
-                    timeZone: 'utc'
+                    timeZone: 'EST'
                 }
             );
         break;

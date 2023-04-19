@@ -14,12 +14,15 @@ CREATE TABLE jobs (
 	FOREIGN KEY(employer_id) REFERENCES employers(id)
 );
 
-INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description)
+INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description, 
+slug)
 VALUES(1, 'Dark Matter Specialist', 'Responsible for innovation in the dark matter lab',
-250000, 450000, 'long description....');
+250000, 450000, 'long description....', '1-dark-matter-specialist');
 
-INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description)
-VALUES(2, 'Line Cook', 'Responsible for innovation in the kitchen', 25000, 35000, 'long description!');
+INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description,
+slug)
+VALUES(2, 'Line Cook', 'Responsible for innovation in the kitchen', 25000, 35000, 'long description!',
+'2-line-cook');
 
 -- jobs_tags
 DROP TABLE IF EXISTS jobs_tags;

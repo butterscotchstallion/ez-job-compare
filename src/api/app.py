@@ -133,6 +133,7 @@ def get_jobs():
                     j.salary_range_end AS salaryRangeEnd,
                     j.created_at AS createdAt,
                     j.updated_at AS updatedAt,
+                    j.slug,
                     e.name AS employerName,
                     e.slug AS employerSlug
             FROM jobs j
