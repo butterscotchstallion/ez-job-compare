@@ -1,23 +1,32 @@
 $padding: 10px;
 
 .jobs-list-item {
-    h4 {
-        margin-top: 0;
-    }
-
     .jobs-card-header {
         background-color: #3eb40d;
         color: #222;
         padding: $padding;
+        
+        a {
+            color: #222;
+        }
+    }
+
+    .MuiCardHeader-title {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .MuiCardHeader-subheader {
+        font-size: .85rem;
     }
 
     .jobs-card-content {
-        padding: 0 $padding $padding $padding;
+        padding: $padding;
     }
 
     .jobs-card-actions {
         padding: $padding;
-        font-size: .75rem;
+        font-size: .25rem;
     }
 
     .MuiCardHeader-subheader {

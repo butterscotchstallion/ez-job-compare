@@ -10,6 +10,7 @@ CREATE TABLE jobs (
 	location VARCHAR(255),
 	created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 	updated_at TEXT,
+	slug VARCHAR(255),
 	FOREIGN KEY(employer_id) REFERENCES employers(id)
 );
 

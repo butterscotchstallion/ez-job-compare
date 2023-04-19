@@ -133,7 +133,8 @@ def get_jobs():
                     j.salary_range_end AS salaryRangeEnd,
                     j.created_at AS createdAt,
                     j.updated_at AS updatedAt,
-                    e.name AS employerName
+                    e.name AS employerName,
+                    e.slug AS employerSlug
             FROM jobs j
             JOIN employers e on e.id = j.employer_id
             ORDER BY j.created_at, j.title
