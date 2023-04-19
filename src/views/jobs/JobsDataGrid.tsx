@@ -5,7 +5,6 @@ import Paper from '@mui/material/Paper';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Link } from 'react-router-dom';
 import formatDate from '../../utils/formatDate';
-import { dateFormatTypes } from '../../utils/formatDate';
 import ReactTimeAgo from 'react-time-ago'
 import TagList from '../../components/tag/TagList';
 
@@ -23,53 +22,49 @@ export default function JobsDataGrid(props: any) {
     });
 
     return (
-        <Box sx={{ width: '100%' }}>
             <Grid container spacing={3}>
                 <Grid item xs={6}>
-                    <Stack spacing={2}>
-                        {jobs.map((job: IJob, index: number) => (
-                            <Item key={index} className="jobs-list-item">
-                                <Card
-                                    variant="outlined">
-                                    <CardHeader 
-                                        className="jobs-card-header"
-                                        title={
-                                            <Link to={'/jobs/'+job.slug}>{job.title}</Link>
-                                        }
-                                        subheader={
-                                            <Link to={'/employers/'+job.employerSlug}>{job.employerName}</Link>
-                                        }
-                                        action={
-                                            <IconButton aria-label="settings">
-                                              <MoreVertIcon />
-                                            </IconButton>
-                                        }
-                                    >
-                                    </CardHeader>
-                                    <CardContent className="jobs-card-content">
-                                        <Paper className="jobs-salary-range-area">
-                                            Salary range: {job.salaryRangeStart} - {job.salaryRangeEnd}
-                                        </Paper>
-                                        <TagList tags={job.tags} />
-                                        <Typography variant="body2" color="text.secondary">
-                                            {job.shortDescription}
-                                        </Typography>
-                                    </CardContent>
+                    {jobs.map((job: IJob, index: number) => (
+                        <Card
+                            key={index}
+                            className="jobs-list-item"
+                            variant="outlined">
+                            <CardHeader 
+                                className="jobs-card-header"
+                                title={
+                                    <Link to={'/jobs/'+job.slug}>{job.title}</Link>
+                                }
+                                subheader={
+                                    <Link to={'/employers/'+job.employerSlug}>{job.employerName}</Link>
+                                }
+                                action={
+                                    <IconButton aria-label="settings">
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                }
+                            >
+                            </CardHeader>
+                            <CardContent className="jobs-card-content">
+                                <Paper className="jobs-salary-range-area">
+                                    Salary range: {job.salaryRangeStart} - {job.salaryRangeEnd}
+                                </Paper>
+                                <TagList tags={job.tags} />
+                                <Typography variant="body2" color="text.secondary">
+                                    {job.shortDescription}
+                                </Typography>
+                            </CardContent>
 
-                                    <CardActions className="jobs-card-actions">
-                                        <Typography variant="body2" color="text.secondary">
-                                            Posted <ReactTimeAgo
-                                                        date={new Date(job.formattedDate)}
-                                                        locale="en-US"
-                                                        timeStyle="round"/>
-                                        </Typography>
-                                    </CardActions>
-                                </Card>
-                            </Item>
-                        ))}
-                    </Stack>
+                            <CardActions className="jobs-card-actions">
+                                <Typography variant="body2" color="text.secondary">
+                                    Posted <ReactTimeAgo
+                                                date={new Date(job.formattedDate)}
+                                                locale="en-US"
+                                                timeStyle="round"/>
+                                </Typography>
+                            </CardActions>
+                        </Card>
+                    ))}
                 </Grid>
             </Grid>
-        </Box>
     );
 };
