@@ -1,3 +1,5 @@
+import { ITag } from "../tag/i-tag.interface";
+
 export interface IJob {
     id: number;
     title: string;
@@ -13,4 +15,5 @@ export interface IJob {
     slug: string;
     formattedDate: string;
     formattedDateRelative: string;
+    tags: ITag[]
 }
