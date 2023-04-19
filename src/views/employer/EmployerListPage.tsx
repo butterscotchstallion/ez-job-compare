@@ -26,63 +26,69 @@ export default function EmployerListPage(props: any) {
     let isFiltering = tagSlug && tagSlug.length > 0;
 
     useEffect(() => {
+        let mounted = true;
         console.log('Rendering!');
         document.title = 'Employer List';
 
-        Promise.all([
-            getEmployers(),
-            getTags()
-        ]).then((response: any) => {
-            // Employers - populate tags initially
-            let employersResults = response[0].data.results.map((e: any) => {
-                e.tags = [];
-                return e;
-            });
-            if (tagSlug) {
-                const filtered = filterByTagSlug(employersResults, tagSlug);
-                setEmployers(filtered);
-            } else {
-                setEmployers(employersResults);
-                setFilterSlugName('');
-            }
-
-            // Tags
-            const tagResults = response[1].data.results;
-            if (tagResults.length > 0) {
-                setTags(tagResults);
-
-                getTagsEmployersList().then((response: any) => {
-                    const tagsEmployersMap = getTagsEmployersMap(response.data.results, tagResults);
-                    const employersWithTags = employersResults.map((e: any) => {
-                        e.tags = tagsEmployersMap[e.id] || [];
-                        return e;
-                    });
-                    setEmployers(employersWithTags);
+        if (mounted) {
+            Promise.all([
+                getEmployers(),
+                getTags()
+            ]).then((response: any) => {
+                // Employers - populate tags initially
+                let employersResults = response[0].data.results.map((e: any) => {
+                    e.tags = [];
+                    return e;
                 });
-                
-                if (isFiltering) {
-                    const tagSlugMap = getTagSlugMap(tags);
-                    const tag: ITag = isFiltering ? tagSlugMap[(tagSlug || '')] : null;
-                    if (tag) {
-                        console.log('setting filter slug to '+tag.name);
-                        setFilterSlugName(tag.name);
-                    } else {
-                        console.warn(tagSlug + ' not in tag map: '+tagSlugMap);
+                if (tagSlug) {
+                    const filtered = filterByTagSlug(employersResults, tagSlug);
+                    setEmployers(filtered);
+                } else {
+                    setEmployers(employersResults);
+                    setFilterSlugName('');
+                }
+
+                // Tags
+                const tagResults = response[1].data.results;
+                if (tagResults.length > 0) {
+                    setTags(tagResults);
+
+                    getTagsEmployersList().then((response: any) => {
+                        const tagsEmployersMap = getTagsEmployersMap(response.data.results, tagResults);
+                        const employersWithTags = employersResults.map((e: any) => {
+                            e.tags = tagsEmployersMap[e.id] || [];
+                            return e;
+                        });
+                        setEmployers(employersWithTags);
+                    });
+                    
+                    if (isFiltering) {
+                        const tagSlugMap = getTagSlugMap(tags);
+                        const tag: ITag = isFiltering ? tagSlugMap[(tagSlug || '')] : null;
+                        if (tag) {
+                            console.log('setting filter slug to '+tag.name);
+                            setFilterSlugName(tag.name);
+                        } else {
+                            console.warn(tagSlug + ' not in tag map: '+tagSlugMap);
+                        }
                     }
                 }
-            }
 
-            setErrorMsg('');
-            setLoading(false);
-        })
-        .catch((error: any) => {
-            setErrorMsg(error.message);
-            setLoading(false);
-        })
-        .finally(() => {
-            setLoading(false);
-        });
-        
+                setErrorMsg('');
+                setLoading(false);
+            })
+            .catch((error: any) => {
+                setErrorMsg(error.message);
+                setLoading(false);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+        }
+
+        return function cleanup() {
+            mounted = false;
+        };        
     }, []);
     
     function filterByTagSlug(employers: any[], filterSlug: string | undefined) {

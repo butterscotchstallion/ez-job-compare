@@ -1,5 +1,23 @@
+$padding: 10px;
+
 .jobs-list-item {
     h4 {
         margin-top: 0;
     }
+
+    .jobs-card-header {
+        background-color: #3eb40d;
+        color: #222;
+        padding: $padding;
+    }
+
+    .jobs-card-content {
+        padding: 0 $padding $padding $padding;
+    }
+
+    .jobs-card-actions {
+        padding: $padding;
+        font-size: .75rem;
+    }
 }
+

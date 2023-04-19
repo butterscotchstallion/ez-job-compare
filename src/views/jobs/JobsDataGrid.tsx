@@ -1,7 +1,8 @@
-import { Box, Grid, styled } from '@mui/material';
+import { Box, Card, CardActions, CardContent, CardHeader, Grid, IconButton, styled } from '@mui/material';
 import { IJob } from '../../components/job/i-job.interface';
 import { Stack } from '@mui/material';
 import Paper from '@mui/material/Paper';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#1A2027',
@@ -18,9 +19,26 @@ export default function JobsDataGrid(props: any) {
                     <Stack spacing={2}>
                         {props.jobs.map((job: IJob, index: number) => (
                             <Item key={index} className="jobs-list-item">
-                                <h4>{job.title}</h4>
-                                <p><small>Added {job.createdAt}</small></p>
-                                <p>{job.description}</p>
+                                <Card
+                                    variant="outlined">
+                                    <CardHeader 
+                                        className="jobs-card-header"
+                                        title={job.title}
+                                        action={
+                                            <IconButton aria-label="settings">
+                                              <MoreVertIcon />
+                                            </IconButton>
+                                        }
+                                    >
+                                    </CardHeader>
+                                    <CardContent className="jobs-card-content">
+                                        <p>{job.description}</p>
+                                    </CardContent>
+
+                                    <CardActions className="jobs-card-actions">
+                                        Posted on {job.createdAt}
+                                    </CardActions>
+                                </Card>
                             </Item>
                         ))}
                     </Stack>

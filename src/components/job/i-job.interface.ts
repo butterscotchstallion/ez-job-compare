@@ -1,7 +1,8 @@
 export interface IJob {
     id: number;
     title: string;
-    description: string;
+    shortDescription: string;
+    longDescription: string;
     salaryRangeStart: number;
     salaryRangeEnd: number;
     location: string;

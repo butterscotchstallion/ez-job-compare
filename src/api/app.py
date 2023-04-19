@@ -127,7 +127,8 @@ def get_jobs():
         query = '''
             SELECT  j.id,
                     j.title,
-                    j.description,
+                    j.short_description AS shortDescription,
+                    j.long_description AS longDescription,
                     j.salary_range_start AS salaryRangeStart,
                     j.salary_range_end AS salaryRangeEnd,
                     j.created_at AS createdAt,
