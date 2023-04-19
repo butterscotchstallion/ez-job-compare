@@ -47,6 +47,9 @@ export default function JobsDataGrid(props: any) {
                                     >
                                     </CardHeader>
                                     <CardContent className="jobs-card-content">
+                                        <Paper className="jobs-salary-range-area">
+                                            Salary range: {job.salaryRangeStart} - {job.salaryRangeEnd}
+                                        </Paper>
                                         <TagList tags={job.tags} />
                                         <Typography variant="body2" color="text.secondary">
                                             {job.shortDescription}
