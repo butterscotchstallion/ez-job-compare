@@ -4,21 +4,21 @@ CREATE TABLE jobs (
 	employer_id INTEGER,
 	title VARCHAR(255),
 	short_description VARCHAR(255),
-	long_desccription TEXT,
+	long_description TEXT,
 	salary_range_start INTEGER,
 	salary_range_end INTEGER,
 	location VARCHAR(255),
-	created_at TEXT,
+	created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 	updated_at TEXT,
 	FOREIGN KEY(employer_id) REFERENCES employers(id)
 );
 
-INSERT INTO jobs(employer_id, title, description, salary_range_start, salary_range_end)
+INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description)
 VALUES(1, 'Dark Matter Specialist', 'Responsible for innovation in the dark matter lab',
-250000, 450000);
+250000, 450000, 'long description....');
 
-INSERT INTO jobs(employer_id, title, description, salary_range_start, salary_range_end)
-VALUES(2, 'Line Cook', 'Responsible for innovation in the kitchen', 25000, 35000);
+INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description)
+VALUES(2, 'Line Cook', 'Responsible for innovation in the kitchen', 25000, 35000, 'long description!');
 
 -- jobs_tags
 DROP TABLE IF EXISTS jobs_tags;

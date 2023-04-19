@@ -32,7 +32,7 @@ export default function JobsDataGrid(props: any) {
                                     >
                                     </CardHeader>
                                     <CardContent className="jobs-card-content">
-                                        <p>{job.description}</p>
+                                        <p>{job.shortDescription}</p>
                                     </CardContent>
 
                                     <CardActions className="jobs-card-actions">
