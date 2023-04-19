@@ -115,6 +115,37 @@ def get_employers_tags():
     finally:
         close_connection(conn)
 
+### Jobs
+@cross_origin()
+@app.route("/api/v1/jobs", methods=['GET'])
+def list_jobs():
+    return jsonify(get_jobs())
+
+def get_jobs():
+    try:
+        conn = connect_db()
+        query = '''
+            SELECT  j.id,
+                    j.title,
+                    j.description,
+                    j.salary_range_start AS salaryRangeStart,
+                    j.salary_range_end AS salaryRangeEnd,
+                    j.created_at AS createdAt,
+                    j.updated_at AS updatedAt
+            FROM jobs j
+            ORDER BY j.created_at, j.title
+        '''
+        cursor = conn.execute(query)
+        results = get_list_from_rows(cursor)
+        return {
+            'status': 'OK',
+            'results': results
+        }
+    except sqlite3.Error as er:
+        log.error('get_jobs error: %s' % (' '.join(er.args)))
+    finally:
+        close_connection(conn)
+
 ##############
 ## Private ###
 ##############

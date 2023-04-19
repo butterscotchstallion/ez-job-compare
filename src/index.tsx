@@ -10,6 +10,7 @@ import ErrorPage from './views/Error';
 import EmployerPage from './views/employer/EmployerPage';
 import { createTheme } from "@mui/material";
 import EmployerListPage from './views/employer/EmployerListPage';
+import JobsPage from './views/jobs/JobsPage';
 
 const theme = createTheme({
     palette: {
@@ -34,7 +35,11 @@ const router = createBrowserRouter([
   {
     path: '/employers/:employerId',
     element: <EmployerPage theme={theme} />
-  },  
+  },
+  {
+    path: '/jobs',
+    element: <JobsPage theme={theme} />
+  }, 
 ]);
 
 const root = ReactDOM.createRoot(

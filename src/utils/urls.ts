@@ -10,7 +10,8 @@ const URLS = () => {
             return BASE_URL + 'employers/'+id;
         },
         "tagList": BASE_URL + 'tags',
-        "tagsEmployers": BASE_URL + 'employers/tagsMap'
+        "tagsEmployers": BASE_URL + 'employers/tagsMap',
+        "jobsList": BASE_URL + 'jobs'
     };
 };
 export default URLS;

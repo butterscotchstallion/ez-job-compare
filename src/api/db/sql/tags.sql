@@ -27,3 +27,7 @@ INSERT INTO employers_tags(tag_id, employer_id) VALUES(1, 1);
 INSERT INTO employers_tags(tag_id, employer_id) VALUES(3, 1);
 -- employer 2
 INSERT INTO employers_tags(tag_id, employer_id) VALUES(4, 2);
+-- employer 3
+INSERT INTO employers_tags(tag_id, employer_id) VALUES(1, 3);
+
+
