@@ -101,12 +101,10 @@ export default function EmployerListPage(props: any) {
 
     return (
         <>
-            {loading && <p>Loading...</p>}
-            {errorMsg && <p>Error! {errorMsg}</p>}
             {isFiltering && employers && employers.length === 0 ? (
                 <p>No results using that filter</p>
             ) : null}
-            {employers && (
+            {employers ? (
                 <Layout theme={props.theme} areaTitle="Employer List">
                     {filterSlugName && (
                         <Card className="employerListFilterMessage" variant="outlined">
@@ -119,6 +117,8 @@ export default function EmployerListPage(props: any) {
                     )}
 
                     <Grid container spacing={3}>
+                        {errorMsg && <p>Error! {errorMsg}</p>}
+
                         {employers.map((employer: any, index: number) => (
                             <Grid item xs={4} key={index}>
                                 <Card
@@ -167,7 +167,7 @@ export default function EmployerListPage(props: any) {
                         ))}
                     </Grid>
                 </Layout>
-            )}
+            ) : <p>Loading...</p>}
         </>
     );
 };
