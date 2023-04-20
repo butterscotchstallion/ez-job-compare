@@ -14,15 +14,22 @@ CREATE TABLE jobs (
 	FOREIGN KEY(employer_id) REFERENCES employers(id)
 );
 
+-- Massive Dynamic
 INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description, 
 slug)
 VALUES(1, 'Dark Matter Specialist', 'Responsible for innovation in the dark matter lab',
 250000, 450000, 'long description....', '1-dark-matter-specialist');
 
 INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description,
-slug)
+slug, location)
+VALUES(1, 'Chronotech II', 'Responsible for technology that interacts with time', 250000, 550000, 'long description!',
+'3-chronotech-ii', null);
+
+-- Los Pollos Hermanos
+INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description,
+slug, location)
 VALUES(2, 'Line Cook', 'Responsible for innovation in the kitchen', 25000, 35000, 'long description!',
-'2-line-cook');
+'2-line-cook', 'Albuquerque New Mexico');
 
 -- jobs_tags
 DROP TABLE IF EXISTS jobs_tags;

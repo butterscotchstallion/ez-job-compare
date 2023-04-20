@@ -1,4 +1,4 @@
-import { Box, Card, CardActions, CardContent, CardHeader, Grid, IconButton, Typography, styled } from '@mui/material';
+import { Badge, Box, Card, CardActions, CardContent, CardHeader, Grid, IconButton, Typography, styled } from '@mui/material';
 import { IJob } from '../../components/job/i-job.interface';
 import { Stack } from '@mui/material';
 import Paper from '@mui/material/Paper';
@@ -38,19 +38,27 @@ export default function JobsDataGrid(props: any) {
                                 subheader={
                                     <>
                                         <Link to={'/employers/'+job.employerSlug}>{job.employerName}</Link> 
-                                        <div className="job-location">{job.location}</div>
+                                        {job.location && (
+                                            <Typography variant="body2" color="text.secondary">
+                                                {job.location}
+                                            </Typography>
+                                        )}
                                     </>
                                 }
                                 action={
-                                    <IconButton aria-label="settings">
-                                        <MoreVertIcon />
-                                    </IconButton>
+                                    <>
+                                        <IconButton aria-label="settings">
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                    </>
                                 }
                             >
                             </CardHeader>
                             <CardContent className="jobs-card-content">
                                 <Paper className="jobs-salary-range-area">
-                                    Salary range: {job.salaryRangeStart} - {job.salaryRangeEnd}
+                                    <Typography variant="body2" color="text.secondary">
+                                        Salary range: {job.salaryRangeStart} - {job.salaryRangeEnd}
+                                    </Typography>
                                 </Paper>
                                 <TagList tags={job.tags} />
                                 <Typography variant="body2" color="text.secondary">

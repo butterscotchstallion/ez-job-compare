@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import getEmployers from "../../components/employer/getEmployers";
 import Layout from "../Layout";
-import { Avatar, Card, CardActions, CardContent, CardHeader, CardMedia, Grid, IconButton, Typography } from "@mui/material";
+import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Grid, IconButton, Typography } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
@@ -15,6 +15,9 @@ import { ITag } from "../../components/tag/i-tag.interface";
 import TagFilterList from "../../components/tag/TagFilterList";
 import getTagsEmployersMap from "../../components/tag/getTagsEmployersMap";
 import getTagsEmployersList from "../../components/tag/getTagsEmployersList";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import getJobCountMap from "../../components/job/getJobCountMap";
+import IEmployer from "../../components/employer/i-employer.interface";
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -33,7 +36,8 @@ export default function EmployerListPage(props: any) {
         if (mounted) {
             Promise.all([
                 getEmployers(),
-                getTags()
+                getTags(),
+                getJobCountMap()
             ]).then((response: any) => {
                 // Employers - populate tags initially
                 let employersResults = response[0].data.results.map((e: any) => {
@@ -53,13 +57,17 @@ export default function EmployerListPage(props: any) {
                 if (tagResults.length > 0) {
                     setTags(tagResults);
 
-                    getTagsEmployersList().then((response: any) => {
-                        const tagsEmployersMap = getTagsEmployersMap(response.data.results, tagResults);
+                    getTagsEmployersList().then((tagsEmployersResponse: any) => {
+                        const tagsEmployersMap = getTagsEmployersMap(tagsEmployersResponse.data.results, tagResults);
                         const employersWithTags = employersResults.map((e: any) => {
                             e.tags = tagsEmployersMap[e.id] || [];
                             return e;
                         });
-                        setEmployers(employersWithTags);
+                        const employersWithCounts = employersWithTags.map((e: IEmployer) => {
+                            e.jobCount = response[2][e.id];
+                            return e;
+                        });
+                        setEmployers(employersWithCounts);
                     });
                     
                     if (isFiltering) {
@@ -138,9 +146,21 @@ export default function EmployerListPage(props: any) {
                                             </Avatar>
                                         }
                                         action={
-                                            <IconButton aria-label="settings">
-                                                <MoreVertIcon />
-                                            </IconButton>
+                                            <> 
+                                                {employer.jobCount > 0 ? (
+                                                    <Badge
+                                                        title="{employer.jobCount} jobs"
+                                                        badgeContent={employer.jobCount}
+                                                        color="primary"
+                                                    >
+                                                        <AccountBoxIcon />
+                                                    </Badge>
+                                                ) : ''}
+                                                
+                                                <IconButton aria-label="settings">
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                            </>
                                         }
                                         title={
                                             <Link to={'/employers/'+employer.id}>{employer.name}</Link>

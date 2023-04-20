@@ -179,6 +179,34 @@ def get_jobs_tags():
     finally:
         close_connection(conn)
 
+### Jobs count
+@cross_origin()
+@app.route("/api/v1/employers/jobCount", methods=['GET'])
+def list_job_count():
+    return jsonify(get_job_count())
+
+def get_job_count():
+    try:
+        conn = connect_db()
+        query = '''
+            SELECT  e.id AS employerId,
+                    e.name AS employerName,
+                    COUNT(*) as jobCount
+            FROM employers e
+            JOIN jobs j ON j.employer_id = e.id
+            GROUP BY e.id
+        '''
+        cursor = conn.execute(query)
+        results = get_list_from_rows(cursor)
+        return {
+            'status': 'OK',
+            'results': results
+        }
+    except sqlite3.Error as er:
+        log.error('get_job_tags error: %s' % (' '.join(er.args)))
+    finally:
+        close_connection(conn)
+
 ##############
 ## Private ###
 ##############

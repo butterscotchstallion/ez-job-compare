@@ -13,6 +13,7 @@ const URLS = () => {
         "tagsEmployers": BASE_URL + 'employers/tagsMap',
         "jobsList": BASE_URL + 'jobs',
         "tagsJobs": BASE_URL + 'jobs/tagsMap',
+        "jobCount": BASE_URL + 'employers/jobCount'
     };
 };
 export default URLS;
