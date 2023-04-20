@@ -153,7 +153,6 @@ def get_jobs(**kwargs):
             ''' + queryClause + '''
             ORDER BY j.created_at DESC, j.title
         '''
-        log.info(query)
         cursor = conn.execute(query, params)
         results = get_list_from_rows(cursor)
         return {

@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Grid, Paper, TextField, Typography } from "@mui/material";
 import { debounce } from "lodash";
 import { useState } from "react";
+import './search.scss';
 
 export default function Search(props: any) {
     const [searchDisabled, setSearchDisabled] = useState(true);
@@ -52,11 +53,9 @@ export default function Search(props: any) {
                 </Grid>
                 <Grid item alignItems="stretch" style={{ paddingLeft: '1rem', display: "flex" }}>
                     <ButtonGroup variant="contained" aria-label="outlined button group">
-                        <Button variant="outlined"
-                                type="submit"
+                        <Button type="submit"
                                 disabled={searchDisabled}>Search</Button>
-                        <Button variant="outlined"
-                                disabled={!isSearching}
+                        <Button disabled={!isSearching}
                                 onClick={onReset}>Reset</Button>
                     </ButtonGroup>
                 </Grid>
