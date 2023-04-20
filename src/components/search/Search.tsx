@@ -16,12 +16,14 @@ export default function Search(props: any) {
 
         if (isValidSearchQuery) {
             setIsSearching(true);
+            setSearchQuery(query);
         } else {
             setIsSearching(false);
         }
     }
     
-    function onReset() {
+    function onReset(e: any) {
+        e.currentTarget.form.reset();
         setSearchQuery('');
         setIsSearching(false);
         props.onSearchQueryChanged('');

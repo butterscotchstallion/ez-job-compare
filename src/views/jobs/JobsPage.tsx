@@ -17,7 +17,7 @@ export default function JobsPage(props: any) {
     const [isSearching, setIsSearching] = useState<boolean>(false);
     
     function onSearchQueryChanged(searchQuery: string) {
-        if (searchQuery) {
+        if (searchQuery.length > 0) {
             const filtered = allJobs.filter((job: IJob) => {
                 const titleMatch = job.title.toLowerCase().indexOf(searchQuery) !== -1;
                 const shortDescMatch = job.shortDescription.toLowerCase().indexOf(searchQuery) !== -1;
