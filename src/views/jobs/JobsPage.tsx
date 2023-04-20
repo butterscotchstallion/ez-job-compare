@@ -14,11 +14,11 @@ import { Typography } from "@mui/material";
 export default function JobsPage(props: any) {
     const [allJobs, setAllJobs] = useState<IJob[]>([]);
     const [jobs, setJobs] = useState<IJob[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
+    const [isSearching, setIsSearching] = useState<boolean>(false);
     
     function onSearchQueryChanged(searchQuery: string) {
         if (searchQuery) {
-            const filtered = jobs.filter((job: IJob) => {
+            const filtered = allJobs.filter((job: IJob) => {
                 const titleMatch = job.title.toLowerCase().indexOf(searchQuery) !== -1;
                 const shortDescMatch = job.shortDescription.toLowerCase().indexOf(searchQuery) !== -1;
                 const longDescMatch = job.longDescription.toLowerCase().indexOf(searchQuery) !== -1;
