@@ -10,6 +10,8 @@ INSERT INTO tags(name, slug, icon) VALUES('Remote', 'remote', 'Computer');
 INSERT INTO tags(name, slug, icon) VALUES('Contract', 'contract', 'EditNote');
 INSERT INTO tags(name, slug, icon) VALUES('Signing Bonus', 'signing-bonus', 'AttachMoney');
 INSERT INTO tags(name, slug, icon) VALUES('On Site Required', 'on-site-required', 'HomeWork');
+INSERT INTO tags(name, slug, icon) VALUES('Dangerous Work Environment', 'dangerous-work-environment', 'Dangerous');
+
 
 -- employers_tags
 DROP TABLE IF EXISTS employers_tags;

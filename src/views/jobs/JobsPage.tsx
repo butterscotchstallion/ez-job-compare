@@ -24,7 +24,9 @@ export default function JobsPage(props: any) {
                 const titleMatch = job.title.toLowerCase().indexOf(searchQuery) !== -1;
                 const shortDescMatch = job.shortDescription.toLowerCase().indexOf(searchQuery) !== -1;
                 const longDescMatch = job.longDescription.toLowerCase().indexOf(searchQuery) !== -1;
-                return titleMatch || shortDescMatch || longDescMatch;
+                const employerMatch = job.employerName.toLowerCase().indexOf(searchQuery) !== -1;
+                const locationMatch = job.location ? job.location.toLowerCase().indexOf(searchQuery) !== -1 : false;
+                return titleMatch || shortDescMatch || longDescMatch || employerMatch || locationMatch;
             });
             setJobs(filtered);
             setIsSearching(true);

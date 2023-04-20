@@ -34,14 +34,30 @@ export default function JobsDataGrid(props: any) {
                             <CardHeader 
                                 className="jobs-card-header"
                                 title={
-                                    <Link to={'/jobs/'+job.slug}>{job.title}</Link>
+                                    <Link to={'/jobs/'+job.slug}>
+                                        <Highlighter
+                                            searchWords={[props.searchQuery]}
+                                            autoEscape={true}
+                                            textToHighlight={job.title}
+                                        />
+                                    </Link>
                                 }
                                 subheader={
                                     <>
-                                        <Link to={'/employers/'+job.employerSlug}>{job.employerName}</Link> 
+                                        <Link to={'/employers/'+job.employerSlug}>
+                                            <Highlighter
+                                                searchWords={[props.searchQuery]}
+                                                autoEscape={true}
+                                                textToHighlight={job.employerName}
+                                            />
+                                        </Link>
                                         {job.location && (
                                             <Typography variant="body2" color="text.secondary">
-                                                {job.location}
+                                                <Highlighter
+                                                    searchWords={[props.searchQuery]}
+                                                    autoEscape={true}
+                                                    textToHighlight={job.location}
+                                                />
                                             </Typography>
                                         )}
                                     </>

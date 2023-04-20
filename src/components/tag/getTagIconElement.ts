@@ -5,6 +5,7 @@ import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import ImportantDevicesIcon from '@mui/icons-material/ImportantDevices';
 import InstallDesktopIcon from '@mui/icons-material/InstallDesktop';
 import { createElement } from 'react';
+import DangerousIcon from '@mui/icons-material/Dangerous';
 
 export default function getTagIconElement(iconName: string): React.ReactElement | undefined {
     const iconMap: any = {
@@ -13,7 +14,8 @@ export default function getTagIconElement(iconName: string): React.ReactElement 
         'AttachMoney': AttachMoneyIcon,
         'HomeWork': HomeWorkIcon,
         'ImportantDevicesIcon': ImportantDevicesIcon,
-        'InstallDesktop': InstallDesktopIcon
+        'InstallDesktop': InstallDesktopIcon,
+        'Dangerous': DangerousIcon
     };
     const icon = iconMap[iconName];
 
