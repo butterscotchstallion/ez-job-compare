@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import getEmployers from "../../components/employer/getEmployers";
 import Layout from "../Layout";
-import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Grid, IconButton, Typography } from "@mui/material";
+import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
@@ -65,6 +65,7 @@ export default function EmployerListPage(props: any) {
                         });
                         const employersWithCounts = employersWithTags.map((e: IEmployer) => {
                             e.jobCount = response[2][e.id];
+                            e.jobCountTitle = e.jobCount + (e.jobCount === 1 ? ' job' : ' jobs');
                             return e;
                         });
                         setEmployers(employersWithCounts);
@@ -148,13 +149,14 @@ export default function EmployerListPage(props: any) {
                                         action={
                                             <> 
                                                 {employer.jobCount > 0 ? (
-                                                    <Badge
-                                                        title="{employer.jobCount} jobs"
-                                                        badgeContent={employer.jobCount}
-                                                        color="primary"
-                                                    >
-                                                        <AccountBoxIcon />
-                                                    </Badge>
+                                                    <Tooltip title={employer.jobCountTitle} arrow>
+                                                        <Badge
+                                                            badgeContent={employer.jobCount}
+                                                            color="primary"
+                                                        >
+                                                            <AccountBoxIcon />
+                                                        </Badge>
+                                                    </Tooltip>
                                                 ) : ''}
                                                 
                                                 <IconButton aria-label="settings">

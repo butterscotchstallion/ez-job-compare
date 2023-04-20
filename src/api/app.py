@@ -139,7 +139,7 @@ def get_jobs():
                     e.slug AS employerSlug
             FROM jobs j
             JOIN employers e on e.id = j.employer_id
-            ORDER BY j.created_at, j.title
+            ORDER BY j.created_at DESC, j.title
         '''
         cursor = conn.execute(query)
         results = get_list_from_rows(cursor)

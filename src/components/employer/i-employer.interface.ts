@@ -4,4 +4,5 @@ export default interface IEmployer {
     slug: string;
     description: string;
     jobCount: number;
+    jobCountTitle: string;
 };
