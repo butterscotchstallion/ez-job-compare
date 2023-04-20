@@ -1,3 +1,5 @@
+import { encode } from "punycode";
+
 const URLS = () => {
     const BASE_URL = 'http://localhost:5000/api/v1/';
 
@@ -11,7 +13,13 @@ const URLS = () => {
         },
         "tagList": BASE_URL + 'tags',
         "tagsEmployers": BASE_URL + 'employers/tagsMap',
-        "jobsList": BASE_URL + 'jobs',
+        "jobsList": (searchQuery: string | undefined) => {
+            let url = BASE_URL + 'jobs'; 
+            if (searchQuery) { 
+                url += '?query='+encodeURI(searchQuery);
+            }
+            return url;
+        },
         "tagsJobs": BASE_URL + 'jobs/tagsMap',
         "jobCount": BASE_URL + 'employers/jobCount'
     };

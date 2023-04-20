@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Grid, Paper, TextField, Typography } from "@mui/material";
+import { Button, ButtonGroup, Grid, TextField } from "@mui/material";
 import { debounce } from "lodash";
 import { useState } from "react";
 import './search.scss';
