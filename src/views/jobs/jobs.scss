@@ -51,3 +51,13 @@ $textColor: #fff;
     }
 }
 
+.search-area {
+    margin-bottom: 1rem;
+    padding: $padding;
+}
+
+.search-query-indicator-text-area {
+    padding-left: 1rem;
+    align-items: flex-end;
+    display: flex;
+}

@@ -119,11 +119,21 @@ def get_employers_tags():
 @cross_origin()
 @app.route("/api/v1/jobs", methods=['GET'])
 def list_jobs():
-    return jsonify(get_jobs())
+    query = request.args.get('query')
+    return jsonify(get_jobs(query=query))
 
-def get_jobs():
+def get_jobs(**kwargs):
     try:
         conn = connect_db()
+        queryClause = ''
+        params = ()
+        if kwargs['query']:
+            param = "%{}%".format(kwargs['query'])
+            queryClause = ' AND j.title LIKE ? '
+            queryClause += ' OR j.short_description LIKE ? '
+            queryClause += ' OR j.long_description LIKE ? '
+            params = (param, param, param,)
+
         query = '''
             SELECT  j.id,
                     j.title,
@@ -137,11 +147,14 @@ def get_jobs():
                     j.location,
                     e.name AS employerName,
                     e.slug AS employerSlug
-            FROM jobs j
+            FROM jobs j            
             JOIN employers e on e.id = j.employer_id
+            WHERE 1=1
+            ''' + queryClause + '''
             ORDER BY j.created_at DESC, j.title
         '''
-        cursor = conn.execute(query)
+        log.info(query)
+        cursor = conn.execute(query, params)
         results = get_list_from_rows(cursor)
         return {
             'status': 'OK',

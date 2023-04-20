@@ -8,10 +8,31 @@ import getTagsJobsList from "../../components/tag/getTagsJobsList";
 import getTagsJobsMap from "../../components/tag/getTagsJobsMap";
 import getTags from "../../components/tag/getTags";
 import { ITag } from "../../components/tag/i-tag.interface";
+import Search from "../../components/search/Search";
+import { Typography } from "@mui/material";
 
 export default function JobsPage(props: any) {
+    const [allJobs, setAllJobs] = useState<IJob[]>([]);
     const [jobs, setJobs] = useState<IJob[]>([]);
-
+    const [isSearching, setIsSearching] = useState(false);
+    
+    function onSearchQueryChanged(searchQuery: string) {
+        if (searchQuery) {
+            const filtered = jobs.filter((job: IJob) => {
+                const titleMatch = job.title.toLowerCase().indexOf(searchQuery) !== -1;
+                const shortDescMatch = job.shortDescription.toLowerCase().indexOf(searchQuery) !== -1;
+                const longDescMatch = job.longDescription.toLowerCase().indexOf(searchQuery) !== -1;
+                return titleMatch || shortDescMatch || longDescMatch;
+            });
+            setJobs(filtered);
+            setIsSearching(true);
+        } else {
+            console.log('resetting search');
+            setJobs(allJobs);
+            setIsSearching(false);
+        }
+    }
+    
     useEffect(() => {
         document.title = 'Jobs';
         Promise.all([
@@ -39,6 +60,7 @@ export default function JobsPage(props: any) {
                     j.salaryRangeEnd = formatter.format(Number(j.salaryRangeEnd));
                     return j;
                 });
+                setAllJobs(jobsWithSalaryRangeFormatted);
                 setJobs(jobsWithSalaryRangeFormatted);
             });
         }).catch((error) => {
@@ -49,9 +71,15 @@ export default function JobsPage(props: any) {
     return (
         <>
             <Layout theme={props.theme} areaTitle="Jobs">
-                {jobs.length > 0 ? (
+                <Search onSearchQueryChanged={onSearchQueryChanged} />
+                {jobs.length > 0 && (
                     <JobsDataGrid jobs={jobs} />
-                ) : <p>Loading...</p>}
+                )}
+                {jobs.length === 0 && isSearching ? (
+                    <Typography variant="body2" color="text.secondary">
+                        No results for that query.
+                    </Typography>
+                ) : ''}
             </Layout>
         </>
     );
