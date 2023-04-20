@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import formatDate from '../../utils/formatDate';
 import ReactTimeAgo from 'react-time-ago'
 import TagList from '../../components/tag/TagList';
+import Highlighter from "react-highlight-words";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#1A2027',
@@ -62,7 +63,21 @@ export default function JobsDataGrid(props: any) {
                                 </Paper>
                                 <TagList tags={job.tags} />
                                 <Typography variant="body2" color="text.secondary">
-                                    {showFullDescription ? job.longDescription : job.shortDescription}
+                                    {
+                                        showFullDescription ? (
+                                            <Highlighter
+                                                searchWords={[props.searchQuery]}
+                                                autoEscape={true}
+                                                textToHighlight={job.longDescription}
+                                            /> 
+                                        ) : (
+                                            <Highlighter
+                                                searchWords={[props.searchQuery]}
+                                                autoEscape={true}
+                                                textToHighlight={job.shortDescription}
+                                            />
+                                        )
+                                    }
                                 </Typography>
                             </CardContent>
 

@@ -15,9 +15,11 @@ export default function JobsPage(props: any) {
     const [allJobs, setAllJobs] = useState<IJob[]>([]);
     const [jobs, setJobs] = useState<IJob[]>([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
+    const [searchQuery, setSearchQuery] = useState('');
     
     function onSearchQueryChanged(searchQuery: string) {
         if (searchQuery.length > 0) {
+            setSearchQuery(searchQuery);
             const filtered = allJobs.filter((job: IJob) => {
                 const titleMatch = job.title.toLowerCase().indexOf(searchQuery) !== -1;
                 const shortDescMatch = job.shortDescription.toLowerCase().indexOf(searchQuery) !== -1;
@@ -27,9 +29,9 @@ export default function JobsPage(props: any) {
             setJobs(filtered);
             setIsSearching(true);
         } else {
-            console.log('resetting search');
             setJobs(allJobs);
             setIsSearching(false);
+            setSearchQuery('');
         }
     }
     
@@ -73,7 +75,7 @@ export default function JobsPage(props: any) {
             <Layout theme={props.theme} areaTitle="Jobs">
                 <Search onSearchQueryChanged={onSearchQueryChanged} />
                 {jobs.length > 0 && (
-                    <JobsDataGrid jobs={jobs} />
+                    <JobsDataGrid jobs={jobs} searchQuery={searchQuery} />
                 )}
                 {jobs.length === 0 && isSearching ? (
                     <Typography variant="body2" color="text.secondary">
