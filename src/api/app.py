@@ -134,6 +134,7 @@ def get_jobs():
                     j.created_at AS createdAt,
                     j.updated_at AS updatedAt,
                     j.slug,
+                    j.location,
                     e.name AS employerName,
                     e.slug AS employerSlug
             FROM jobs j

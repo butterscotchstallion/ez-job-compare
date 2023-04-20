@@ -20,6 +20,7 @@ export default function JobsDataGrid(props: any) {
         job.formattedDate = formatDate(job.createdAt);
         return job;
     });
+    const showFullDescription = props.showFullDescription;
 
     return (
             <Grid container spacing={3}>
@@ -35,7 +36,10 @@ export default function JobsDataGrid(props: any) {
                                     <Link to={'/jobs/'+job.slug}>{job.title}</Link>
                                 }
                                 subheader={
-                                    <Link to={'/employers/'+job.employerSlug}>{job.employerName}</Link>
+                                    <>
+                                        <Link to={'/employers/'+job.employerSlug}>{job.employerName}</Link> 
+                                        <div className="job-location">{job.location}</div>
+                                    </>
                                 }
                                 action={
                                     <IconButton aria-label="settings">
@@ -50,7 +54,7 @@ export default function JobsDataGrid(props: any) {
                                 </Paper>
                                 <TagList tags={job.tags} />
                                 <Typography variant="body2" color="text.secondary">
-                                    {job.shortDescription}
+                                    {showFullDescription ? job.longDescription : job.shortDescription}
                                 </Typography>
                             </CardContent>
 
