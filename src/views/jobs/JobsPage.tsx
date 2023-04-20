@@ -55,21 +55,19 @@ export default function JobsPage(props: any) {
     }, []);
     
     return (
-        <>
-            <Layout theme={props.theme} areaTitle="Jobs">
-                <Search onSearchQueryChanged={onSearchQueryChanged} />
-                {jobs.length > 0 && (
-                    <JobsDataGrid jobs={jobs} searchQuery={searchQuery} />
-                )}
-                {!isSearching && jobs.length === 0 ? (
-                    <span>Loading jobs...</span>
-                ) : ''}
-                {jobs.length === 0 && isSearching ? (
-                    <Typography variant="body2" color="text.secondary">
-                        No results for that query.
-                    </Typography>
-                ) : ''}
-            </Layout>
-        </>
+        <Layout theme={props.theme} areaTitle="Jobs">
+            <Search onSearchQueryChanged={onSearchQueryChanged} />
+            {jobs.length > 0 && (
+                <JobsDataGrid jobs={jobs} searchQuery={searchQuery} />
+            )}
+            {!isSearching && jobs.length === 0 ? (
+                <span>Loading jobs...</span>
+            ) : ''}
+            {jobs.length === 0 && isSearching ? (
+                <Typography variant="body2" color="text.secondary">
+                    No results for that query.
+                </Typography>
+            ) : ''}
+        </Layout>
     );
 }

@@ -132,7 +132,8 @@ def get_jobs(**kwargs):
             queryClause = ' AND j.title LIKE ? '
             queryClause += ' OR j.short_description LIKE ? '
             queryClause += ' OR j.long_description LIKE ? '
-            params = (param, param, param,)
+            queryClause += ' OR e.name LIKE ? '
+            params = (param, param, param, param,)
 
         query = '''
             SELECT  j.id,
@@ -155,6 +156,7 @@ def get_jobs(**kwargs):
         '''
         cursor = conn.execute(query, params)
         results = get_list_from_rows(cursor)
+        log.info(query)
         return {
             'status': 'OK',
             'results': results
