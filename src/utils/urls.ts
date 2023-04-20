@@ -1,5 +1,3 @@
-import { encode } from "punycode";
-
 const URLS = () => {
     const BASE_URL = 'http://localhost:5000/api/v1/';
 

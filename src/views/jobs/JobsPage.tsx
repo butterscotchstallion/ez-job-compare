@@ -17,6 +17,8 @@ export default function JobsPage(props: any) {
     const [jobs, setJobs] = useState<IJob[]>([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [salaryRangeMin, setSalaryRangeMin] = useState(0);
+    const [salaryRangeMax, setSalaryRangeMax] = useState(0);
     
     function onSearchQueryChanged(searchQuery: string) {
         if (searchQuery.length > 0) {
@@ -30,9 +32,21 @@ export default function JobsPage(props: any) {
         }
     }
 
+    function onSalaryMinRangeChanged(newValue: number) {
+        setSalaryRangeMin(newValue);
+    }
+
+    function onSalaryMaxRangeChanged(newValue: number) {
+        setSalaryRangeMax(newValue);
+    }
+
     function getJobsAndTags(query?: string) {
         Promise.all([
-            getJobs({ searchQuery: query }),
+            getJobs({ 
+                searchQuery: query,
+                salaryRangeMin: salaryRangeMin,
+                salaryRangeMax: salaryRangeMax
+            }),
             getTags()
         ]).then((responses: any) => {
             const responseJobs: IJob[] = responses[0].data.results;
@@ -56,7 +70,12 @@ export default function JobsPage(props: any) {
     
     return (
         <Layout theme={props.theme} areaTitle="Jobs">
-            <Search onSearchQueryChanged={onSearchQueryChanged} />
+            <Search 
+                onSearchQueryChanged={onSearchQueryChanged}
+                onSalaryMinRangeChanged={onSalaryMinRangeChanged}
+                onSalaryMaxRangeChanged={onSalaryMaxRangeChanged}
+            />
+
             {jobs.length > 0 && (
                 <JobsDataGrid jobs={jobs} searchQuery={searchQuery} />
             )}

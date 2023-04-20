@@ -1,3 +1,4 @@
+import formatMoney from "../../utils/formatMoney";
 import getTagsJobsList from "../tag/getTagsJobsList";
 import getTagsJobsMap from "../tag/getTagsJobsMap";
 import { ITag } from "../tag/i-tag.interface";
@@ -17,16 +18,9 @@ export default function processJobs(jobs: IJob[], tags: ITag[]): Promise<IJob[]>
                 j.tags = tagsJobsMap[j.id] || [];
                 return j;
             });
-            const formatter = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                // These options are needed to round to whole numbers if that's what you want.
-                minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-                //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
-            });
             const jobsWithSalaryRangeFormatted = jobsWithTags.map((j: IJob) => {
-                j.salaryRangeStart = formatter.format(Number(j.salaryRangeStart));
-                j.salaryRangeEnd = formatter.format(Number(j.salaryRangeEnd));
+                j.salaryRangeStart = formatMoney(Number(j.salaryRangeStart));
+                j.salaryRangeEnd = formatMoney(Number(j.salaryRangeEnd));
                 return j;
             });
             resolve(jobsWithSalaryRangeFormatted);

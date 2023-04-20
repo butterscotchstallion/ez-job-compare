@@ -1,14 +1,15 @@
-import { Button, ButtonGroup, Grid, TextField } from "@mui/material";
+import { Button, ButtonGroup, Grid, Paper, Slider, TextField } from "@mui/material";
 import { debounce } from "lodash";
 import { useState } from "react";
 import './search.scss';
+import SalaryRangeSlider from "./SalaryRangeSlider";
 
-export default function Search(props: any) {
+export default function Search({ onSearchQueryChanged, onSalaryRangeMinChanged, onSalaryRangeMaxChanged }: any) {
     const [searchDisabled, setSearchDisabled] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     
-    function onSearchQueryChanged(event: any) {
+    function onChange(event: any) {
         const query = event.target.value.toLowerCase();
         const isValidSearchQuery = query.length > 1;
 
@@ -21,12 +22,17 @@ export default function Search(props: any) {
             setIsSearching(false);
         }
     }
+
+    function onSalaryRangeChanged(newValues: number[]) {
+        onSalaryRangeMinChanged(newValues[0]);
+        onSalaryRangeMaxChanged(newValues[1]);
+    }
     
     function onReset(e: any) {
         e.currentTarget.form.reset();
         setSearchQuery('');
         setIsSearching(false);
-        props.onSearchQueryChanged('');
+        onSearchQueryChanged('');
     }
 
     function onSearchButtonClicked(event: any) {
@@ -40,26 +46,32 @@ export default function Search(props: any) {
     }
 
     const debouncedCallback = debounce(() => {
-        props.onSearchQueryChanged(searchQuery);
+        onSearchQueryChanged(searchQuery);
     }, 500);
 
     return (
         <Grid container className="search-area">
             <form onSubmit={onSubmit}>
-                <Grid item>
+                <Grid item xs={2}>
                     <TextField 
                         id="outlined-search"
                         label="Search jobs"
                         type="search"
-                        onChange={onSearchQueryChanged} />
+                        onChange={onChange} />
                 </Grid>
-                <Grid item alignItems="stretch" style={{ paddingLeft: '1rem', display: "flex" }}>
+                <Grid xs={2} item alignItems="stretch" style={{ paddingLeft: '1rem', display: "flex" }}>
                     <ButtonGroup variant="contained" aria-label="outlined button group">
                         <Button type="submit"
                                 disabled={searchDisabled}>Search</Button>
                         <Button disabled={!isSearching}
                                 onClick={onReset}>Reset</Button>
                     </ButtonGroup>
+                </Grid>
+                <Grid item xs={2}>
+                    <Paper>
+                        <label>Salary Range</label>
+                        <SalaryRangeSlider onChange={onSalaryRangeChanged}/>
+                    </Paper>
                 </Grid>
             </form>
         </Grid>
