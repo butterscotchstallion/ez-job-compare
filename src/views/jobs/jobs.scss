@@ -1,8 +1,15 @@
 $padding: 10px;
 $textColor: #fff;
 
+
+
 .jobs-list-item {
     margin-bottom: 1rem;
+
+    mark {
+        background-color: lime;
+        padding: 5px;
+    }
 
     .job-location {
         color: $textColor;
