@@ -73,19 +73,13 @@ export default function Search({    onSearchQueryChanged,
                         type="search"
                         onChange={onChange} />
                 </Grid>
-                <Grid xs={2} item alignItems="stretch" style={{ paddingLeft: '1rem', display: "flex" }}>
-                    <ButtonGroup variant="contained" aria-label="outlined button group">
-                        <Button type="submit">Search</Button>
-                        <Button onClick={onReset}>Reset</Button>
-                    </ButtonGroup>
-                </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={2} style={{ paddingLeft: '1rem'}}>
                     <Paper>
                         <label>Salary Range</label>
                         <SalaryRangeSlider onChange={onSalaryRangeChanged}/>
                     </Paper>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={2} style={{ paddingLeft: '1rem'}}>
                     <CustomProvider theme="dark">
                         <label>Tags</label>
                         <TagPicker  data={formattedTags}
@@ -93,6 +87,12 @@ export default function Search({    onSearchQueryChanged,
                                     placeholder="Select Tags"
                                     onChange={handleTagPickerChange} />
                     </CustomProvider>
+                </Grid>
+                <Grid xs={2} item alignItems="stretch" style={{ paddingLeft: '1rem', display: "flex" }}>
+                    <ButtonGroup variant="contained" aria-label="outlined button group">
+                        <Button type="submit">Search</Button>
+                        <Button onClick={onReset}>Reset</Button>
+                    </ButtonGroup>
                 </Grid>
             </form>
         </Grid>
