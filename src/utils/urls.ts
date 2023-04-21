@@ -23,7 +23,7 @@ const URLS = () => {
             if (props.salaryRangeMax) {
                 params.push('salaryRangeMax='+props.salaryRangeMax);
             }
-            if(props.selectedTagIds) {
+            if (props.selectedTagIds.length > 0) {
                 props.selectedTagIds.map((tagId: number) => {
                     params.push('tagIds[]='+tagId);
                     return tagId;
