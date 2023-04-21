@@ -3,11 +3,23 @@ import { debounce } from "lodash";
 import { useState } from "react";
 import './search.scss';
 import SalaryRangeSlider from "./SalaryRangeSlider";
+import { TagPicker, CustomProvider } from 'rsuite';
+import { ITag } from "../tag/i-tag.interface";
+import "rsuite/dist/rsuite.min.css";
 
-export default function Search({ onSearchQueryChanged, onSalaryRangeMinChanged, onSalaryRangeMaxChanged }: any) {
+export default function Search({    onSearchQueryChanged, 
+                                    onSalaryRangeMinChanged,
+                                    onSalaryRangeMaxChanged,
+                                    tags 
+                                }: any) {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
-    
+    const formattedTags: any = tags.map((tag: any) => {
+        tag.label = tag.name;
+        tag.value = tag.id;
+        return tag;
+    });
+
     function onChange(event: any) {
         const query = event.target.value.toLowerCase();
         const isValidSearchQuery = query.length > 1;
@@ -66,6 +78,11 @@ export default function Search({ onSearchQueryChanged, onSalaryRangeMinChanged, 
                         <label>Salary Range</label>
                         <SalaryRangeSlider onChange={onSalaryRangeChanged}/>
                     </Paper>
+                </Grid>
+                <Grid item xs={2}>
+                    <CustomProvider theme="dark">
+                        <TagPicker data={formattedTags} style={{ width: 300 }} />
+                    </CustomProvider>
                 </Grid>
             </form>
         </Grid>

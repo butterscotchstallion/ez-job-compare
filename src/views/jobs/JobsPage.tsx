@@ -16,6 +16,7 @@ export default function JobsPage(props: any) {
     const [loading, setLoading] = useState(false);
     const [allJobs, setAllJobs] = useState<IJob[]>([]);
     const [jobs, setJobs] = useState<IJob[]>([]);
+    const [tags, setTags] = useState<ITag[]>([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [salaryRangeMin, setSalaryRangeMin] = useState(0);
@@ -51,6 +52,8 @@ export default function JobsPage(props: any) {
         ]).then((responses: any) => {
             const responseJobs: IJob[] = responses[0].data.results;
             const responseTags: ITag[] = responses[1].data.results;
+            
+            setTags(responseTags);
 
             processJobs(responseJobs, responseTags).then((jobs: IJob[]) => {
                 setAllJobs(jobs);
@@ -76,6 +79,7 @@ export default function JobsPage(props: any) {
                 onSearchQueryChanged={onSearchQueryChanged}
                 onSalaryRangeMinChanged={onSalaryRangeMinChanged}
                 onSalaryRangeMaxChanged={onSalaryRangeMaxChanged}
+                tags={tags}
             />
 
             {jobs.length > 0 && (
