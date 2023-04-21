@@ -72,8 +72,9 @@ export default function JobsDataGrid(props: any) {
                                         <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
                                     }
                                 </Typography>
+                                <TagList tags={job.tags} />
                             </Paper>
-                            <TagList tags={job.tags} />
+                            
                             <Typography variant="body2" color="text.secondary">
                                 {
                                     props.showFullDescription ? (
