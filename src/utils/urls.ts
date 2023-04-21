@@ -23,6 +23,12 @@ const URLS = () => {
             if (props.salaryRangeMax) {
                 params.push('salaryRangeMax='+props.salaryRangeMax);
             }
+            if(props.selectedTagIds) {
+                props.selectedTagIds.map((tagId: number) => {
+                    params.push('tagIds[]='+tagId);
+                    return tagId;
+                });
+            }
             if (params.length) {
                 url += '?' + params.join('&');
             }

@@ -122,15 +122,18 @@ def list_jobs():
     query = request.args.get('query')
     salary_range_min = request.args.get('salaryRangeMin')
     salary_range_max = request.args.get('salaryRangeMax')
+    tag_ids = request.args.get('tagIds')
     return jsonify(get_jobs(query=query,
                             salary_range_min=salary_range_min,
-                            salary_range_max=salary_range_max))
+                            salary_range_max=salary_range_max,
+                            tag_ids=tag_ids))
 
 def get_jobs(**kwargs):
     try:
         conn = connect_db()
         queryClause = ''
         params = []
+        tagJoinClause = ''
 
         # Search query
         if kwargs['query']:

@@ -10,10 +10,12 @@ import "rsuite/dist/rsuite.min.css";
 export default function Search({    onSearchQueryChanged, 
                                     onSalaryRangeMinChanged,
                                     onSalaryRangeMaxChanged,
+                                    onTagPickerChanged,
                                     tags 
                                 }: any) {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
+    const [selectedTags, setSelectedTags] = useState([]);
     const formattedTags: any = tags.map((tag: any) => {
         tag.label = tag.name;
         tag.value = tag.id;
@@ -57,6 +59,10 @@ export default function Search({    onSearchQueryChanged,
         onSearchQueryChanged(searchQuery);
     }, 500);
 
+    function handleTagPickerChange(selectedTagIds: number[]) {
+        onTagPickerChanged(selectedTagIds);
+    }
+
     return (
         <Grid container className="search-area">
             <form onSubmit={onSubmit}>
@@ -81,7 +87,11 @@ export default function Search({    onSearchQueryChanged,
                 </Grid>
                 <Grid item xs={2}>
                     <CustomProvider theme="dark">
-                        <TagPicker data={formattedTags} style={{ width: 300 }} />
+                        <label>Tags</label>
+                        <TagPicker  data={formattedTags}
+                                    style={{ width: 300 }}
+                                    placeholder="Select Tags"
+                                    onChange={handleTagPickerChange} />
                     </CustomProvider>
                 </Grid>
             </form>

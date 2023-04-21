@@ -21,6 +21,7 @@ export default function JobsPage(props: any) {
     const [searchQuery, setSearchQuery] = useState('');
     const [salaryRangeMin, setSalaryRangeMin] = useState(0);
     const [salaryRangeMax, setSalaryRangeMax] = useState(0);
+    const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
     
     function onSearchQueryChanged(searchQuery: string) {
         if (searchQuery.length > 0) {
@@ -40,13 +41,18 @@ export default function JobsPage(props: any) {
         setSalaryRangeMax(newValue);
     }
 
+    function onTagPickerChanged(selectedTagIds: number[]) {
+        setSelectedTagIds(selectedTagIds);
+    }
+
     function getJobsAndTags(query?: string) {
         setLoading(true);
         Promise.all([
             getJobs({ 
                 searchQuery: query,
                 salaryRangeMin: salaryRangeMin,
-                salaryRangeMax: salaryRangeMax
+                salaryRangeMax: salaryRangeMax,
+                selectedTagIds: selectedTagIds
             }),
             getTags()
         ]).then((responses: any) => {
@@ -79,6 +85,7 @@ export default function JobsPage(props: any) {
                 onSearchQueryChanged={onSearchQueryChanged}
                 onSalaryRangeMinChanged={onSalaryRangeMinChanged}
                 onSalaryRangeMaxChanged={onSalaryRangeMaxChanged}
+                onTagPickerChanged={onTagPickerChanged}
                 tags={tags}
             />
 
