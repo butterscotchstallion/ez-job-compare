@@ -14,7 +14,6 @@ export default function Search({    onSearchQueryChanged,
                                 }: any) {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
-    const [selectedTags, setSelectedTags] = useState([]);
     const formattedTags: any = tags.map((tag: any) => {
         tag.label = tag.name;
         tag.value = tag.id;

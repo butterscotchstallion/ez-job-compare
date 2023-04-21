@@ -28,6 +28,8 @@ export default function JobsPage(props: any) {
             setIsSearching(true);
         } else {
             getJobsAndTags();
+            // Highlight will remain without this here
+            setSearchQuery('');
         }
     }
 
