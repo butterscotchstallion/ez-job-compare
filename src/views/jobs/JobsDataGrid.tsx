@@ -15,7 +15,7 @@ export default function JobsDataGrid(props: any) {
     });
     return (
         <Grid container spacing={3}>
-            <Grid item xs={6}>
+            <Grid item xs={8}>
                 {jobs.map((job: IJob, index: number) => (
                     <Card
                         key={index}

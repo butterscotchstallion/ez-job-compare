@@ -120,20 +120,36 @@ def get_employers_tags():
 @app.route("/api/v1/jobs", methods=['GET'])
 def list_jobs():
     query = request.args.get('query')
-    return jsonify(get_jobs(query=query))
+    salary_range_min = request.args.get('salaryRangeMin')
+    salary_range_max = request.args.get('salaryRangeMax')
+    return jsonify(get_jobs(query=query,
+                            salary_range_min=salary_range_min,
+                            salary_range_max=salary_range_max))
 
 def get_jobs(**kwargs):
     try:
         conn = connect_db()
         queryClause = ''
-        params = ()
+        params = []
+
+        # Search query
         if kwargs['query']:
             param = "%{}%".format(kwargs['query'])
             queryClause = ' AND j.title LIKE ? '
             queryClause += ' OR j.short_description LIKE ? '
             queryClause += ' OR j.long_description LIKE ? '
             queryClause += ' OR e.name LIKE ? '
-            params = (param, param, param, param,)
+            queryClause += ' OR j.location LIKE ?'
+            params = [param, param, param, param, param]
+
+        ## Handle salary min/max range
+        if kwargs['salary_range_min']:
+            queryClause += ' AND j.salary_range_start >= ? '
+            params.append(kwargs['salary_range_min'])
+
+        if kwargs['salary_range_max']:
+            queryClause += ' AND j.salary_range_end <= ? '
+            params.append(kwargs['salary_range_max'])
 
         query = '''
             SELECT  j.id,
@@ -154,9 +170,9 @@ def get_jobs(**kwargs):
             ''' + queryClause + '''
             ORDER BY j.created_at DESC, j.title
         '''
+        log.info(query)
         cursor = conn.execute(query, params)
         results = get_list_from_rows(cursor)
-        log.info(query)
         return {
             'status': 'OK',
             'results': results

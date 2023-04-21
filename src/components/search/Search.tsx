@@ -5,15 +5,12 @@ import './search.scss';
 import SalaryRangeSlider from "./SalaryRangeSlider";
 
 export default function Search({ onSearchQueryChanged, onSalaryRangeMinChanged, onSalaryRangeMaxChanged }: any) {
-    const [searchDisabled, setSearchDisabled] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     
     function onChange(event: any) {
         const query = event.target.value.toLowerCase();
         const isValidSearchQuery = query.length > 1;
-
-        setSearchDisabled(!isValidSearchQuery);
 
         if (isValidSearchQuery) {
             setIsSearching(true);
@@ -61,10 +58,8 @@ export default function Search({ onSearchQueryChanged, onSalaryRangeMinChanged, 
                 </Grid>
                 <Grid xs={2} item alignItems="stretch" style={{ paddingLeft: '1rem', display: "flex" }}>
                     <ButtonGroup variant="contained" aria-label="outlined button group">
-                        <Button type="submit"
-                                disabled={searchDisabled}>Search</Button>
-                        <Button disabled={!isSearching}
-                                onClick={onReset}>Reset</Button>
+                        <Button type="submit">Search</Button>
+                        <Button onClick={onReset}>Reset</Button>
                     </ButtonGroup>
                 </Grid>
                 <Grid item xs={2}>

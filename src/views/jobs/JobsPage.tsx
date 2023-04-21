@@ -13,6 +13,7 @@ import { Typography } from "@mui/material";
 import processJobs from "../../components/job/processJobs";
 
 export default function JobsPage(props: any) {
+    const [loading, setLoading] = useState(false);
     const [allJobs, setAllJobs] = useState<IJob[]>([]);
     const [jobs, setJobs] = useState<IJob[]>([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -32,15 +33,16 @@ export default function JobsPage(props: any) {
         }
     }
 
-    function onSalaryMinRangeChanged(newValue: number) {
+    function onSalaryRangeMinChanged(newValue: number) {
         setSalaryRangeMin(newValue);
     }
 
-    function onSalaryMaxRangeChanged(newValue: number) {
+    function onSalaryRangeMaxChanged(newValue: number) {
         setSalaryRangeMax(newValue);
     }
 
     function getJobsAndTags(query?: string) {
+        setLoading(true);
         Promise.all([
             getJobs({ 
                 searchQuery: query,
@@ -60,6 +62,8 @@ export default function JobsPage(props: any) {
             });            
         }).catch((error) => {
             console.error(error);
+        }).finally(() => {
+            setLoading(false);
         });
     }
 
@@ -72,14 +76,14 @@ export default function JobsPage(props: any) {
         <Layout theme={props.theme} areaTitle="Jobs">
             <Search 
                 onSearchQueryChanged={onSearchQueryChanged}
-                onSalaryMinRangeChanged={onSalaryMinRangeChanged}
-                onSalaryMaxRangeChanged={onSalaryMaxRangeChanged}
+                onSalaryRangeMinChanged={onSalaryRangeMinChanged}
+                onSalaryRangeMaxChanged={onSalaryRangeMaxChanged}
             />
 
             {jobs.length > 0 && (
                 <JobsDataGrid jobs={jobs} searchQuery={searchQuery} />
             )}
-            {!isSearching && jobs.length === 0 ? (
+            {loading ? (
                 <span>Loading jobs...</span>
             ) : ''}
             {jobs.length === 0 && isSearching ? (

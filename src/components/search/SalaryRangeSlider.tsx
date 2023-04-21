@@ -1,9 +1,14 @@
-import { Slider } from "@mui/material";
+import { Box, Slider } from "@mui/material";
 import { useState } from "react";
 import formatMoney from "../../utils/formatMoney";
 
+export function onReset() {
+
+};
+
 export default function SalaryRangeSlider({ onChange }: any) {
-    const [value, setValue] = useState<number[]>([25000, 500000]);
+    const defaultValues = [0, 500000];
+    const [value, setValue] = useState<number[]>(defaultValues);
 
     const handleChange = (event: Event, newValue: number | number[]) => {
         setValue(newValue as number[]);
@@ -11,16 +16,22 @@ export default function SalaryRangeSlider({ onChange }: any) {
     };
 
     function valueText(value: number) {
-        return formatMoney(value);
+        const formatted = formatMoney(value);
+        return formatted;
     }
 
     return (
-        <Slider
-            getAriaLabel={() => 'Salary ranges'}
-            value={value}
-            onChange={handleChange}
-            valueLabelDisplay="auto"
-            getAriaValueText={valueText}
-        />
+        <Box sx={{ width: 300 }}>
+            <Slider
+                getAriaLabel={() => 'Salary ranges'}
+                value={value}
+                min={defaultValues[0]}
+                max={defaultValues[1]}
+                step={5000}
+                onChange={handleChange}
+                valueLabelDisplay="auto"
+                valueLabelFormat={valueText}
+            />
+        </Box>
     );
 };

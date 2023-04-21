@@ -11,10 +11,20 @@ const URLS = () => {
         },
         "tagList": BASE_URL + 'tags',
         "tagsEmployers": BASE_URL + 'employers/tagsMap',
-        "jobsList": (searchQuery: string | undefined) => {
+        "jobsList": (props: any) => {
+            const params: string[] = [];
             let url = BASE_URL + 'jobs'; 
-            if (searchQuery) { 
-                url += '?query='+encodeURI(searchQuery);
+            if (props.searchQuery) { 
+                params.push('query='+encodeURI(props.searchQuery));
+            }
+            if (props.salaryRangeMin) {
+                params.push('salaryRangeMin='+props.salaryRangeMin);
+            }
+            if (props.salaryRangeMax) {
+                params.push('salaryRangeMax='+props.salaryRangeMax);
+            }
+            if (params.length) {
+                url += '?' + params.join('&');
             }
             return url;
         },
