@@ -7,7 +7,7 @@ export function onReset() {
 };
 
 export default function SalaryRangeSlider({ onChange }: any) {
-    const defaultValues = [0, 5000000];
+    const defaultValues = [0, 900000];
     const [value, setValue] = useState<number[]>(defaultValues);
 
     const handleChange = (event: Event, newValue: number | number[]) => {
@@ -21,7 +21,7 @@ export default function SalaryRangeSlider({ onChange }: any) {
     }
 
     return (
-        <Box sx={{ width: 300 }}>
+        <Box sx={{ width: 200 }}>
             <Slider
                 getAriaLabel={() => 'Salary ranges'}
                 value={value}

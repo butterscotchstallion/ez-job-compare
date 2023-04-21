@@ -9,6 +9,7 @@ import TagList from '../../components/tag/TagList';
 import Highlighter from "react-highlight-words";
 
 export default function JobsDataGrid(props: any) {
+    const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
     const jobs = props.jobs.map((job: IJob) => {
         job.formattedDate = formatDate(job.createdAt);
         return job;
@@ -64,7 +65,12 @@ export default function JobsDataGrid(props: any) {
                         <CardContent className="jobs-card-content">
                             <Paper className="jobs-salary-range-area">
                                 <Typography variant="body2" color="text.secondary">
-                                    Salary range: {job.salaryRangeStart} - {job.salaryRangeEnd}
+                                    Salary range: 
+                                    {isFilteringBySalary ? (
+                                        <mark>{job.salaryRangeStart} - {job.salaryRangeEnd}</mark>
+                                    ) : 
+                                        <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
+                                    }
                                 </Typography>
                             </Paper>
                             <TagList tags={job.tags} />

@@ -13,7 +13,6 @@ export default function Search({ onSearchQueryChanged, onSalaryRangeMinChanged, 
         const isValidSearchQuery = query.length > 1;
 
         if (isValidSearchQuery) {
-            setIsSearching(true);
             setSearchQuery(query);
         } else {
             setIsSearching(false);

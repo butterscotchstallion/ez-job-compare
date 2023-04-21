@@ -143,11 +143,11 @@ def get_jobs(**kwargs):
             params = [param, param, param, param, param]
 
         ## Handle salary min/max range
-        if kwargs['salary_range_min']:
+        if kwargs['salary_range_min'] is not None:
             queryClause += ' AND j.salary_range_start >= ? '
             params.append(kwargs['salary_range_min'])
 
-        if kwargs['salary_range_max']:
+        if kwargs['salary_range_max'] is not None:
             queryClause += ' AND j.salary_range_end <= ? '
             params.append(kwargs['salary_range_max'])
 

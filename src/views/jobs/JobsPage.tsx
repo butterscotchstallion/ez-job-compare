@@ -28,8 +28,6 @@ export default function JobsPage(props: any) {
             setIsSearching(true);
         } else {
             getJobsAndTags();
-            setIsSearching(false);
-            setSearchQuery('');
         }
     }
 
@@ -81,7 +79,11 @@ export default function JobsPage(props: any) {
             />
 
             {jobs.length > 0 && (
-                <JobsDataGrid jobs={jobs} searchQuery={searchQuery} />
+                <JobsDataGrid   jobs={jobs}
+                                searchQuery={searchQuery}
+                                isSearching={isSearching}
+                                salaryRangeMin={salaryRangeMin}
+                                salaryRangeMax={salaryRangeMax} />
             )}
             {loading ? (
                 <span>Loading jobs...</span>
