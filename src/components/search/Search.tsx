@@ -82,7 +82,7 @@ export default function Search({    onSearchQueryChanged,
                     <CustomProvider theme="dark">
                         <label>Tags</label>
                         <TagPicker  data={formattedTags}
-                                    style={{ width: 300 }}
+                                    className="tag-picker"
                                     placeholder="Select Tags"
                                     onChange={handleTagPickerChange} />
                     </CustomProvider>

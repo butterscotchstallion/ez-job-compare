@@ -12,3 +12,9 @@
     align-items: flex-end;
     display: flex;
 }
+
+.tag-picker {
+    max-height: 65px;
+    overflow-y: scroll;
+    width: 300px;
+}
