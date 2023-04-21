@@ -1,11 +1,10 @@
-import { Button, ButtonGroup, Grid, Paper, Slider, TextField } from "@mui/material";
+import { Button, ButtonGroup, Grid, Paper, TextField } from "@mui/material";
 import { debounce } from "lodash";
 import { useState } from "react";
-import './search.scss';
-import SalaryRangeSlider from "./SalaryRangeSlider";
-import { TagPicker, CustomProvider } from 'rsuite';
-import { ITag } from "../tag/i-tag.interface";
+import { CustomProvider, TagPicker } from 'rsuite';
 import "rsuite/dist/rsuite.min.css";
+import SalaryRangeSlider from "./SalaryRangeSlider";
+import './search.scss';
 
 export default function Search({    onSearchQueryChanged, 
                                     onSalaryRangeMinChanged,

@@ -1,16 +1,14 @@
+import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import Layout from "../Layout";
 import getJobs from "../../components/job/getJobs";
 import { IJob } from "../../components/job/i-job.interface";
-import JobsDataGrid from "./JobsDataGrid";
-import './jobs.scss';
-import getTagsJobsList from "../../components/tag/getTagsJobsList";
-import getTagsJobsMap from "../../components/tag/getTagsJobsMap";
+import processJobs from "../../components/job/processJobs";
+import Search from "../../components/search/Search";
 import getTags from "../../components/tag/getTags";
 import { ITag } from "../../components/tag/i-tag.interface";
-import Search from "../../components/search/Search";
-import { Typography } from "@mui/material";
-import processJobs from "../../components/job/processJobs";
+import Layout from "../Layout";
+import JobsDataGrid from "./JobsDataGrid";
+import './jobs.scss';
 
 export default function JobsPage(props: any) {
     const [loading, setLoading] = useState(false);
