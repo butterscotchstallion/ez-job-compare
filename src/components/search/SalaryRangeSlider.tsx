@@ -7,7 +7,7 @@ export function onReset() {
 };
 
 export default function SalaryRangeSlider({ onChange }: any) {
-    const defaultValues = [0, 500000];
+    const defaultValues = [0, 5000000];
     const [value, setValue] = useState<number[]>(defaultValues);
 
     const handleChange = (event: Event, newValue: number | number[]) => {
@@ -17,7 +17,7 @@ export default function SalaryRangeSlider({ onChange }: any) {
 
     function valueText(value: number) {
         const formatted = formatMoney(value);
-        return formatted;
+        return formatted + " USD per year";
     }
 
     return (
