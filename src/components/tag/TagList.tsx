@@ -13,31 +13,21 @@ const ListItem = styled('li')(({ theme }) => ({
 export default function TagList(props: any) {
   const [chipData, setChipData] = React.useState<readonly ITag[]>(props.tags);
   return (
-    <Paper
-      sx={{
-        display: chipData.length > 0 ? 'flex' : 'none',
-        justifyContent: 'flex-start',
-        flexWrap: 'wrap',
-        listStyle: 'none',
-        p: 0.5,
-        m: '0 0 .5em 0',
-      }}
-      component="ul"
-    >
+    <>
       {chipData.map((tag: ITag) => {
         const iconEl = getTagIconElement(tag.icon);
         return (
-          <ListItem key={tag.slug} className="tagListItem">
             <Chip
               icon={iconEl}
               label={tag.name}
               variant="outlined"
               color="primary"
+              className="tag-chip"
               size="small"
+              key={tag.id}
             />
-          </ListItem>
         );
       })}
-    </Paper>
+    </>
   );
 }

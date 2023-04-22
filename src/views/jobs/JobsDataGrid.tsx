@@ -7,6 +7,12 @@ import formatDate from '../../utils/formatDate';
 import ReactTimeAgo from 'react-time-ago'
 import TagList from '../../components/tag/TagList';
 import Highlighter from "react-highlight-words";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
@@ -63,35 +69,59 @@ export default function JobsDataGrid(props: any) {
                         >
                         </CardHeader>
                         <CardContent className="jobs-card-content">
-                            <Paper className="jobs-salary-range-area">
-                                <Typography variant="body2" color="text.secondary">
-                                    Salary range: 
-                                    {isFilteringBySalary ? (
-                                        <mark>{job.salaryRangeStart} - {job.salaryRangeEnd}</mark>
-                                    ) : 
-                                        <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
-                                    }
-                                </Typography>
-                                <TagList tags={job.tags} />
-                            </Paper>
-                            
-                            <Typography variant="body2" color="text.secondary">
-                                {
-                                    props.showFullDescription ? (
-                                        <Highlighter
-                                            searchWords={[props.searchQuery]}
-                                            autoEscape={true}
-                                            textToHighlight={job.longDescription}
-                                        /> 
-                                    ) : (
-                                        <Highlighter
-                                            searchWords={[props.searchQuery]}
-                                            autoEscape={true}
-                                            textToHighlight={job.shortDescription}
-                                        />
-                                    )
-                                }
-                            </Typography>
+                            <Grid container>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {
+                                            props.showFullDescription ? (
+                                                <Highlighter
+                                                    searchWords={[props.searchQuery]}
+                                                    autoEscape={true}
+                                                    textToHighlight={job.longDescription}
+                                                /> 
+                                            ) : (
+                                                <Highlighter
+                                                    searchWords={[props.searchQuery]}
+                                                    autoEscape={true}
+                                                    textToHighlight={job.shortDescription}
+                                                />
+                                            )
+                                        }
+                                    </Typography>                                    
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Paper className="jobs-salary-range-area">
+                                        <TableContainer component={Paper}>
+                                            <Table size="small" aria-label="a dense table">
+                                                <TableBody>
+                                                    <TableRow>
+                                                        <TableCell>
+                                                            Salary Range
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2" color="text.secondary">
+                                                                {isFilteringBySalary ? (
+                                                                        <mark>{job.salaryRangeStart} - {job.salaryRangeEnd}</mark>
+                                                                    ) : 
+                                                                        <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
+                                                                }
+                                                            </Typography>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    {job.tags.length && (
+                                                        <TableRow>
+                                                            <TableCell>Tags</TableCell>
+                                                            <TableCell>
+                                                                <TagList tags={job.tags} />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}                                                    
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>                                        
+                                    </Paper>
+                                </Grid>                                
+                            </Grid>
                         </CardContent>
 
                         <CardActions className="jobs-card-actions">
