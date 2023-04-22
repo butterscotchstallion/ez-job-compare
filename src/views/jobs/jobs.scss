@@ -14,7 +14,7 @@ $textColor: #fff;
     }
 
     .jobs-card-header {
-        background-color: #475dd7;
+        background-color: #2d3a85;
         color: #222;
         padding: $padding;
         
@@ -63,7 +63,7 @@ $textColor: #fff;
 }
 
 .job-info-table {
-    tr:last-child {
+    tr:last-child > td {
         border-bottom: 0;
     }
     

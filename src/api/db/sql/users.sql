@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+	id INTEGER PRIMARY KEY,
+	guid VARCHAR(255),
+	name VARCHAR(255),
+	password VARCHAR(255),
+	active INTEGER DEFAULT 1,
+	avatar_filename VARCHAR(255),
+	created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+	updated_at TEXT
+);

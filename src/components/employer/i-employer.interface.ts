@@ -5,4 +5,5 @@ export default interface IEmployer {
     description: string;
     jobCount: number;
     jobCountTitle: string;
+    website: string;
 };

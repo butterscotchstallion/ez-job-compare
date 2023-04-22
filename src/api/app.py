@@ -169,8 +169,9 @@ def get_jobs(**kwargs):
                     j.location,
                     e.name AS employerName,
                     e.slug AS employerSlug,
-                    es.name AS companySize
-            FROM jobs j            
+                    es.name AS companySize,
+                    e.website AS employerWebsite
+            FROM jobs j
             JOIN employers e on e.id = j.employer_id
             JOIN employer_sizes es ON e.employer_size_id = es.id
             WHERE 1=1

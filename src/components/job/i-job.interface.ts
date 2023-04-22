@@ -17,4 +17,5 @@ export interface IJob {
     formattedDateRelative: string;
     tags: ITag[],
     companySize: string;
+    employerWebsite: string;
 }

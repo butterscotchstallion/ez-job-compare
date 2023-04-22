@@ -40,24 +40,13 @@ export default function JobsDataGrid(props: any) {
                                 </Link>
                             }
                             subheader={
-                                <>
-                                    <Link to={'/employers/'+job.employerSlug}>
-                                        <Highlighter
-                                            searchWords={[props.searchQuery]}
-                                            autoEscape={true}
-                                            textToHighlight={job.employerName}
-                                        />
-                                    </Link>
-                                    {job.location && (
-                                        <Typography variant="body2" color="text.secondary">
-                                            <Highlighter
-                                                searchWords={[props.searchQuery]}
-                                                autoEscape={true}
-                                                textToHighlight={job.location}
-                                            />
-                                        </Typography>
-                                    )}
-                                </>
+                                <Link to={job.employerWebsite} title="Employer website" target="_blank">
+                                    <Highlighter
+                                        searchWords={[props.searchQuery]}
+                                        autoEscape={true}
+                                        textToHighlight={job.employerName}
+                                    />
+                                </Link>
                             }
                             action={
                                 <>
@@ -92,43 +81,53 @@ export default function JobsDataGrid(props: any) {
                                     </div>                                
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Paper className="jobs-salary-range-area">
-                                        <TableContainer component={Paper}>
-                                            <Table size="small" aria-label="Job Information" className="job-info-table">
-                                                <TableBody>
+                                    <TableContainer component={Paper}>
+                                        <Table size="small" aria-label="Job Information" className="job-info-table">
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell className="job-table-left-col">
+                                                        Salary Range
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {isFilteringBySalary ? (
+                                                                <mark>{job.salaryRangeStart} - {job.salaryRangeEnd}</mark>
+                                                            ) : 
+                                                                <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
+                                                        }
+                                                    </TableCell>
+                                                </TableRow>                                                
+                                                {job.location ? (
                                                     <TableRow>
-                                                        <TableCell className="job-table-left-col">
-                                                            Salary Range
-                                                        </TableCell>
+                                                        <TableCell>Location</TableCell>
                                                         <TableCell>
-                                                            {isFilteringBySalary ? (
-                                                                    <mark>{job.salaryRangeStart} - {job.salaryRangeEnd}</mark>
-                                                                ) : 
-                                                                    <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
-                                                            }
+                                                            <Highlighter
+                                                                searchWords={[props.searchQuery]}
+                                                                autoEscape={true}
+                                                                textToHighlight={job.location}
+                                                            />
                                                         </TableCell>
                                                     </TableRow>
+                                                ) : ''}
+                                                <TableRow>
+                                                    <TableCell className="job-table-left-col">
+                                                        Company size
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {job.companySize}
+                                                    </TableCell>
+                                                </TableRow>
+                                                {job.tags.length ? (
                                                     <TableRow>
-                                                        <TableCell className="job-table-left-col">
-                                                            Company size
-                                                        </TableCell>
+                                                        <TableCell className="job-table-left-col">Tags</TableCell>
                                                         <TableCell>
-                                                            {job.companySize}
+                                                            <TagList tags={job.tags} />
                                                         </TableCell>
                                                     </TableRow>
-                                                    {job.tags.length ? (
-                                                        <TableRow>
-                                                            <TableCell className="job-table-left-col">Tags</TableCell>
-                                                            <TableCell>
-                                                                <TagList tags={job.tags} />
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    ) : ''}                                   
-                                                </TableBody>
-                                            </Table>
-                                        </TableContainer>                                        
-                                    </Paper>
-                                </Grid>                                
+                                                ) : ''}                                   
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Grid>
                             </Grid>
                         </CardContent>
 
