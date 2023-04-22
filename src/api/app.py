@@ -181,6 +181,10 @@ def get_jobs(**kwargs):
         }
     except sqlite3.Error as er:
         log.error('get_jobs error: %s' % (' '.join(er.args)))
+        return {
+            'status': 'ERROR',
+            'message': er
+        }
     finally:
         close_connection(conn)
 

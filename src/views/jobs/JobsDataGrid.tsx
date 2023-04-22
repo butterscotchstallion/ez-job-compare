@@ -71,28 +71,30 @@ export default function JobsDataGrid(props: any) {
                         <CardContent className="jobs-card-content">
                             <Grid container>
                                 <Grid item xs={6}>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {
-                                            props.showFullDescription ? (
-                                                <Highlighter
-                                                    searchWords={[props.searchQuery]}
-                                                    autoEscape={true}
-                                                    textToHighlight={job.longDescription}
-                                                /> 
-                                            ) : (
-                                                <Highlighter
-                                                    searchWords={[props.searchQuery]}
-                                                    autoEscape={true}
-                                                    textToHighlight={job.shortDescription}
-                                                />
-                                            )
-                                        }
-                                    </Typography>                                    
+                                    <div className="job-desc-wrapper">
+                                        <Typography variant="body2" color="text.secondary">
+                                            {
+                                                props.showFullDescription ? (
+                                                    <Highlighter
+                                                        searchWords={[props.searchQuery]}
+                                                        autoEscape={true}
+                                                        textToHighlight={job.longDescription}
+                                                    /> 
+                                                ) : (
+                                                    <Highlighter
+                                                        searchWords={[props.searchQuery]}
+                                                        autoEscape={true}
+                                                        textToHighlight={job.shortDescription}
+                                                    />
+                                                )
+                                            }
+                                        </Typography>
+                                    </div>                                
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Paper className="jobs-salary-range-area">
                                         <TableContainer component={Paper}>
-                                            <Table size="small" aria-label="a dense table">
+                                            <Table size="small" aria-label="Job Information" className="job-info-table">
                                                 <TableBody>
                                                     <TableRow>
                                                         <TableCell>
@@ -108,14 +110,14 @@ export default function JobsDataGrid(props: any) {
                                                             </Typography>
                                                         </TableCell>
                                                     </TableRow>
-                                                    {job.tags.length && (
+                                                    {job.tags.length ? (
                                                         <TableRow>
                                                             <TableCell>Tags</TableCell>
                                                             <TableCell>
                                                                 <TagList tags={job.tags} />
                                                             </TableCell>
                                                         </TableRow>
-                                                    )}                                                    
+                                                    ) : ''}                                   
                                                 </TableBody>
                                             </Table>
                                         </TableContainer>                                        

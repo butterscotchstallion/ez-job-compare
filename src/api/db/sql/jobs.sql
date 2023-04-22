@@ -31,6 +31,11 @@ slug, location)
 VALUES(2, 'Line Cook', 'Responsible for innovation in the kitchen', 25000, 35000, 'long description!',
 '2-line-cook', 'Albuquerque New Mexico');
 
+INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description,
+slug, location)
+VALUES(2, 'General Manager', 'Manages store and its employees', 30000, 60000, 'long description!',
+'3-general-manager', 'Albuquerque New Mexico');
+
 -- jobs_tags
 DROP TABLE IF EXISTS jobs_tags;
 CREATE TABLE jobs_tags(
@@ -46,3 +51,5 @@ INSERT INTO jobs_tags(job_id, tag_id) VALUES(1, 3);
 INSERT INTO jobs_tags(job_id, tag_id) VALUES(1, 1);
 INSERT INTO jobs_tags(job_id, tag_id) VALUES(2, 4);
 INSERT INTO jobs_tags(job_id, tag_id) VALUES(2, 5);
+INSERT INTO jobs_tags(job_id, tag_id) VALUES(3, 4);
+INSERT INTO jobs_tags(job_id, tag_id) VALUES(4, 6);
