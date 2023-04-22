@@ -45,8 +45,10 @@ def get_employers():
             SELECT  e.id,
                     e.name,
                     e.image,
-                    e.description
+                    e.description,
+                    es.name AS companySize
             FROM employers e
+            JOIN employer_sizes es ON es.id = e.employer_size_id
             ORDER BY e.name
         '''
         cursor = conn.execute(query)
@@ -166,9 +168,11 @@ def get_jobs(**kwargs):
                     j.slug,
                     j.location,
                     e.name AS employerName,
-                    e.slug AS employerSlug
+                    e.slug AS employerSlug,
+                    es.name AS companySize
             FROM jobs j            
             JOIN employers e on e.id = j.employer_id
+            JOIN employer_sizes es ON e.employer_size_id = es.id
             WHERE 1=1
             ''' + queryClause + '''
             ORDER BY j.created_at DESC, j.title

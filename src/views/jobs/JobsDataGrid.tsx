@@ -97,22 +97,28 @@ export default function JobsDataGrid(props: any) {
                                             <Table size="small" aria-label="Job Information" className="job-info-table">
                                                 <TableBody>
                                                     <TableRow>
-                                                        <TableCell>
+                                                        <TableCell className="job-table-left-col">
                                                             Salary Range
                                                         </TableCell>
                                                         <TableCell>
-                                                            <Typography variant="body2" color="text.secondary">
-                                                                {isFilteringBySalary ? (
-                                                                        <mark>{job.salaryRangeStart} - {job.salaryRangeEnd}</mark>
-                                                                    ) : 
-                                                                        <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
-                                                                }
-                                                            </Typography>
+                                                            {isFilteringBySalary ? (
+                                                                    <mark>{job.salaryRangeStart} - {job.salaryRangeEnd}</mark>
+                                                                ) : 
+                                                                    <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
+                                                            }
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell className="job-table-left-col">
+                                                            Company size
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {job.companySize}
                                                         </TableCell>
                                                     </TableRow>
                                                     {job.tags.length ? (
                                                         <TableRow>
-                                                            <TableCell>Tags</TableCell>
+                                                            <TableCell className="job-table-left-col">Tags</TableCell>
                                                             <TableCell>
                                                                 <TagList tags={job.tags} />
                                                             </TableCell>
