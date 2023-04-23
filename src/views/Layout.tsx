@@ -1,20 +1,21 @@
-import '../styles/App.scss';
-import * as React from 'react';
-import { styled, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Avatar, Button } from '@mui/material';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import MuiDrawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { ThemeProvider, styled } from '@mui/material/styles';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../styles/App.scss';
+import URLS from '../utils/urls';
 import { mainListItems, secondaryListItems } from './navItems';
 
 const drawerWidth: number = 240;
@@ -67,10 +68,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
   
 function LayoutContent(props: any) {
+    const loggedIn = false;
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
       setOpen(!open);
     };
+    const navigate = useNavigate();
+
+    function navigateToLogin() {
+        navigate(URLS().login);
+    }
 
     return (
         <ThemeProvider theme={props.theme}>
@@ -82,32 +89,33 @@ function LayoutContent(props: any) {
                             pr: '24px', // keep right padding when drawer closed
                         }}
                     >
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={toggleDrawer}
-                        sx={{
-                        marginRight: '36px',
-                        ...(open && { display: 'none' }),
-                        }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        component="h1"
-                        variant="h6"
-                        color="inherit"
-                        noWrap
-                        sx={{ flexGrow: 1 }}
-                    >
-                        {props.areaTitle}
-                    </Typography>
-                    <IconButton color="inherit">
-                        <Badge badgeContent={4} color="secondary">
-                        <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={toggleDrawer}
+                            sx={{
+                            marginRight: '36px',
+                            ...(open && { display: 'none' }),
+                            }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography
+                            component="h1"
+                            variant="h6"
+                            color="inherit"
+                            noWrap
+                            sx={{ flexGrow: 1 }}
+                        >
+                            {props.areaTitle}
+                        </Typography>
+
+                        {loggedIn ? (
+                            <Avatar alt="User avatar" src="/images/cthun.jpg" />
+                        ) : (
+                            <Button variant="outlined" onClick={navigateToLogin}>Log In</Button>
+                        )}
                     </Toolbar>
                 </AppBar>
                 <Drawer variant="permanent" open={open}>

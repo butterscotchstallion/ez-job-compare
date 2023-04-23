@@ -13,6 +13,7 @@ import EmployerListPage from './views/employer/EmployerListPage';
 import JobsPage from './views/jobs/JobsPage';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en.json'
+import LoginPage from './views/user/LoginPage';
 
 TimeAgo.addDefaultLocale(en);
 
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
     path: '/jobs',
     element: <JobsPage theme={theme} />
   }, 
+  {
+    path: '/user/login',
+    element: <LoginPage theme={theme} />
+  },
 ]);
 
 const root = ReactDOM.createRoot(

@@ -35,7 +35,9 @@ const URLS = () => {
             return url;
         },
         "tagsJobs": BASE_URL + 'jobs/tagsMap',
-        "jobCount": BASE_URL + 'employers/jobCount'
+        "jobCount": BASE_URL + 'employers/jobCount',
+        "login": "/user/login",
+        "dashboard": "/dashboard"
     };
 };
 export default URLS;
