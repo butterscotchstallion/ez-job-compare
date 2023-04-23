@@ -9,3 +9,13 @@ CREATE TABLE users (
 	created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 	updated_at TEXT
 );
+
+DROP TABLE IF EXISTS user_tokens;
+CREATE TABLE user_tokens(
+	id INTEGER PRIMARY KEY,
+	token VARCHAR(255),
+	user_id INTEGER,
+	created_at TEXT,
+	updated_at TEXT,
+	FOREIGN KEY(user_id) REFERENCES users(id)
+);

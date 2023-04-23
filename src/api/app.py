@@ -46,8 +46,6 @@ def list_employers():
 
 def get_employers():
     try:
-        
-        log.error(1)
         conn = db.connect_db()
         query = '''
             SELECT  e.id,
