@@ -1,8 +1,9 @@
-import { Avatar, Button, Menu, MenuItem } from "@mui/material";
-import { useEffect, useState } from "react";
-import IUser from "../../components/user/i-user.interface";
-import destroySession from "../../components/user/destroySession";
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
+import { Avatar, Button, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import destroySession from "../../components/user/destroySession";
 
 export default function LoggedInUserMenu({ user }: any) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -47,9 +48,18 @@ export default function LoggedInUserMenu({ user }: any) {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem onClick={onClose}>Profile</MenuItem>
-                <MenuItem onClick={onClose}>My account</MenuItem>
-                <MenuItem onClick={onLogoutClicked}>Logout</MenuItem>
+                <MenuItem onClick={onClose}>
+                    <ListItemIcon>
+                        <PersonIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Profile</ListItemText>    
+                </MenuItem>
+                <MenuItem onClick={onLogoutClicked}>
+                    <ListItemIcon>
+                        <LogoutIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Logout</ListItemText>
+                </MenuItem>
             </Menu>
         </>
     );
