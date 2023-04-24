@@ -8,7 +8,7 @@ export function removeUser() {
     localStorage.removeItem('user');
 }
 
-export function getUser() {
+export function getUser(): IUser | undefined {
     const item = localStorage.getItem('user');
 
     if (item) {

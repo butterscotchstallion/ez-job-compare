@@ -494,21 +494,46 @@ def update_session_token(token):
 
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/reviews", methods=['GET'])
-def employer_reviews_route():
+def employer_reviews_route(slug):
     return jsonify(get_employer_reviews(slug))
 
+def get_employer_id_by_slug(slug):
+    try:
+        conn = db.connect_db()
+        query = '''
+            SELECT  e.id
+            FROM employers e 
+            WHERE e.slug = ?
+        '''
+        cursor = conn.execute(query, (slug,))
+        results = db.get_list_from_rows(cursor)
+        if results:
+            return results[0]['id']
+    except sqlite3.Error as er:
+        log.error('get_employer_id_by_slug error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
 
 def get_employer_reviews(slug):
     try:
         conn = db.connect_db()
-        query = '''
-            SELECT  body,
-                    created_at AS createdAt
-            FROM reviews r
-            WHERE r.active = 1
-        '''
-        cursor = conn.execute(query, (username,))
-        results = db.get_list_from_rows(cursor)
+        employer_id = get_employer_id_by_slug(slug)
+        results = []
+        if employer_id:
+            query = '''
+                SELECT  r.body,
+                        r.created_at AS createdAt,
+                        u.name AS reviewAuthor,
+                        u.avatar_filename AS avatarFilename
+                FROM reviews r
+                JOIN users u ON u.id = r.user_id
+                WHERE r.active = 1
+                AND r.employer_id = ?
+                ORDER BY r.created_at DESC
+            '''
+            cursor = conn.execute(query, (employer_id,))
+            results = db.get_list_from_rows(cursor)
+
         return {
             'status': 'OK',
             'results': results

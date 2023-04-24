@@ -41,7 +41,10 @@ const URLS = () => {
         "loginAPI": BASE_URL + 'user/login',
         "dashboard": "/dashboard",
         "isSessionActive": BASE_URL + 'user/session',
-        "reviewCountList": BASE_URL + 'employer/reviewCountList'
+        "reviewCountList": BASE_URL + 'employer/reviewCountList',
+        "reviewsAPI": (employerSlug: string) => {
+            return BASE_URL + 'employer/'+employerSlug+'/reviews'
+        }
     };
 };
 export default URLS;

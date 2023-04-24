@@ -1,24 +1,61 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Card, CardActions, CardContent, CardHeader, Grid, IconButton, Typography } from '@mui/material';
+import PreviewIcon from '@mui/icons-material/Preview';
+import { Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
+import { useEffect, useRef, useState } from 'react';
 import Highlighter from "react-highlight-words";
 import { Link } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import { IJob } from '../../components/job/i-job.interface';
 import TagList from '../../components/tag/TagList';
 import formatDate from '../../utils/formatDate';
+import { IReview } from '../../components/reviews/i-review.interface';
+import EmployerReview from '../reviews/EmployerReview';
+import getReviewsByEmployerSlug from '../../components/reviews/getReviewsByEmployerSlug';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const descriptionElementRef = useRef<HTMLElement>(null);
     const jobs = props.jobs.map((job: IJob) => {
         job.formattedDate = formatDate(job.createdAt);
         return job;
     });
+    const [reviews, setReviews] = useState<IReview[]>([]);
+    const [loadingReviews, setLoadingReviews] = useState(false);
+    const [reviewEmployerName, setReviewEmployerName] = useState('');
+    
+    useEffect(() => {
+        if (isOpen) {
+            const { current: descriptionElement } = descriptionElementRef;
+            if (descriptionElement !== null) {
+                descriptionElement.focus();
+            }
+        }
+    }, []);
+
+    function onClose() {
+        setIsOpen(false);
+    }
+
+    function onReviewButtonClicked(job: IJob) {
+        setReviewEmployerName(job.employerName);
+        setLoadingReviews(true);
+        getReviewsByEmployerSlug(job.employerSlug).then((response: any) => {
+            setReviews(response.data.results);
+        }, (error) => {
+            console.error(error);
+        }).finally(() => {
+            setLoadingReviews(false);
+        });
+        setIsOpen(true);
+    }
+
     return (
         <Grid container spacing={3}>
             <Grid item xs={8}>
@@ -120,13 +157,17 @@ export default function JobsDataGrid(props: any) {
                                                         Reviews
                                                     </TableCell>
                                                     <TableCell>
-                                                        {job.reviewCount > 0 ? (
-                                                            <>
-                                                                {job.reviewCount} review
-                                                                {job.reviewCount !== 1 ? 's' : ''}
-                                                            </>
+                                                        {job.reviewCount > 0 ? (                                                            
+                                                            <Button variant="outlined"
+                                                                    onClick={() => onReviewButtonClicked(job)}
+                                                                    className="see-reviews-button">
+                                                                <PreviewIcon />
+                                                                Reviews
+                                                            </Button>
                                                         ) : (
-                                                            <>0 reviews</>
+                                                            <>
+                                                                0 reviews                                                              
+                                                            </>
                                                         )}
                                                     </TableCell>
                                                 </TableRow>
@@ -155,6 +196,29 @@ export default function JobsDataGrid(props: any) {
                         </CardActions>
                     </Card>
                 ))}
+
+                <Dialog
+                    open={isOpen}
+                    onClose={onClose}
+                    scroll="paper"
+                    fullWidth={true}
+                    aria-labelledby="scroll-dialog-title"
+                    aria-describedby="scroll-dialog-description"
+                    className="employer-reviews-dialog"
+                >
+                    <DialogTitle id="scroll-dialog-title">{reviewEmployerName} Reviews</DialogTitle>
+                    <DialogContent dividers={true}>
+                        {loadingReviews ? (
+                            <CircularProgress />
+                        ) : ''}
+                        {reviews.map((review: IReview, index: number) => (
+                            <EmployerReview review={review} key={index} />
+                        ))}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={onClose}>Close</Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
         </Grid>
     );

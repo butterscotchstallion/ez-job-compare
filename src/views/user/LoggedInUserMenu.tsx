@@ -4,18 +4,12 @@ import { Avatar, Button, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import destroySession from "../../components/user/destroySession";
+import UserAvatar from './UserAvatar';
 
 export default function LoggedInUserMenu({ user }: any) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isMenuOpen, setMenuOpen] = useState<boolean>(false);
-    const avatarPath = "/images/";
-    let avatar = avatarPath;
     const navigate = useNavigate();
-    
-    if (user.avatarFilename) {
-        avatar += user.avatarFilename;
-    }
-
     const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         setMenuOpen(true);
         setAnchorEl(e.currentTarget);
@@ -34,10 +28,7 @@ export default function LoggedInUserMenu({ user }: any) {
                     aria-haspopup="true"
                     aria-expanded={isMenuOpen ? 'true' : undefined}
                     onClick={onClick}>
-                <Avatar 
-                    title={"Logged in as "+user.name}
-                    src={avatar}
-                    />
+                <UserAvatar user={user} />
             </Button>
             <Menu
                 id="user-menu"

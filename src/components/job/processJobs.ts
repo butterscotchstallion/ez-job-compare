@@ -26,8 +26,7 @@ export default function processJobs(jobs: IJob[], tags: ITag[], reviewCountList:
             });
             const jobsWithReviewCounts = jobsWithSalaryRangeFormatted.map((j: IJob) => {
                 const reviewCountMap = getReviewCountMap(reviewCountList);
-                const reviewCount = reviewCountMap[j.employerId];
-                j.reviewCount = reviewCount;
+                j.reviewCount = reviewCountMap[j.employerId] || 0;
                 return j;
             });
             resolve(jobsWithReviewCounts);

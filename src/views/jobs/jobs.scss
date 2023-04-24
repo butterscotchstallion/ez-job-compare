@@ -63,6 +63,10 @@ $textColor: #fff;
 }
 
 .job-info-table {
+    .see-reviews-button {
+        padding-left: .25rem;
+    }
+
     tr:last-child > td {
         border-bottom: 0;
     }
@@ -71,4 +75,8 @@ $textColor: #fff;
         width: 40%;
         vertical-align: top;
     }
+}
+
+.employer-reviews-dialog {
+    min-width: 600px;
 }
