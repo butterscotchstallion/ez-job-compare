@@ -185,6 +185,7 @@ def get_jobs(**kwargs):
                     j.updated_at AS updatedAt,
                     j.slug,
                     j.location,
+                    e.id AS employerId,
                     e.name AS employerName,
                     e.slug AS employerSlug,
                     es.name AS companySize,
@@ -389,6 +390,7 @@ def check_credentials(username, password):
     finally:
         db.close_connection(conn)
 
+
 def get_user_by_token(token):
     '''Retrieve user info based on session token'''
     try:
@@ -412,6 +414,7 @@ def get_user_by_token(token):
         log.error('check_credentials error: %s' % (' '.join(er.args)))
     finally:
         db.close_connection(conn)
+
 
 def get_or_create_session_token(username):
     '''Returns session token if exists, creates if not'''
@@ -483,5 +486,64 @@ def update_session_token(token):
         return True
     except sqlite3.Error as er:
         log.error('update_session_token error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
+
+# Reviews
+
+
+@cross_origin()
+@app.route("/api/v1/employer/<slug>/reviews", methods=['GET'])
+def employer_reviews_route():
+    return jsonify(get_employer_reviews(slug))
+
+
+def get_employer_reviews(slug):
+    try:
+        conn = db.connect_db()
+        query = '''
+            SELECT  body,
+                    created_at AS createdAt
+            FROM reviews r
+            WHERE r.active = 1
+        '''
+        cursor = conn.execute(query, (username,))
+        results = db.get_list_from_rows(cursor)
+        return {
+            'status': 'OK',
+            'results': results
+        }
+    except sqlite3.Error as er:
+        log.error('get_employer_reviews error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
+
+
+@cross_origin()
+@app.route("/api/v1/employer/reviewCountList", methods=['GET'])
+def employer_review_count_list_route():
+    return jsonify(get_employer_review_counts())
+
+
+def get_employer_review_counts():
+    '''Retrieves list of review counts for each employer'''
+    try:
+        conn = db.connect_db()
+        query = '''
+            SELECT  employer_id AS employerId,
+                    COUNT(*) AS reviewCount
+            FROM reviews r
+            WHERE 1=1
+            AND r.active = 1
+            GROUP BY employer_id
+        '''
+        cursor = conn.execute(query)
+        results = db.get_list_from_rows(cursor)
+        return {
+            'status': 'OK',
+            'results': results
+        }
+    except sqlite3.Error as er:
+        log.error('get_employer_review_count error: %s' % (' '.join(er.args)))
     finally:
         db.close_connection(conn)

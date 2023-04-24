@@ -18,4 +18,6 @@ export interface IJob {
     tags: ITag[],
     companySize: string;
     employerWebsite: string;
+    reviewCount: number;
+    employerId: number;
 }

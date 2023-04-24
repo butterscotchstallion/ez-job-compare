@@ -116,6 +116,21 @@ export default function JobsDataGrid(props: any) {
                                                         {job.companySize}
                                                     </TableCell>
                                                 </TableRow>
+                                                <TableRow>
+                                                    <TableCell className="job-table-left-col">
+                                                        Reviews
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {job.reviewCount > 0 ? (
+                                                            <>
+                                                                {job.reviewCount} review
+                                                                {job.reviewCount !== 1 ? 's' : ''}
+                                                            </>
+                                                        ) : (
+                                                            <>0 reviews</>
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
                                                 {job.tags.length ? (
                                                     <TableRow>
                                                         <TableCell className="job-table-left-col">Tags</TableCell>

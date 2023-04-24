@@ -40,7 +40,8 @@ const URLS = () => {
         "login": "/user/login",
         "loginAPI": BASE_URL + 'user/login',
         "dashboard": "/dashboard",
-        "isSessionActive": BASE_URL + 'user/session'
+        "isSessionActive": BASE_URL + 'user/session',
+        "reviewCountList": BASE_URL + 'employer/reviewCountList'
     };
 };
 export default URLS;

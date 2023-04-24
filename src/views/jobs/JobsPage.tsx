@@ -9,6 +9,8 @@ import { ITag } from "../../components/tag/i-tag.interface";
 import Layout from "../Layout";
 import JobsDataGrid from "./JobsDataGrid";
 import './jobs.scss';
+import getReviewsCountList from "../../components/reviews/getReviewsCountList";
+import { IReviewCountList } from "../../components/reviews/getReviewCountMap";
 
 export default function JobsPage(props: any) {
     const [loading, setLoading] = useState(false);
@@ -54,14 +56,16 @@ export default function JobsPage(props: any) {
                 salaryRangeMax: salaryRangeMax,
                 selectedTagIds: selectedTagIds
             }),
-            getTags()
+            getTags(),
+            getReviewsCountList()
         ]).then((responses: any) => {
             const responseJobs: IJob[] = responses[0].data.results;
             const responseTags: ITag[] = responses[1].data.results;
+            const reviewCountList: IReviewCountList[] = responses[2].data.results;
             
             setTags(responseTags);
 
-            processJobs(responseJobs, responseTags).then((jobs: IJob[]) => {
+            processJobs(responseJobs, responseTags, reviewCountList).then((jobs: IJob[]) => {
                 setAllJobs(jobs);
                 setJobs(jobs);
             }).catch((error: any) => {
