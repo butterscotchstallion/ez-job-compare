@@ -4,13 +4,13 @@ CLI utility to create users
 import argparse
 import logging as log
 import sqlite3
-from . import PasswordUtils
-from . import DbUtils
+from util import PasswordUtils
+from util import DbUtils
 
 log.basicConfig(level=log.INFO)
 pw_utils = PasswordUtils()
 db = DbUtils()
-DB_PATH = '../database.db'
+DB_PATH = 'database.db'
 
 
 def user_exists(username):
@@ -20,8 +20,9 @@ def user_exists(username):
         query = '''
             SELECT COUNT(*) AS userCount
             FROM users u
+            WHERE u.name = ?
         '''
-        cursor = conn.execute(query)
+        cursor = conn.execute(query, (username,))
         results = db.get_list_from_rows(cursor)
         user_count = results[0]['userCount']
         return user_count > 0
