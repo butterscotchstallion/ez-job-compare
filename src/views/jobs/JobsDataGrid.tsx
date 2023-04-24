@@ -99,7 +99,14 @@ export default function JobsDataGrid(props: any) {
                                 </Link>
                             }
                             action={
-                                <div className="jobs-header-action-area">                                             
+                                <div className="jobs-header-action-area">
+                                    {user ? (
+                                        <Button 
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                        >Add Review</Button>
+                                    ) : ''}
+
                                     <Button variant="outlined"
                                             onClick={() => onReviewButtonClicked(job)}
                                             className="see-reviews-button"
@@ -107,13 +114,6 @@ export default function JobsDataGrid(props: any) {
                                             disabled={job.reviewCount === 0}>
                                         {job.reviewCount} Review{job.reviewCount !== 1 ? 's' : ''}
                                     </Button>
-
-                                    {user ? (
-                                        <Button 
-                                            variant="outlined"
-                                            startIcon={<AddIcon />}
-                                        >Add Review</Button>
-                                    ) : ''}
                                   
                                     <IconButton aria-label="settings">
                                         <MoreVertIcon />
