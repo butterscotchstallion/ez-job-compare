@@ -522,7 +522,7 @@ def get_employer_reviews(slug):
         if employer_id:
             query = '''
                 SELECT  r.body,
-                        r.created_at AS createdAt,
+                        DATETIME(r.created_at, 'localtime') AS createdAt,
                         u.name AS reviewAuthor,
                         u.avatar_filename AS avatarFilename
                 FROM reviews r

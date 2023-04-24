@@ -28,7 +28,7 @@ export default function LoggedInUserMenu({ user }: any) {
                     aria-haspopup="true"
                     aria-expanded={isMenuOpen ? 'true' : undefined}
                     onClick={onClick}>
-                <UserAvatar user={user} />
+                <UserAvatar user={user} title={"Logged in as "+user.name} />
             </Button>
             <Menu
                 id="user-menu"

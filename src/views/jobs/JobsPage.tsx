@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import getJobs from "../../components/job/getJobs";
 import { IJob } from "../../components/job/i-job.interface";
@@ -101,7 +101,7 @@ export default function JobsPage(props: any) {
                                 salaryRangeMax={salaryRangeMax} />
             )}
             {loading ? (
-                <span>Loading jobs...</span>
+                <CircularProgress />
             ) : ''}
             {jobs.length === 0 && isSearching ? (
                 <Typography variant="body2" color="text.secondary">

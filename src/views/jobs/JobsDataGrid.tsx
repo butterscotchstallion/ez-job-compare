@@ -162,7 +162,7 @@ export default function JobsDataGrid(props: any) {
                                                                     onClick={() => onReviewButtonClicked(job)}
                                                                     className="see-reviews-button">
                                                                 <PreviewIcon />
-                                                                Reviews
+                                                                {job.reviewCount} Review{job.reviewCount !== 1 ? 's' : ''}
                                                             </Button>
                                                         ) : (
                                                             <>

@@ -13,7 +13,7 @@ export default function EmployerReview({ review }: any) {
         <Card className="employer-review-card">
             <CardHeader
                 avatar={
-                    <UserAvatar user={user} />
+                    <UserAvatar user={user} title={"Submitted by "+user.name} />
                 }
                 action={
                     <IconButton aria-label="settings">
