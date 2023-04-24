@@ -210,8 +210,7 @@ export default function JobsDataGrid(props: any) {
                     <DialogContent dividers={true}>
                         {loadingReviews ? (
                             <CircularProgress />
-                        ) : ''}
-                        {reviews.map((review: IReview, index: number) => (
+                        ) : reviews.map((review: IReview, index: number) => (
                             <EmployerReview review={review} key={index} />
                         ))}
                     </DialogContent>
