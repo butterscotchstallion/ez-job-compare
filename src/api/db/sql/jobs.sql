@@ -8,7 +8,7 @@ CREATE TABLE jobs (
 	salary_range_start INTEGER,
 	salary_range_end INTEGER,
 	location VARCHAR(255),
-	created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+	created_at TEXT DEFAULT (DATETIME('now', 'localtime')),
 	updated_at TEXT,
 	slug VARCHAR(255),
 	FOREIGN KEY(employer_id) REFERENCES employers(id)
@@ -42,7 +42,7 @@ CREATE TABLE jobs_tags(
 	id INTEGER PRIMARY KEY,
 	job_id INTEGER,
 	tag_id INTEGER,
-	created_at TEXT,
+	created_at TEXT DEFAULT (DATETIME('now', 'localtime')),
 	FOREIGN KEY(job_id) REFERENCES jobs(id)
 	FOREIGN KEY(tag_id) REFERENCES tags(id)
 );

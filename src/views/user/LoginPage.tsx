@@ -45,13 +45,13 @@ export default function LoginPage(props: any) {
                 if (token) {
                     setToken(token);
                     setUser(response.data.results[0].user);
-                    navigate('/');
+                    navigate(URLS().jobsPage);
                 } else {
                     setLoginError('Invalid token returned from API!');
-                }                
+                }
             } else {
                 setLoginError(response.data.message);
-            }            
+            }
         }).catch((error: any) => {
             setLoginError(error.message);
         }).finally(() => {

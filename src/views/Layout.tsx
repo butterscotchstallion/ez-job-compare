@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/App.scss';
 import URLS from '../utils/urls';
 import { mainListItems, secondaryListItems } from './navItems';
+import { getUser } from '../components/user/userStorage';
 
 const drawerWidth: number = 240;
 interface AppBarProps extends MuiAppBarProps {
@@ -68,13 +69,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
   
 function LayoutContent(props: any) {
-    const loggedIn = false;
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
       setOpen(!open);
     };
     const navigate = useNavigate();
-
+    const user = getUser();
+    
     function navigateToLogin() {
         navigate(URLS().login);
     }
@@ -111,8 +112,10 @@ function LayoutContent(props: any) {
                             {props.areaTitle}
                         </Typography>
 
-                        {loggedIn ? (
-                            <Avatar alt="User avatar" src="/images/cthun.jpg" />
+                        {user ? (
+                            <Avatar 
+                                title={"Logged in as "+user.name}
+                                src="/images/cthun.jpg" />
                         ) : (
                             <Button variant="outlined" onClick={navigateToLogin}>Log In</Button>
                         )}

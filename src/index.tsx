@@ -16,6 +16,8 @@ import en from 'javascript-time-ago/locale/en.json'
 import LoginPage from './views/user/LoginPage';
 import isLoggedIn from './components/user/isUserLoggedIn';
 import { getToken } from './components/user/token';
+import destroySession from './components/user/destroySession';
+import { getUser } from './components/user/userStorage';
 
 TimeAgo.addDefaultLocale(en);
 
@@ -24,7 +26,14 @@ const theme = createTheme({
         mode: 'dark'
     }
 });
-const loggedIn = getToken();
+
+// Check user token
+isLoggedIn().then((response: any) => {
+    if (response === false || (response && !response.data.results[0].active)) {
+      console.info('Destroying user session for inactive session');
+      destroySession();
+    }
+});
 
 const router = createBrowserRouter([
   {

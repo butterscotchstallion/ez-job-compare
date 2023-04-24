@@ -11,6 +11,7 @@ const URLS = () => {
         },
         "tagList": BASE_URL + 'tags',
         "tagsEmployers": BASE_URL + 'employers/tagsMap',
+        "jobsPage": "/jobs",
         "jobsList": (props: any) => {
             const params: string[] = [];
             let url = BASE_URL + 'jobs'; 
@@ -23,7 +24,7 @@ const URLS = () => {
             if (props.salaryRangeMax) {
                 params.push('salaryRangeMax='+props.salaryRangeMax);
             }
-            if (props.selectedTagIds.length > 0) {
+            if (props.selectedTags && props.selectedTagIds.length > 0) {
                 props.selectedTagIds.map((tagId: number) => {
                     params.push('tagIds[]='+tagId);
                     return tagId;

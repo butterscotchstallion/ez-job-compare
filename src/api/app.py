@@ -288,6 +288,7 @@ def user_login_route():
 @app.route("/api/v1/user/session", methods=['GET'])
 def user_session_route():
     token = request.headers.get('x-ezjobcompare-session-token')
+    log.info('Checking token: {}'.format(token))
     return jsonify(is_session_active(token))
 
 
@@ -300,7 +301,7 @@ def is_session_active(token):
                 SELECT COUNT(*) as activeSessions
                 FROM user_tokens
                 WHERE token = ?
-                AND created_at < DATE('now', '-1 day')
+                AND created_at > DATETIME('now', '-1 day')
             '''
             cursor = conn.execute(query, (token,))
             results = db.get_list_from_rows(cursor)
@@ -432,7 +433,7 @@ def get_or_create_session_token(username):
                 token = pw_utils.generate_password(255)
                 query = '''
                     INSERT INTO user_tokens(user_id, token, created_at)
-                    VALUES(?, ?, CURRENT_TIMESTAMP)
+                    VALUES(?, ?, DATETIME('now', 'localtime'))
                 '''
                 cursor = conn.execute(query, (user_id, token))
                 conn.commit()
@@ -470,7 +471,7 @@ def update_session_token(token):
         conn = db.connect_db()
         query = '''
             UPDATE user_tokens
-            SET updated_at = CURRENT_TIMESTAMP
+            SET updated_at = DATETIME('now', 'localtime')
             WHERE token = ?
         '''
         cursor = conn.execute(query, (username,))

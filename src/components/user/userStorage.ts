@@ -4,6 +4,10 @@ export function setUser(user: IUser) {
     localStorage.setItem('user', JSON.stringify(user));
 }
 
+export function removeUser() {
+    localStorage.removeItem('user');
+}
+
 export function getUser() {
     const item = localStorage.getItem('user');
 

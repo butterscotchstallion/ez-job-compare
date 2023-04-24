@@ -12,19 +12,12 @@ function isSessionActive(token: string) {
 
 export default function isLoggedIn() {
     const token = getToken();
-    const falsePromise = new Promise((resolve) => {
-        resolve(false);
-    });
-
+    
     if (token) {
-        isSessionActive(token).then((response: any) => {
-            return new Promise((resolve) => {
-                resolve(response.data.results[0].active);
-            });
-        }, () => {
-            return falsePromise;
-        });
+        return isSessionActive(token);
     } else {
-        return falsePromise;
-    }    
+        return new Promise<boolean>((resolve) => {
+            resolve(false);
+        });
+    }
 }
