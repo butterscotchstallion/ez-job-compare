@@ -18,6 +18,7 @@ import '../styles/App.scss';
 import URLS from '../utils/urls';
 import { mainListItems, secondaryListItems } from './navItems';
 import { getUser } from '../components/user/userStorage';
+import LoggedInUserMenu from './user/LoggedInUserMenu';
 
 const drawerWidth: number = 240;
 interface AppBarProps extends MuiAppBarProps {
@@ -113,9 +114,7 @@ function LayoutContent(props: any) {
                         </Typography>
 
                         {user ? (
-                            <Avatar 
-                                title={"Logged in as "+user.name}
-                                src="/images/cthun.jpg" />
+                            <LoggedInUserMenu user={user} />
                         ) : (
                             <Button variant="outlined" onClick={navigateToLogin}>Log In</Button>
                         )}
