@@ -85,7 +85,15 @@ export default function JobsDataGrid(props: any) {
                                 </Link>
                             }
                             action={
-                                <>
+                                <>                                             
+                                    <Button variant="outlined"
+                                            onClick={() => onReviewButtonClicked(job)}
+                                            className="see-reviews-button"
+                                            startIcon={<PreviewIcon />}
+                                            disabled={job.reviewCount === 0}>
+                                        {job.reviewCount} Review{job.reviewCount !== 1 ? 's' : ''}
+                                    </Button>
+                                  
                                     <IconButton aria-label="settings">
                                         <MoreVertIcon />
                                     </IconButton>
@@ -150,25 +158,6 @@ export default function JobsDataGrid(props: any) {
                                                     </TableCell>
                                                     <TableCell>
                                                         {job.companySize}
-                                                    </TableCell>
-                                                </TableRow>
-                                                <TableRow>
-                                                    <TableCell className="job-table-left-col">
-                                                        Reviews
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {job.reviewCount > 0 ? (                                                            
-                                                            <Button variant="outlined"
-                                                                    onClick={() => onReviewButtonClicked(job)}
-                                                                    className="see-reviews-button">
-                                                                <PreviewIcon />
-                                                                {job.reviewCount} Review{job.reviewCount !== 1 ? 's' : ''}
-                                                            </Button>
-                                                        ) : (
-                                                            <>
-                                                                0 reviews                                                              
-                                                            </>
-                                                        )}
                                                     </TableCell>
                                                 </TableRow>
                                                 {job.tags.length ? (
