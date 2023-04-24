@@ -1,12 +1,15 @@
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import IUser from "../../components/user/i-user.interface";
+import destroySession from "../../components/user/destroySession";
+import { useNavigate } from "react-router-dom";
 
 export default function LoggedInUserMenu({ user }: any) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isMenuOpen, setMenuOpen] = useState<boolean>(false);
     const avatarPath = "/images/";
     let avatar = avatarPath;
+    const navigate = useNavigate();
     
     if (user.avatarFilename) {
         avatar += user.avatarFilename;
@@ -18,6 +21,10 @@ export default function LoggedInUserMenu({ user }: any) {
     }
     const onClose = () => {
         setMenuOpen(false);
+    };
+    const onLogoutClicked = () => {
+        destroySession();
+        navigate('/');
     };
 
     return (
@@ -42,7 +49,7 @@ export default function LoggedInUserMenu({ user }: any) {
             >
                 <MenuItem onClick={onClose}>Profile</MenuItem>
                 <MenuItem onClick={onClose}>My account</MenuItem>
-                <MenuItem onClick={onClose}>Logout</MenuItem>
+                <MenuItem onClick={onLogoutClicked}>Logout</MenuItem>
             </Menu>
         </>
     );
