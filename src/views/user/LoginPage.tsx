@@ -5,10 +5,12 @@ import './login.scss';
 import login from "../../components/user/login";
 import { useNavigate } from "react-router-dom";
 import URLS from "../../utils/urls";
+import { setToken } from "../../components/user/token";
+import { setUser } from "../../components/user/userStorage";
 
 export default function LoginPage(props: any) {
     const [loginError, setLoginError] = useState('');
-    const [buttonDisabled, setButtonDisabled] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(true);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -18,13 +20,38 @@ export default function LoginPage(props: any) {
         document.title = 'Log in';
     }, []);
 
+    function updatePassword(password: string) {
+        setPassword(password);
+        if (username && password) {
+            setButtonDisabled(false);
+        }
+    }
+
+    function updateUsername(username: string) {
+        setUsername(username);
+        if (username && password) {
+            setButtonDisabled(false);
+        }
+    }
+
     function onSubmit(e: any) {
         e.preventDefault();
         setButtonDisabled(true);
         setLoading(true);
 
         login(username, password).then((response: any) => {
-            navigate(URLS().dashboard);
+            if (response.data.status === 'OK') {
+                const token = response.data.results[0].token;
+                if (token) {
+                    setToken(token);
+                    setUser(response.data.results[0].user);
+                    navigate('/');
+                } else {
+                    setLoginError('Invalid token returned from API!');
+                }                
+            } else {
+                setLoginError(response.data.message);
+            }            
         }).catch((error: any) => {
             setLoginError(error.message);
         }).finally(() => {
@@ -55,7 +82,7 @@ export default function LoginPage(props: any) {
                                 <TextField
                                     required
                                     label="Username"
-                                    onChange={(e) => setUsername(e.target.value)}
+                                    onChange={(e) => updateUsername(e.target.value)}
                                     />
                             </div>
                             <div>
@@ -63,7 +90,7 @@ export default function LoginPage(props: any) {
                                     required
                                     type="password"
                                     label="Password"
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    onChange={(e) => updatePassword(e.target.value)}
                                     />
                             </div>
                             <div>

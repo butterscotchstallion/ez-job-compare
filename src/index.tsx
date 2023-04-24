@@ -14,6 +14,8 @@ import JobsPage from './views/jobs/JobsPage';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en.json'
 import LoginPage from './views/user/LoginPage';
+import isLoggedIn from './components/user/isUserLoggedIn';
+import { getToken } from './components/user/token';
 
 TimeAgo.addDefaultLocale(en);
 
@@ -22,6 +24,7 @@ const theme = createTheme({
         mode: 'dark'
     }
 });
+const loggedIn = getToken();
 
 const router = createBrowserRouter([
   {

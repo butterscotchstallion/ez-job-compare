@@ -2,29 +2,14 @@
 CLI utility to create users
 '''
 import argparse
-import secrets
-import string
 from db import DbUtils
 import logging as log
 import sqlite3
-import bcrypt
+from . import PasswordUtils
+
 log.basicConfig(level=log.INFO)
+pw_utils = PasswordUtils()
 
-
-def generate_password():
-    # 20 character password
-    alphabet = string.ascii_letters + string.digits
-    password = ''.join(secrets.choice(alphabet) for i in range(20))
-    return password
-
-def get_hashed_password(plain_text_password):
-    # Hash a password for the first time
-    #   (Using bcrypt, the salt is saved into the hash itself)
-    return bcrypt.hashpw(plain_text_password, bcrypt.gensalt())
-
-def check_password(plain_text_password, hashed_password):
-    # Check hashed password. Using bcrypt, the salt is saved into the hash itself
-    return bcrypt.checkpw(plain_text_password, hashed_password)
 
 def user_exists(username):
     db = DbUtils()
@@ -53,11 +38,11 @@ def create_user(username):
                 INSERT INTO users(name, password)
                 VALUES(?, ?)
             '''
-            generated_password = generate_password()
-            hashed = get_hashed_password(generated_password)
+            generated_password = pw_utils.generate_password()
+            hashed = pw_utils.get_hashed_password(generated_password)
             cursor = conn.execute(query, (username, hashed))
             conn.commit()
-            
+
             log.info('User created!')
             log.info('Password: {}'.format(generated_password))
             return True
@@ -77,6 +62,7 @@ def main():
     args = parser.parse_args()
 
     create_user(args.username)
+
 
 if __name__ == "__main__":
     main()

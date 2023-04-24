@@ -7,7 +7,8 @@ import sys
 import traceback
 import json
 from flask_cors import CORS, cross_origin
-from db import DbUtils
+from util import DbUtils
+from util import PasswordUtils
 
 log.basicConfig(level=log.INFO)
 
@@ -16,6 +17,8 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 db = DbUtils()
+pw_utils = PasswordUtils()
+
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
@@ -274,11 +277,206 @@ def get_job_count():
 
 @cross_origin()
 @app.route("/api/v1/user/login", methods=['POST'])
-def log_in_user_route():
-    username = request.args.get('username')
-    password = request.args.get('password')
-    return jsonify(get_login_token())
+def user_login_route():
+    req_json = request.json
+    username = req_json['data']['username']
+    password = req_json['data']['password']
+    return jsonify(user_login(username, password))
 
 
-def get_login_token():
-    pass
+@cross_origin()
+@app.route("/api/v1/user/session", methods=['GET'])
+def user_session_route():
+    token = request.headers.get('x-ezjobcompare-session-token')
+    return jsonify(is_session_active(token))
+
+
+def is_session_active(token):
+    '''Checks if session exists in the last day'''
+    if token:
+        try:
+            conn = db.connect_db()
+            query = '''
+                SELECT COUNT(*) as activeSessions
+                FROM user_tokens
+                WHERE token = ?
+                AND created_at < DATE('now', '-1 day')
+            '''
+            cursor = conn.execute(query, (token,))
+            results = db.get_list_from_rows(cursor)
+            is_active = len(results) > 0 and results[0]['activeSessions'] > 0
+            return {
+                'status': 'OK',
+                'results': [
+                    {
+                        'active': is_active
+                    }
+                ]
+            }
+        except sqlite3.Error as er:
+            log.error('is_session_active error: %s' % (' '.join(er.args)))
+            return {
+                'status': 'ERROR',
+                'message': 'Error checking session'
+            }
+        finally:
+            db.close_connection(conn)
+    else:
+        return {
+            'status': 'ERROR',
+            'results': [
+                {
+                    'active': false
+                }
+            ]
+        }
+
+
+def user_login(username, password):
+    '''
+    1. Check credentials
+    2. Check if a session token exists already that we can update
+    3. Create session token if not
+    '''
+    if check_credentials(username, password):
+        token = get_or_create_session_token(username)
+        user = None
+        if token:
+            user = get_user_by_token(token)
+
+        return {
+            'status': 'OK',
+            'results': [
+                {
+                    'token': token,
+                    'user': user
+                }
+            ]
+        }
+    else:
+        log.error('Check password failed')
+        return {
+            'status': 'ERROR',
+            'message': 'Invalid credentials'
+        }
+
+
+def check_credentials(username, password):
+    '''Checks if supplied username and password matches'''
+    try:
+        conn = db.connect_db()
+        query = '''
+            SELECT password
+            FROM users
+            WHERE name = ?
+        '''
+        cursor = conn.execute(query, (username,))
+        results = db.get_list_from_rows(cursor)
+
+        if results:
+            hashed_pw = results[0]['password']
+            return pw_utils.check_password(password, hashed_pw)
+        else:
+            log.info('No results for password with username {}'.format(username))
+            return False
+    except sqlite3.Error as er:
+        log.error('check_credentials error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
+
+def get_user_by_token(token):
+    '''Retrieve user info based on session token'''
+    try:
+        conn = db.connect_db()
+        query = '''
+            SELECT  u.id,
+                    u.name,
+                    u.avatar_filename AS avatarFilename,
+                    u.created_at AS createdAt,
+                    u.updated_at AS updatedAt
+            FROM users u
+            JOIN user_tokens ut ON ut.user_id = u.id
+            WHERE u.active = 1
+            AND ut.token = ?
+        '''
+        cursor = conn.execute(query, (token,))
+        results = db.get_list_from_rows(cursor)
+        if results:
+            return results[0]
+    except sqlite3.Error as er:
+        log.error('check_credentials error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
+
+def get_or_create_session_token(username):
+    '''Returns session token if exists, creates if not'''
+    try:
+        conn = db.connect_db()
+        query = '''
+            SELECT  ut.token
+            FROM user_tokens ut
+            JOIN users u ON u.id = ut.user_id
+            WHERE u.name = ?
+            AND u.active = 1
+        '''
+        cursor = conn.execute(query, (username,))
+        results = db.get_list_from_rows(cursor)
+        if results:
+            token = results[0]['token']
+            log.info('Found existing token for user {}: {}'.format(
+                username, token))
+            return token
+        else:
+            user_id = get_user_id_by_username(username)
+            if user_id:
+                token = pw_utils.generate_password(255)
+                query = '''
+                    INSERT INTO user_tokens(user_id, token, created_at)
+                    VALUES(?, ?, CURRENT_TIMESTAMP)
+                '''
+                cursor = conn.execute(query, (user_id, token))
+                conn.commit()
+                log.info('Created new token for user {}:{}'.format(
+                    username, token))
+                return token
+            else:
+                log.error('Failed to get user id for user {}'.format(username))
+    except sqlite3.Error as er:
+        log.error('get_login_token_by_user_id error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
+
+
+def get_user_id_by_username(username):
+    try:
+        conn = db.connect_db()
+        query = '''
+            SELECT id
+            FROM users
+            WHERE name = ?
+        '''
+        cursor = conn.execute(query, (username,))
+        results = db.get_list_from_rows(cursor)
+        if results:
+            return results[0]['id']
+    except sqlite3.Error as er:
+        log.error('get_user_id_by_username error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
+
+
+def update_session_token(token):
+    try:
+        conn = db.connect_db()
+        query = '''
+            UPDATE user_tokens
+            SET updated_at = CURRENT_TIMESTAMP
+            WHERE token = ?
+        '''
+        cursor = conn.execute(query, (username,))
+        conn.commit()
+        return True
+    except sqlite3.Error as er:
+        log.error('update_session_token error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
