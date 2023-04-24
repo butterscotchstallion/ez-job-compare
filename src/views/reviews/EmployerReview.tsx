@@ -14,6 +14,7 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
     return (
         <Card className="employer-review-card">
             <CardHeader
+                className="employer-review-card-header"
                 avatar={
                     <UserAvatar 
                         user={user}
@@ -28,10 +29,15 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
                 }
                 title={review.reviewAuthor}
                 subheader={
-                    <ReactTimeAgo
-                        date={new Date(review.createdAt)}
-                        locale="en-US"
-                        timeStyle="round"/>
+                    <>
+                        {isVerified ? (
+                            <div className="verified-employee-subheader">Verified Employee</div>
+                        ): ''}                        
+                        <ReactTimeAgo
+                            date={new Date(review.createdAt)}
+                            locale="en-US"
+                            timeStyle="round"/>
+                    </>
                 }
             />
             <CardContent>

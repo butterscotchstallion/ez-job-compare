@@ -3,9 +3,9 @@ import logging as log
 
 class DbUtils:
 
-    def connect_db(self):
+    def connect_db(self, dbPath):
         try:
-            with sqlite3.connect('./database.db') as conn:
+            with sqlite3.connect(dbPath) as conn:
                 if conn:
                     conn.row_factory = sqlite3.Row
             return conn

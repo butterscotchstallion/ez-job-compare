@@ -18,6 +18,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 db = DbUtils()
 pw_utils = PasswordUtils()
+DB_PATH = 'database.db'
 
 
 @app.errorhandler(HTTPException)
@@ -49,7 +50,7 @@ def list_employers():
 
 def get_employers():
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  e.id,
                     e.name,
@@ -82,7 +83,7 @@ def list_tags():
 
 def get_tags():
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  t.id,
                     t.name,
@@ -113,7 +114,7 @@ def list_employer_tags_map():
 
 def get_employers_tags():
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  et.employer_id AS employerId,
                     et.tag_id AS tagId
@@ -150,7 +151,7 @@ def list_jobs():
 
 def get_jobs(**kwargs):
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         queryClause = ''
         params = []
         tagJoinClause = ''
@@ -223,7 +224,7 @@ def list_jobs_tags_map():
 
 def get_jobs_tags():
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  jt.job_id AS jobId,
                     jt.tag_id AS tagId
@@ -253,7 +254,7 @@ def list_job_count():
 
 def get_job_count():
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  e.id AS employerId,
                     e.name AS employerName,
@@ -297,7 +298,7 @@ def is_session_active(token):
     '''Checks if session exists in the last day'''
     if token:
         try:
-            conn = db.connect_db()
+            conn = db.connect_db(DB_PATH)
             query = '''
                 SELECT COUNT(*) as activeSessions
                 FROM user_tokens
@@ -370,7 +371,7 @@ def user_login(username, password):
 def check_credentials(username, password):
     '''Checks if supplied username and password matches'''
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT password
             FROM users
@@ -394,7 +395,7 @@ def check_credentials(username, password):
 def get_user_by_token(token):
     '''Retrieve user info based on session token'''
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  u.id,
                     u.name,
@@ -419,7 +420,7 @@ def get_user_by_token(token):
 def get_or_create_session_token(username):
     '''Returns session token if exists, creates if not'''
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  ut.token
             FROM user_tokens ut
@@ -457,7 +458,7 @@ def get_or_create_session_token(username):
 
 def get_user_id_by_username(username):
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT id
             FROM users
@@ -475,7 +476,7 @@ def get_user_id_by_username(username):
 
 def update_session_token(token):
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             UPDATE user_tokens
             SET updated_at = DATETIME('now', 'localtime')
@@ -499,7 +500,7 @@ def employer_reviews_route(slug):
 
 def get_employer_id_by_slug(slug):
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  e.id
             FROM employers e 
@@ -516,7 +517,7 @@ def get_employer_id_by_slug(slug):
 
 def get_employer_reviews(slug):
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         employer_id = get_employer_id_by_slug(slug)
         results = []
         if employer_id:
@@ -554,7 +555,7 @@ def employer_review_count_list_route():
 def get_employer_review_counts():
     '''Retrieves list of review counts for each employer'''
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  employer_id AS employerId,
                     COUNT(*) AS reviewCount
@@ -581,7 +582,7 @@ def verified_employees_route(slug):
 
 def get_verified_employees(slug):
     try:
-        conn = db.connect_db()
+        conn = db.connect_db(DB_PATH)
         query = '''
             SELECT  ve.start_date AS startDate,
                     ve.end_date AS endDate,
