@@ -588,7 +588,11 @@ def get_verified_employees(slug):
                     ve.end_date AS endDate,
                     ve.user_id AS userId,
                     ve.employer_id AS employerId,
-                    DATETIME(ve.created_at, 'localtime') AS createdAt
+                    DATETIME(ve.created_at, 'localtime') AS createdAt,
+                    CASE WHEN ve.end_date IS NULL OR DATE(ve.end_date) > DATE('now', 'localtime')
+                    THEN 1
+                    ELSE 0
+                    END AS isCurrentEmployee
             FROM verified_employees ve
             JOIN users u ON u.id = ve.user_id
             JOIN employers e ON e.id = ve.employer_id

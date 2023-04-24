@@ -10,7 +10,14 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
         avatarFilename: review.avatarFilename
     };
     const isVerified = typeof verifiedEmployeesMap[userId] !== 'undefined';
+    const verifiedInfo = isVerified ? verifiedEmployeesMap[userId] : null;
     const avatarTitle = isVerified ? 'Verified employee' : 'Submitted by '+user.name;
+    let verifiedTitle = 'Verified ';
+    if (verifiedInfo && verifiedInfo.isCurrentEmployee) {
+        verifiedTitle+= ' Current Employee';
+    } else if (verifiedInfo && !verifiedInfo.isCurrentEmployee) {
+        verifiedTitle += ' Alumni';
+    }
     return (
         <Card className="employer-review-card">
             <CardHeader
@@ -31,8 +38,10 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
                 subheader={
                     <>
                         {isVerified ? (
-                            <div className="verified-employee-subheader">Verified Employee</div>
-                        ): ''}                        
+                            <div className="verified-employee-subheader">
+                                {verifiedTitle}
+                            </div>
+                        ): ''}
                         <ReactTimeAgo
                             date={new Date(review.createdAt)}
                             locale="en-US"

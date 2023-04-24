@@ -4,4 +4,5 @@ export default interface IVerifiedEmployee {
     startDate: string;
     endDate: string;
     createdAt: string;
+    isCurrentEmployee: boolean;
 };
