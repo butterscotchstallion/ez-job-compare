@@ -77,6 +77,16 @@ $textColor: #fff;
     }
 }
 
+.jobs-header-action-area {
+    button {
+        margin-right: .5rem;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
 .employer-reviews-dialog {
     min-width: 600px;
 }

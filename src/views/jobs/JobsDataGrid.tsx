@@ -20,6 +20,8 @@ import getReviewsByEmployerSlug from '../../components/reviews/getReviewsByEmplo
 import IVerifiedEmployee from '../../components/employer/i-verified-employee.interface';
 import getVerifiedEmployeesMap, { IVerifiedEmployeesMap } from '../../components/employer/getVerifiedEmployeesMap';
 import getVerifiedEmployees from '../../components/employer/getVerifiedEmployees';
+import AddIcon from '@mui/icons-material/Add';
+import { getUser } from '../../components/user/userStorage';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
@@ -34,6 +36,7 @@ export default function JobsDataGrid(props: any) {
     const [reviewEmployerName, setReviewEmployerName] = useState<string>('');
     const [reviewEmployerSlug, setReviewEmployerSlug] = useState<string>('');
     const [verifiedEmployeesMap, setVerifiedEmployeesMap] = useState<IVerifiedEmployeesMap>({});
+    const user = getUser();
 
     useEffect(() => {
         if (isOpen) {
@@ -96,7 +99,7 @@ export default function JobsDataGrid(props: any) {
                                 </Link>
                             }
                             action={
-                                <>                                             
+                                <div className="jobs-header-action-area">                                             
                                     <Button variant="outlined"
                                             onClick={() => onReviewButtonClicked(job)}
                                             className="see-reviews-button"
@@ -104,11 +107,18 @@ export default function JobsDataGrid(props: any) {
                                             disabled={job.reviewCount === 0}>
                                         {job.reviewCount} Review{job.reviewCount !== 1 ? 's' : ''}
                                     </Button>
+
+                                    {user ? (
+                                        <Button 
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                        >Add Review</Button>
+                                    ) : ''}
                                   
                                     <IconButton aria-label="settings">
                                         <MoreVertIcon />
                                     </IconButton>
-                                </>
+                                </div>
                             }
                         >
                         </CardHeader>

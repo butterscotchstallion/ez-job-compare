@@ -303,7 +303,7 @@ def is_session_active(token):
                 SELECT COUNT(*) as activeSessions
                 FROM user_tokens
                 WHERE token = ?
-                AND created_at > DATETIME('now', '-1 day')
+                AND created_at > DATETIME('now', 'localtime', '-1 day')
             '''
             cursor = conn.execute(query, (token,))
             results = db.get_list_from_rows(cursor)
