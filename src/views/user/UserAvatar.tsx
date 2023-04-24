@@ -1,6 +1,6 @@
 import { Avatar } from "@mui/material";
 
-export default function UserAvatar({ user, title }: any) {
+export default function UserAvatar({ user, title, className }: any) {
     const avatarPath = "/images/";
     let avatar = avatarPath;
     
@@ -12,6 +12,7 @@ export default function UserAvatar({ user, title }: any) {
         <Avatar 
             title={title}
             src={avatar}
+            className={className}
             />
     );
 };

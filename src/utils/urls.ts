@@ -44,6 +44,9 @@ const URLS = () => {
         "reviewCountList": BASE_URL + 'employer/reviewCountList',
         "reviewsAPI": (employerSlug: string) => {
             return BASE_URL + 'employer/'+employerSlug+'/reviews'
+        },
+        "verifiedEmployeesAPI": (employerSlug: string) => {
+            return BASE_URL + 'employer/'+employerSlug+'/verifiedEmployees';
         }
     };
 };

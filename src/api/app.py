@@ -524,7 +524,8 @@ def get_employer_reviews(slug):
                 SELECT  r.body,
                         DATETIME(r.created_at, 'localtime') AS createdAt,
                         u.name AS reviewAuthor,
-                        u.avatar_filename AS avatarFilename
+                        u.avatar_filename AS avatarFilename,
+                        u.id AS reviewAuthorUserId
                 FROM reviews r
                 JOIN users u ON u.id = r.user_id
                 WHERE r.active = 1
@@ -570,5 +571,35 @@ def get_employer_review_counts():
         }
     except sqlite3.Error as er:
         log.error('get_employer_review_count error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
+
+@cross_origin()
+@app.route("/api/v1/employer/<slug>/verifiedEmployees", methods=['GET'])
+def verified_employees_route(slug):
+    return jsonify(get_verified_employees(slug))
+
+def get_verified_employees(slug):
+    try:
+        conn = db.connect_db()
+        query = '''
+            SELECT  ve.start_date AS startDate,
+                    ve.end_date AS endDate,
+                    ve.user_id AS userId,
+                    ve.employer_id AS employerId,
+                    DATETIME(ve.created_at, 'localtime') AS createdAt
+            FROM verified_employees ve
+            JOIN users u ON u.id = ve.user_id
+            JOIN employers e ON e.id = ve.employer_id
+            WHERE e.slug = ?
+        '''
+        cursor = conn.execute(query, (slug,))
+        results = db.get_list_from_rows(cursor)
+        return {
+            'status': 'OK',
+            'results': results
+        }
+    except sqlite3.Error as er:
+        log.error('get_verified_employees error: %s' % (' '.join(er.args)))
     finally:
         db.close_connection(conn)

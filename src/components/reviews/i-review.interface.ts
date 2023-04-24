@@ -3,4 +3,5 @@ export interface IReview {
     body: string;
     createdAt: string;
     employerId: number;
+    reviewAuthorUserId: number;
 };

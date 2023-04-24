@@ -17,6 +17,9 @@ import formatDate from '../../utils/formatDate';
 import { IReview } from '../../components/reviews/i-review.interface';
 import EmployerReview from '../reviews/EmployerReview';
 import getReviewsByEmployerSlug from '../../components/reviews/getReviewsByEmployerSlug';
+import IVerifiedEmployee from '../../components/employer/i-verified-employee.interface';
+import getVerifiedEmployeesMap, { IVerifiedEmployeesMap } from '../../components/employer/getVerifiedEmployeesMap';
+import getVerifiedEmployees from '../../components/employer/getVerifiedEmployees';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
@@ -27,9 +30,11 @@ export default function JobsDataGrid(props: any) {
         return job;
     });
     const [reviews, setReviews] = useState<IReview[]>([]);
-    const [loadingReviews, setLoadingReviews] = useState(false);
-    const [reviewEmployerName, setReviewEmployerName] = useState('');
-    
+    const [loadingReviews, setLoadingReviews] = useState<boolean>(false);
+    const [reviewEmployerName, setReviewEmployerName] = useState<string>('');
+    const [reviewEmployerSlug, setReviewEmployerSlug] = useState<string>('');
+    const [verifiedEmployeesMap, setVerifiedEmployeesMap] = useState<IVerifiedEmployeesMap>({});
+
     useEffect(() => {
         if (isOpen) {
             const { current: descriptionElement } = descriptionElementRef;
@@ -45,6 +50,7 @@ export default function JobsDataGrid(props: any) {
 
     function onReviewButtonClicked(job: IJob) {
         setReviewEmployerName(job.employerName);
+        setReviewEmployerSlug(job.employerSlug);
         setLoadingReviews(true);
         getReviewsByEmployerSlug(job.employerSlug).then((response: any) => {
             setReviews(response.data.results);
@@ -52,6 +58,11 @@ export default function JobsDataGrid(props: any) {
             console.error(error);
         }).finally(() => {
             setLoadingReviews(false);
+        });
+        getVerifiedEmployees(job.employerSlug).then((response: any) => {
+            setVerifiedEmployeesMap(getVerifiedEmployeesMap(response.data.results));
+        }, (error) => {
+            console.error(error);
         });
         setIsOpen(true);
     }
@@ -200,7 +211,12 @@ export default function JobsDataGrid(props: any) {
                         {loadingReviews ? (
                             <CircularProgress />
                         ) : reviews.map((review: IReview, index: number) => (
-                            <EmployerReview review={review} key={index} />
+                            <EmployerReview 
+                                review={review}
+                                userId={review.reviewAuthorUserId}
+                                verifiedEmployeesMap={verifiedEmployeesMap}
+                                key={index} 
+                            />
                         ))}
                     </DialogContent>
                     <DialogActions>

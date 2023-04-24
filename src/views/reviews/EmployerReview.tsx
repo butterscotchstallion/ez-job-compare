@@ -4,16 +4,22 @@ import ReactTimeAgo from "react-time-ago";
 import UserAvatar from "../user/UserAvatar";
 import './reviews.scss';
 
-export default function EmployerReview({ review }: any) {
+export default function EmployerReview({ review, verifiedEmployeesMap, userId }: any) {
     const user = {
         name: review.reviewAuthor,
         avatarFilename: review.avatarFilename
     };
+    const isVerified = typeof verifiedEmployeesMap[userId] !== 'undefined';
+    const avatarTitle = isVerified ? 'Verified employee' : 'Submitted by '+user.name;
     return (
         <Card className="employer-review-card">
             <CardHeader
                 avatar={
-                    <UserAvatar user={user} title={"Submitted by "+user.name} />
+                    <UserAvatar 
+                        user={user}
+                        title={avatarTitle}
+                        className={isVerified ? 'verified' : ''}
+                    />
                 }
                 action={
                     <IconButton aria-label="settings">
