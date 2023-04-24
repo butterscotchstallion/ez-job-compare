@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import URLS from "../../utils/urls";
 import { getToken } from "./token";
 
@@ -10,7 +10,7 @@ function isSessionActive(token: string) {
     });
 }
 
-export default function isLoggedIn() {
+export default function isLoggedIn(): Promise<string | boolean | AxiosResponse> {
     const token = getToken();
     
     if (token) {

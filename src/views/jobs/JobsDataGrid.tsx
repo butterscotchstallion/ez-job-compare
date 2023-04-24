@@ -1,18 +1,17 @@
-import { Card, CardActions, CardContent, CardHeader, Grid, IconButton, Typography } from '@mui/material';
-import { IJob } from '../../components/job/i-job.interface';
-import Paper from '@mui/material/Paper';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Link } from 'react-router-dom';
-import formatDate from '../../utils/formatDate';
-import ReactTimeAgo from 'react-time-ago'
-import TagList from '../../components/tag/TagList';
-import Highlighter from "react-highlight-words";
+import { Card, CardActions, CardContent, CardHeader, Grid, IconButton, Typography } from '@mui/material';
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Highlighter from "react-highlight-words";
+import { Link } from 'react-router-dom';
+import ReactTimeAgo from 'react-time-ago';
+import { IJob } from '../../components/job/i-job.interface';
+import TagList from '../../components/tag/TagList';
+import formatDate from '../../utils/formatDate';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;

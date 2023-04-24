@@ -1,23 +1,21 @@
-import React from 'react';
+import { createTheme } from "@mui/material";
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en.json';
 import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import Home from './views/Home';
-import ErrorPage from './views/Error';
-import EmployerPage from './views/employer/EmployerPage';
-import { createTheme } from "@mui/material";
-import EmployerListPage from './views/employer/EmployerListPage';
-import JobsPage from './views/jobs/JobsPage';
-import TimeAgo from 'javascript-time-ago'
-import en from 'javascript-time-ago/locale/en.json'
-import LoginPage from './views/user/LoginPage';
-import isLoggedIn from './components/user/isUserLoggedIn';
-import { getToken } from './components/user/token';
 import destroySession from './components/user/destroySession';
-import { getUser, setUser } from './components/user/userStorage';
+import isLoggedIn from './components/user/isUserLoggedIn';
+import { setUser } from './components/user/userStorage';
+import reportWebVitals from './reportWebVitals';
+import EmployerListPage from './views/employer/EmployerListPage';
+import EmployerPage from './views/employer/EmployerPage';
+import ErrorPage from './views/Error';
+import Home from './views/Home';
+import JobsPage from './views/jobs/JobsPage';
+import LoginPage from './views/user/LoginPage';
 
 TimeAgo.addDefaultLocale(en);
 
