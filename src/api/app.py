@@ -306,11 +306,15 @@ def is_session_active(token):
             cursor = conn.execute(query, (token,))
             results = db.get_list_from_rows(cursor)
             is_active = len(results) > 0 and results[0]['activeSessions'] > 0
+            user = None
+            if is_active:
+                user = get_user_by_token(token)
             return {
                 'status': 'OK',
                 'results': [
                     {
-                        'active': is_active
+                        'active': is_active,
+                        'user': user
                     }
                 ]
             }

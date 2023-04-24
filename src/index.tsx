@@ -17,7 +17,7 @@ import LoginPage from './views/user/LoginPage';
 import isLoggedIn from './components/user/isUserLoggedIn';
 import { getToken } from './components/user/token';
 import destroySession from './components/user/destroySession';
-import { getUser } from './components/user/userStorage';
+import { getUser, setUser } from './components/user/userStorage';
 
 TimeAgo.addDefaultLocale(en);
 
@@ -29,7 +29,15 @@ const theme = createTheme({
 
 // Check user token
 isLoggedIn().then((response: any) => {
-    if (response === false || (response && !response.data.results[0].active)) {
+    const results = response ? response.data.results[0] : null;
+    const active = results ? results.active : false;
+    if (active) {
+      if (results.user) {
+        setUser(results.user);
+      } else {
+        console.error('No user found from session active results');
+      }
+    } else {
       console.info('Destroying user session for inactive session');
       destroySession();
     }
