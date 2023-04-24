@@ -1,9 +1,11 @@
+$verified-color: lightblue;
+
 .employer-review-card {
     margin-bottom: 1rem;
 }
 
 .verified {
-    border: 2px solid lime;
+    border: 2px solid $verified-color;
 }
 
 .verified-employee-subheader {
@@ -12,4 +14,8 @@
 
 .employer-review-card-header {
     border-bottom: 1px solid #666;
+}
+
+.verified-text {
+    color: $verified-color;
 }

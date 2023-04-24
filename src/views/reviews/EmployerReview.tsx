@@ -34,11 +34,15 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
                         <MoreVertIcon />
                     </IconButton>
                 }
-                title={review.reviewAuthor}
+                title={
+                    <span className={isVerified ? 'verified-text' : ''}>
+                        {review.reviewAuthor}
+                    </span>
+                }
                 subheader={
                     <>
                         {isVerified ? (
-                            <div className="verified-employee-subheader">
+                            <div className="verified-employee-subheader verified-text">
                                 {verifiedTitle}
                             </div>
                         ): ''}

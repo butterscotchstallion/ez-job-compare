@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import getEmployers from "../../components/employer/getEmployers";
 import Layout from "../Layout";
-import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
@@ -195,7 +195,7 @@ export default function EmployerListPage(props: any) {
                         ))}
                     </Grid>
                 </Layout>
-            ) : <p>Loading...</p>}
+            ) : <CircularProgress />}
         </>
     );
 };
