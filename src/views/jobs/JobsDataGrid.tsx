@@ -1,6 +1,7 @@
+import AddIcon from '@mui/icons-material/Add';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PreviewIcon from '@mui/icons-material/Preview';
-import { Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, TextareaAutosize, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,17 +12,16 @@ import { useEffect, useRef, useState } from 'react';
 import Highlighter from "react-highlight-words";
 import { Link } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
-import { IJob } from '../../components/job/i-job.interface';
-import TagList from '../../components/tag/TagList';
-import formatDate from '../../utils/formatDate';
-import { IReview } from '../../components/reviews/i-review.interface';
-import EmployerReview from '../reviews/EmployerReview';
-import getReviewsByEmployerSlug from '../../components/reviews/getReviewsByEmployerSlug';
-import IVerifiedEmployee from '../../components/employer/i-verified-employee.interface';
-import getVerifiedEmployeesMap, { IVerifiedEmployeesMap } from '../../components/employer/getVerifiedEmployeesMap';
 import getVerifiedEmployees from '../../components/employer/getVerifiedEmployees';
-import AddIcon from '@mui/icons-material/Add';
+import getVerifiedEmployeesMap, { IVerifiedEmployeesMap } from '../../components/employer/getVerifiedEmployeesMap';
+import { IJob } from '../../components/job/i-job.interface';
+import getReviewsByEmployerSlug from '../../components/reviews/getReviewsByEmployerSlug';
+import { IReview } from '../../components/reviews/i-review.interface';
+import TagList from '../../components/tag/TagList';
 import { getUser } from '../../components/user/userStorage';
+import formatDate from '../../utils/formatDate';
+import EmployerReview from '../reviews/EmployerReview';
+import addReview from '../../components/reviews/addReview';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
@@ -35,7 +35,13 @@ export default function JobsDataGrid(props: any) {
     const [loadingReviews, setLoadingReviews] = useState<boolean>(false);
     const [reviewEmployerName, setReviewEmployerName] = useState<string>('');
     const [reviewEmployerSlug, setReviewEmployerSlug] = useState<string>('');
+    const [reviewEmployerId, setReviewEmployerId] = useState<number | null>(null);
     const [verifiedEmployeesMap, setVerifiedEmployeesMap] = useState<IVerifiedEmployeesMap>({});
+    const [isAddReviewModalOpen, setisAddReviewModalOpen] = useState<boolean>(false);
+    const [reviewBody, setReviewBody] = useState('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [reviewFormValid, setReviewFormValid] = useState<boolean>(false);
+    const [addReviewError, setAddReviewError] = useState<string>('');
     const user = getUser();
 
     useEffect(() => {
@@ -47,8 +53,41 @@ export default function JobsDataGrid(props: any) {
         }
     }, []);
 
+    // Review submitted
+    function onSubmit(e: any) {
+        e.preventDefault();
+        setLoading(true);
+        addReview(reviewEmployerId, reviewBody).then((response: any) => {
+            if (response.data.status === 'OK') {
+                onClose();
+                setReviewBody('');
+                setReviewEmployerId(null);
+                setReviewFormValid(false);
+                setReviewEmployerName('');
+                setReviewEmployerSlug('');
+                setAddReviewError('');
+                console.log('Reloading jobs');
+                props.onReviewSubmitted();
+            } else {
+                setAddReviewError(response.data.message);
+            }            
+        }).finally(() => {
+            setLoading(false);
+        });
+    }
+
+    function updateBody(body: string) {
+        if (body.length > 0) {
+            setReviewBody(body);
+            setReviewFormValid(true);
+        } else {
+            setReviewFormValid(false);
+        }
+    }
+
     function onClose() {
         setIsOpen(false);
+        setisAddReviewModalOpen(false);
     }
 
     function onReviewButtonClicked(job: IJob) {
@@ -68,6 +107,12 @@ export default function JobsDataGrid(props: any) {
             console.error(error);
         });
         setIsOpen(true);
+    }
+
+    function onAddReviewButtonClicked(job: IJob) {
+        setisAddReviewModalOpen(true);
+        setReviewEmployerName(job.employerName);
+        setReviewEmployerId(job.employerId);
     }
 
     return (
@@ -104,7 +149,10 @@ export default function JobsDataGrid(props: any) {
                                         <Button 
                                             variant="outlined"
                                             startIcon={<AddIcon />}
-                                        >Add Review</Button>
+                                            onClick={() => { onAddReviewButtonClicked(job) }}
+                                        >
+                                            Add Review
+                                        </Button>
                                     ) : ''}
 
                                     <Button variant="outlined"
@@ -232,6 +280,58 @@ export default function JobsDataGrid(props: any) {
                     <DialogActions>
                         <Button onClick={onClose}>Close</Button>
                     </DialogActions>
+                </Dialog>
+
+                <Dialog
+                    open={isAddReviewModalOpen}
+                    onClose={onClose}
+                    scroll="paper"
+                    fullWidth={true}
+                    aria-labelledby="scroll-dialog-title"
+                    aria-describedby="scroll-dialog-description"
+                    className="employer-add-review-dialog"
+                >
+                    <Box
+                        component="form"
+                        sx={{
+                            '& .MuiTextField-root': { m: 1, width: '25ch' },
+                        }}
+                        noValidate
+                        autoComplete="off"
+                        onSubmit={onSubmit}
+                        >
+                        <DialogTitle id="scroll-dialog-title">Add review for {reviewEmployerName}</DialogTitle>
+                        <DialogContent dividers={true}>
+                            {addReviewError ? (
+                                <Alert severity="error">{addReviewError}</Alert>
+                            ) : ''}
+                            <div>
+                                <div><label>Review text</label></div>
+                                <TextareaAutosize
+                                    className='new-review-body'
+                                    aria-label="Review text"
+                                    minRows={4}
+                                    placeholder="Review text"
+                                    required
+                                    onChange={(e: any) => updateBody(e.target.value)}
+                                />
+                            </div>                          
+                        </DialogContent>
+                        <DialogActions>
+                            <Button
+                                onClick={onClose}
+                                type="button">
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="login-button"
+                                disabled={loading || !reviewFormValid}
+                                variant="outlined">
+                                    {loading ? 'Submitting...' : 'Submit'}
+                            </Button>
+                        </DialogActions>
+                    </Box>
                 </Dialog>
             </Grid>
         </Grid>

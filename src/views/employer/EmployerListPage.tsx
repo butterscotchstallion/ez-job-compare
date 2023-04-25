@@ -121,15 +121,15 @@ export default function EmployerListPage(props: any) {
             ) : null}
             {employers ? (
                 <Layout theme={props.theme} areaTitle="Employer List">
-                    {filterSlugName && (
+                    {filterSlugName ? (
                         <Card className="employerListFilterMessage" variant="outlined">
                             <CardContent>Filtering by {filterSlugName}</CardContent>
                         </Card>
-                    )}
+                    ) : ''}
 
-                    {tags && (
+                    {tags ? (
                         <TagFilterList props={{ tags: tags }} />
-                    )}
+                    ) : ''}
 
                     <Grid container spacing={3}>
                         {errorMsg && <p>Error! {errorMsg}</p>}

@@ -47,7 +47,8 @@ const URLS = () => {
         },
         "verifiedEmployeesAPI": (employerSlug: string) => {
             return BASE_URL + 'employer/'+employerSlug+'/verifiedEmployees';
-        }
+        },
+        "addReviewAPI": BASE_URL + 'employer/reviews'
     };
 };
 export default URLS;

@@ -10,7 +10,7 @@ import Layout from "../Layout";
 import JobsDataGrid from "./JobsDataGrid";
 import './jobs.scss';
 import getReviewsCountList from "../../components/reviews/getReviewsCountList";
-import { IReviewCountList } from "../../components/reviews/getReviewCountMap";
+import getReviewCountMap, { IReviewCountList } from "../../components/reviews/getReviewCountMap";
 
 export default function JobsPage(props: any) {
     const [loading, setLoading] = useState(false);
@@ -94,11 +94,14 @@ export default function JobsPage(props: any) {
             />
 
             {jobs.length > 0 && (
-                <JobsDataGrid   jobs={jobs}
-                                searchQuery={searchQuery}
-                                isSearching={isSearching}
-                                salaryRangeMin={salaryRangeMin}
-                                salaryRangeMax={salaryRangeMax} />
+                <JobsDataGrid   
+                    jobs={jobs}
+                    searchQuery={searchQuery}
+                    isSearching={isSearching}
+                    salaryRangeMin={salaryRangeMin}
+                    salaryRangeMax={salaryRangeMax}
+                    onReviewSubmitted={getJobsAndTags}
+                />
             )}
             {loading ? (
                 <CircularProgress />

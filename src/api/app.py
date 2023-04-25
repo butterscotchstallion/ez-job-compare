@@ -289,9 +289,13 @@ def user_login_route():
 @cross_origin()
 @app.route("/api/v1/user/session", methods=['GET'])
 def user_session_route():
-    token = request.headers.get('x-ezjobcompare-session-token')
+    token = get_token_from_header()
     log.info('Checking token: {}'.format(token))
     return jsonify(is_session_active(token))
+
+
+def get_token_from_header():
+    return request.headers.get('x-ezjobcompare-session-token')
 
 
 def is_session_active(token):
@@ -498,6 +502,7 @@ def update_session_token(token):
 def employer_reviews_route(slug):
     return jsonify(get_employer_reviews(slug))
 
+
 def get_employer_id_by_slug(slug):
     try:
         conn = db.connect_db(DB_PATH)
@@ -514,6 +519,7 @@ def get_employer_id_by_slug(slug):
         log.error('get_employer_id_by_slug error: %s' % (' '.join(er.args)))
     finally:
         db.close_connection(conn)
+
 
 def get_employer_reviews(slug):
     try:
@@ -575,10 +581,12 @@ def get_employer_review_counts():
     finally:
         db.close_connection(conn)
 
+
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/verifiedEmployees", methods=['GET'])
 def verified_employees_route(slug):
     return jsonify(get_verified_employees(slug))
+
 
 def get_verified_employees(slug):
     try:
@@ -606,5 +614,50 @@ def get_verified_employees(slug):
         }
     except sqlite3.Error as er:
         log.error('get_verified_employees error: %s' % (' '.join(er.args)))
+    finally:
+        db.close_connection(conn)
+
+
+@cross_origin()
+@app.route("/api/v1/employer/reviews", methods=['POST'])
+def add_employer_review_route():
+    token = get_token_from_header()
+    user = None
+    access_denied_response = jsonify({
+        'status': 'ERROR',
+        'message': 'Invalid token'
+    })
+
+    if token:
+        user = get_user_by_token(token)
+
+        if user is not None:
+            req_json = request.json
+            employer_id = req_json['employerId']
+            body = req_json['body']
+            return jsonify(add_employer_review(employer_id, body, user['id']))
+        else:
+            log.error('Could not find user with token')
+            return access_denied_response
+    else:
+        log.error('No token supplied')
+        return access_denied_response
+
+
+def add_employer_review(employer_id, body, user_id):
+    try:
+        conn = db.connect_db(DB_PATH)
+        query = '''
+            INSERT INTO reviews(user_id, employer_id, body)
+            VALUES(?, ? , ?)
+        '''
+        cursor = conn.execute(query, (user_id, employer_id, body))
+        conn.commit()
+        log.info('Added review for employer {} from user {}'.format(employer_id, user_id))
+        return {
+            'status': 'OK'
+        }
+    except sqlite3.Error as er:
+        log.error('add_employer_review error: %s' % (' '.join(er.args)))
     finally:
         db.close_connection(conn)

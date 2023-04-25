@@ -87,6 +87,18 @@ $textColor: #fff;
     }
 }
 
-.employer-reviews-dialog {
+.employer-add-review-dialog {
     min-width: 600px;
+
+    .MuiAlert-root {
+        margin-bottom: 1rem;
+    }
+}
+
+.new-review-body {
+    display: block;
+    margin: .5rem 0 .5rem 0;
+    width: 100%;
+    padding: .5rem;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
