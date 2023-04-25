@@ -77,8 +77,9 @@ export default function JobsDataGrid(props: any) {
     }
 
     function updateBody(body: string) {
-        if (body.length > 0) {
-            setReviewBody(body);
+        const trimmedBody = body.trim();
+        if (trimmedBody.length > 0) {
+            setReviewBody(trimmedBody);
             setReviewFormValid(true);
         } else {
             setReviewFormValid(false);
