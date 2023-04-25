@@ -36,13 +36,13 @@ export default function EmployerListPage(props: any) {
     const user = getUser();
     let isFiltering = tagSlug && tagSlug.length > 0;
 
-
     useEffect(() => {
         let mounted = true;
         console.log('Rendering!');
         document.title = 'Employer List';
 
         if (mounted) {
+            setLoading(true);
             Promise.all([
                 getEmployers(),
                 getTags(),
@@ -137,12 +137,14 @@ export default function EmployerListPage(props: any) {
 
     return (
         <>
-            {isFiltering && employers && employers.length === 0 ? (
-                <p>No results using that filter</p>
-            ) : null}
-            {employers ? (
-                <>
-                    <Layout theme={props.theme} areaTitle="Employer List">
+            <AddJobDialog open={addReviewOpen} />
+            <Layout theme={props.theme} areaTitle="Employer List">
+                {loading ? <CircularProgress /> : ''}
+                {isFiltering && employers && employers.length === 0 ? (
+                    <p>No results using that filter</p>
+                ) : null}
+                {employers ? (
+                    <>                    
                         {filterSlugName ? (
                             <Card className="employerListFilterMessage" variant="outlined">
                                 <CardContent>Filtering by {filterSlugName}</CardContent>
@@ -246,10 +248,9 @@ export default function EmployerListPage(props: any) {
                                 </Grid>
                             ))}
                         </Grid>
-                    </Layout>
-                    <AddJobDialog open={addReviewOpen} />
-                </>
-            ) : <CircularProgress />}
+                    </>
+                ) : ''}
+            </Layout>
         </>
     );
 };
