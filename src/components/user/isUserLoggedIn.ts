@@ -12,7 +12,6 @@ function isSessionActive(token: string) {
 
 export default function isLoggedIn(): Promise<string | boolean | AxiosResponse> {
     const token = getToken();
-    
     if (token) {
         return isSessionActive(token);
     } else {

@@ -19,7 +19,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 db = DbUtils()
 pw_utils = PasswordUtils()
 DB_PATH = 'database.db'
-SESSION_DURATION = '1 week'
+SESSION_DURATION = '-7 day'
 
 
 @app.errorhandler(HTTPException)
@@ -312,24 +312,36 @@ def get_token_from_header():
     return request.headers.get('x-ezjobcompare-session-token')
 
 
+def get_duration_clause():
+    return '{}'.format(SESSION_DURATION)
+
+
 def is_session_active(token):
     '''Checks if session exists in the last day'''
     if token:
         try:
             conn = db.connect_db(DB_PATH)
-            duration = '-1{}'.format(SESSION_DURATION)
+            duration = get_duration_clause()
             query = '''
                 SELECT COUNT(*) as activeSessions
                 FROM user_tokens
-                WHERE token = ?
-                AND created_at > DATE('now', 'localtime', ?)
+                WHERE 1=1
+                AND created_at >= DATETIME('now', 'localtime', ?)
+                AND token = ?
             '''
-            cursor = conn.execute(query, (token, duration))
+            cursor = conn.execute(query, (duration, token))
             results = db.get_list_from_rows(cursor)
+            log.info(results)
             is_active = len(results) > 0 and results[0]['activeSessions'] > 0
+            log.info(results[0]['activeSessions'])
             user = None
             if is_active:
+                log.info('Active session found')
                 user = get_user_by_token(token)
+                update_session_token(token)
+                log.info('Updated existing token creation date')
+            else:
+                log.info('Inactive session found')
             return {
                 'status': 'OK',
                 'results': [
@@ -444,10 +456,13 @@ def get_or_create_session_token(username):
             SELECT  ut.token
             FROM user_tokens ut
             JOIN users u ON u.id = ut.user_id
-            WHERE u.name = ?
+            WHERE 1=1
+            AND u.name = ?
             AND u.active = 1
+            AND ut.created_at > DATE('now', 'localtime', ?)
         '''
-        cursor = conn.execute(query, (username,))
+        duration = get_duration_clause()
+        cursor = conn.execute(query, (username, duration))
         results = db.get_list_from_rows(cursor)
         if results:
             token = results[0]['token']
@@ -459,7 +474,7 @@ def get_or_create_session_token(username):
             if user_id:
                 token = pw_utils.generate_password(255)
                 query = '''
-                    INSERT INTO user_tokens(user_id, token, created_at)
+                    REPLACE INTO user_tokens(user_id, token, created_at)
                     VALUES(?, ?, DATE('now', 'localtime'))
                 '''
                 cursor = conn.execute(query, (user_id, token))
@@ -498,10 +513,11 @@ def update_session_token(token):
         conn = db.connect_db(DB_PATH)
         query = '''
             UPDATE user_tokens
-            SET updated_at = DATETIME('now', 'localtime')
+            SET updated_at = DATETIME('now', 'localtime'),
+            created_at = DATETIME('now', 'localtime')
             WHERE token = ?
         '''
-        cursor = conn.execute(query, (username,))
+        cursor = conn.execute(query, (token,))
         conn.commit()
         return True
     except sqlite3.Error as er:

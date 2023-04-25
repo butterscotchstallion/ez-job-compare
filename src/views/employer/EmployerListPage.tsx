@@ -21,6 +21,7 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 import Layout from "../Layout";
 import './employer.scss';
 import { getUser } from "../../components/user/userStorage";
+import AddJobDialog from "../jobs/AddJobDialog";
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -29,6 +30,7 @@ export default function EmployerListPage(props: any) {
     const [errorMsg, setErrorMsg] = useState('');
     const [filterSlugName, setFilterSlugName] = useState('');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [addReviewOpen, setAddReviewOpen] = useState<boolean>(false);
     const isSettingsMenuOpen = !!anchorEl;
     const {tagSlug} = useParams();
     const user = getUser();
@@ -129,116 +131,124 @@ export default function EmployerListPage(props: any) {
         setAnchorEl(null);
     }
 
+    function onPostJobClicked() {
+        setAddReviewOpen(true);
+    }
+
     return (
         <>
             {isFiltering && employers && employers.length === 0 ? (
                 <p>No results using that filter</p>
             ) : null}
             {employers ? (
-                <Layout theme={props.theme} areaTitle="Employer List">
-                    {filterSlugName ? (
-                        <Card className="employerListFilterMessage" variant="outlined">
-                            <CardContent>Filtering by {filterSlugName}</CardContent>
-                        </Card>
-                    ) : ''}
+                <>
+                    <Layout theme={props.theme} areaTitle="Employer List">
+                        {filterSlugName ? (
+                            <Card className="employerListFilterMessage" variant="outlined">
+                                <CardContent>Filtering by {filterSlugName}</CardContent>
+                            </Card>
+                        ) : ''}
 
-                    {tags ? (
-                        <TagFilterList props={{ tags: tags }} />
-                    ) : ''}
+                        {tags ? (
+                            <TagFilterList props={{ tags: tags }} />
+                        ) : ''}
 
-                    <Grid container spacing={3}>
-                        {errorMsg && <p>Error! {errorMsg}</p>}
+                        <Grid container spacing={3}>
+                            {errorMsg && <p>Error! {errorMsg}</p>}
 
-                        {employers.map((employer: any, index: number) => (
-                            <Grid item xs={4} key={index}>
-                                <Card
-                                    variant="outlined"
-                                    className="employer-list-page-card"    
-                                    >
-                                    <CardHeader
-                                        avatar={
-                                            <Avatar sx={{ bgcolor: '#ccc' }} aria-label="recipe">
-                                                <Link className="avatar-link" to={'/employers/'+employer.id}>{employer.name[0]}</Link>
-                                            </Avatar>
-                                        }
-                                        action={
-                                            <> 
-                                                {user ? (
-                                                    <Button
-                                                        variant="outlined"
-                                                        startIcon={<NewspaperIcon />}
-                                                        className="post-new-job-button"
-                                                        >
-                                                        Post Job
-                                                    </Button>
-                                                ): ''}
-                                                {employer.jobCount > 0 ? (
-                                                    <Tooltip title={employer.jobCountTitle} arrow>
-                                                        <Badge
-                                                            badgeContent={employer.jobCount}
-                                                            className="employer-list-job-count-badge"
-                                                            color="primary"
-                                                        >
-                                                            <AccountBoxIcon />
-                                                        </Badge>
-                                                    </Tooltip>
-                                                ) : ''}
-                                                
-                                                <IconButton 
-                                                    aria-label="settings"
-                                                    onClick={onEmployerSettingsClicked}
-                                                    >
-                                                    <MoreVertIcon />
-                                                    <ClickAwayListener onClickAway={onClose}>
-                                                        <Menu 
-                                                            open={isSettingsMenuOpen}
-                                                            onClose={onClose}
-                                                            anchorEl={anchorEl}
+                            {employers.map((employer: any, index: number) => (
+                                <Grid item xs={4} key={index}>
+                                    <Card
+                                        variant="outlined"
+                                        className="employer-list-page-card"    
+                                        >
+                                        <CardHeader
+                                            avatar={
+                                                <Avatar sx={{ bgcolor: '#ccc' }} aria-label="recipe">
+                                                    <Link className="avatar-link" to={'/employers/'+employer.id}>{employer.name[0]}</Link>
+                                                </Avatar>
+                                            }
+                                            action={
+                                                <> 
+                                                    {user ? (
+                                                        <Button
+                                                            variant="outlined"
+                                                            startIcon={<NewspaperIcon />}
+                                                            className="post-new-job-button"
+                                                            onClick={onPostJobClicked}
                                                             >
-                                                            <MenuList autoFocusItem={isSettingsMenuOpen}>
-                                                                <MenuItem>
-                                                                    <ListItemIcon>
-                                                                        <ContentCut fontSize="small" />
-                                                                    </ListItemIcon>
-                                                                    <ListItemText>Add job</ListItemText>
-                                                                </MenuItem>
-                                                            </MenuList>
-                                                        </Menu>
-                                                    </ClickAwayListener>
-                                                </IconButton>
-                                            </>
-                                        }
-                                        title={
-                                            <Link to={'/employers/'+employer.id}>{employer.name}</Link>
-                                        }
-                                        subheader={employer.type}
-                                    />
-                                    <CardMedia
-                                        sx={{ height: 200 }}
-                                        image={'/images/'+employer.image}
-                                        title={employer.name}
-                                    />
-                                    <CardContent>
-                                        {employer.tags.length > 0 && (
-                                            <TagList tags={employer.tags} />
-                                        )}
-                                        <Typography variant="body2" color="text.secondary">
-                                            {employer.description}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions disableSpacing>
-                                        <IconButton aria-label="add to favorites">
-                                            <FavoriteIcon />
-                                        </IconButton>
-                                        <IconButton aria-label="share">
-                                            <ShareIcon />
-                                        </IconButton>
-                                    </CardActions>
-                                </Card>   
-                            </Grid>
-                        ))}
-                    </Grid>
-                </Layout>
+                                                            Post Job
+                                                        </Button>
+                                                    ): ''}
+                                                    {employer.jobCount > 0 ? (
+                                                        <Tooltip title={employer.jobCountTitle} arrow>
+                                                            <Badge
+                                                                badgeContent={employer.jobCount}
+                                                                className="employer-list-job-count-badge"
+                                                                color="primary"
+                                                            >
+                                                                <AccountBoxIcon />
+                                                            </Badge>
+                                                        </Tooltip>
+                                                    ) : ''}
+                                                    
+                                                    <IconButton 
+                                                        aria-label="settings"
+                                                        onClick={onEmployerSettingsClicked}
+                                                        >
+                                                        <MoreVertIcon />
+                                                        <ClickAwayListener onClickAway={onClose}>
+                                                            <Menu 
+                                                                open={isSettingsMenuOpen}
+                                                                onClose={onClose}
+                                                                anchorEl={anchorEl}
+                                                                >
+                                                                <MenuList autoFocusItem={isSettingsMenuOpen}>
+                                                                    <MenuItem>
+                                                                        <ListItemIcon>
+                                                                            <ContentCut fontSize="small" />
+                                                                        </ListItemIcon>
+                                                                        <ListItemText>Add job</ListItemText>
+                                                                    </MenuItem>
+                                                                </MenuList>
+                                                            </Menu>
+                                                        </ClickAwayListener>
+                                                    </IconButton>
+                                                </>
+                                            }
+                                            title={
+                                                <Link to={'/employers/'+employer.id}>{employer.name}</Link>
+                                            }
+                                            subheader={employer.type}
+                                        />
+                                        <CardMedia
+                                            sx={{ height: 200 }}
+                                            image={'/images/'+employer.image}
+                                            title={employer.name}
+                                        />
+                                        <CardContent>
+                                            {employer.tags.length > 0 && (
+                                                <TagList tags={employer.tags} />
+                                            )}
+                                            <Typography variant="body2" color="text.secondary">
+                                                {employer.description}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardActions disableSpacing>
+                                            <IconButton aria-label="add to favorites">
+                                                <FavoriteIcon />
+                                            </IconButton>
+                                            <IconButton aria-label="share">
+                                                <ShareIcon />
+                                            </IconButton>
+                                        </CardActions>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Layout>
+                    <AddJobDialog open={addReviewOpen} />
+                </>
             ) : <CircularProgress />}
         </>
     );

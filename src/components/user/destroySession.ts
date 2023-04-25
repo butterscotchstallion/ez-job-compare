@@ -1,5 +1,5 @@
 import { removeToken } from "./token";
-import { removeUser, setUser } from "./userStorage";
+import { removeUser } from "./userStorage";
 
 export default function destroySession() {
     removeUser();
