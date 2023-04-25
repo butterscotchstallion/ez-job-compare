@@ -3,8 +3,8 @@ const URLS = () => {
 
     return {
         "employers": BASE_URL + 'employers',
-        "employer": (id: number) => {
-            return BASE_URL + 'data/employer.json';
+        "employer": (slug: string) => {
+            return BASE_URL + 'employer/'+slug;
         },
         "employerPage": (id: number) => {
             return BASE_URL + 'employers/'+id;

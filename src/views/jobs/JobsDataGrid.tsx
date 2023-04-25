@@ -136,12 +136,8 @@ export default function JobsDataGrid(props: any) {
                                 </Link>
                             }
                             subheader={
-                                <Link to={job.employerWebsite} title="Employer website" target="_blank">
-                                    <Highlighter
-                                        searchWords={[props.searchQuery]}
-                                        autoEscape={true}
-                                        textToHighlight={job.employerName}
-                                    />
+                                <Link to={'/employers/'+job.employerSlug} title="Employer page">
+                                    {job.employerName}
                                 </Link>
                             }
                             action={
@@ -228,6 +224,16 @@ export default function JobsDataGrid(props: any) {
                                                     </TableCell>
                                                     <TableCell>
                                                         {job.companySize}
+                                                    </TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell className="job-table-left-col">
+                                                        Website
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Link to={job.employerWebsite} target="_blank">
+                                                            {job.employerWebsite}
+                                                        </Link>
                                                     </TableCell>
                                                 </TableRow>
                                                 {job.tags.length ? (

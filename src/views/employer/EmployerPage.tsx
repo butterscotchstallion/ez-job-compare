@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import getEmployer from "../../components/employer/getEmployer";
-import { redirect, useParams } from "react-router-dom";
+import { redirect, useNavigate, useParams } from "react-router-dom";
 import Layout from "../Layout";
 import { Box, Typography } from "@mui/material";
 
@@ -8,13 +8,13 @@ export default function EmployerPage(props: any) {
     const [employer, setEmployer]: any = useState(null);
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
-    let {employerId} = useParams();
+    const navigate = useNavigate();
+    let {employerSlug} = useParams();
 
     useEffect(() => {
         document.title = 'Employer Info';
-        if (employerId) {
-            const numEmployerId = parseInt(employerId, 10);
-            getEmployer(numEmployerId).then((response: any) => {
+        if (employerSlug) {
+            getEmployer(employerSlug).then((response: any) => {
                 setEmployer(response.data.results[0]);
                 setErrorMsg('');
                 setLoading(false);
@@ -27,9 +27,9 @@ export default function EmployerPage(props: any) {
                 setLoading(false);
             });
         } else {
-            redirect('/employers');
+            navigate('/employers');
         }
-    }, [employerId]);
+    }, []);
 
     return (
         <>

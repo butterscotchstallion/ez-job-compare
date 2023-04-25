@@ -56,7 +56,7 @@ const router = createBrowserRouter([
     element: <EmployerListPage theme={theme} />
   },
   {
-    path: '/employers/:employerId',
+    path: '/employers/:employerSlug',
     element: <EmployerPage theme={theme} />
   },
   {

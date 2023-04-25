@@ -47,10 +47,24 @@ def handle_exception(e):
 def list_employers():
     return jsonify(get_employers())
 
+@cross_origin()
+@app.route("/api/v1/employer/<slug>", methods=['GET'])
+def get_employer_by_slug_route(slug):
+    return jsonify(get_employers(slug))
 
-def get_employers():
+
+def get_employers(slug=None):
     try:
         conn = db.connect_db(DB_PATH)
+        params = ()
+        where_and_order_clause = '''
+            ORDER BY e.name
+        '''
+        if slug is not None:
+            params = (slug,)
+            where_and_order_clause = '''
+                WHERE e.slug = ?
+            '''
         query = '''
             SELECT  e.id,
                     e.name,
@@ -59,9 +73,8 @@ def get_employers():
                     es.name AS companySize
             FROM employers e
             JOIN employer_sizes es ON es.id = e.employer_size_id
-            ORDER BY e.name
-        '''
-        cursor = conn.execute(query)
+        ''' + where_and_order_clause
+        cursor = conn.execute(query, params)
         results = db.get_list_from_rows(cursor)
         return {
             'status': 'OK',
@@ -307,7 +320,7 @@ def is_session_active(token):
                 SELECT COUNT(*) as activeSessions
                 FROM user_tokens
                 WHERE token = ?
-                AND created_at > DATETIME('now', 'localtime', '-1 day')
+                AND created_at > DATE('now', 'localtime', '-1 day')
             '''
             cursor = conn.execute(query, (token,))
             results = db.get_list_from_rows(cursor)
@@ -445,7 +458,7 @@ def get_or_create_session_token(username):
                 token = pw_utils.generate_password(255)
                 query = '''
                     INSERT INTO user_tokens(user_id, token, created_at)
-                    VALUES(?, ?, DATETIME('now', 'localtime'))
+                    VALUES(?, ?, DATE('now', 'localtime'))
                 '''
                 cursor = conn.execute(query, (user_id, token))
                 conn.commit()
