@@ -19,6 +19,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 db = DbUtils()
 pw_utils = PasswordUtils()
 DB_PATH = 'database.db'
+SESSION_DURATION = '1 week'
 
 
 @app.errorhandler(HTTPException)
@@ -316,13 +317,14 @@ def is_session_active(token):
     if token:
         try:
             conn = db.connect_db(DB_PATH)
+            duration = '-1{}'.format(SESSION_DURATION)
             query = '''
                 SELECT COUNT(*) as activeSessions
                 FROM user_tokens
                 WHERE token = ?
-                AND created_at > DATE('now', 'localtime', '-1 day')
+                AND created_at > DATE('now', 'localtime', ?)
             '''
-            cursor = conn.execute(query, (token,))
+            cursor = conn.execute(query, (token, duration))
             results = db.get_list_from_rows(cursor)
             is_active = len(results) > 0 and results[0]['activeSessions'] > 0
             user = None

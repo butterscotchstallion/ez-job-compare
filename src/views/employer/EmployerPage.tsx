@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import getEmployer from "../../components/employer/getEmployer";
-import { redirect, useNavigate, useParams } from "react-router-dom";
-import Layout from "../Layout";
 import { Box, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import getEmployer from "../../components/employer/getEmployer";
+import Layout from "../Layout";
 
 export default function EmployerPage(props: any) {
     const [employer, setEmployer]: any = useState(null);
