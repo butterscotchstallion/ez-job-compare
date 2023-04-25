@@ -137,7 +137,11 @@ export default function JobsDataGrid(props: any) {
                             }
                             subheader={
                                 <Link to={'/employers/'+job.employerSlug} title="Employer page">
-                                    {job.employerName}
+                                    <Highlighter
+                                        searchWords={[props.searchQuery]}
+                                        autoEscape={true}
+                                        textToHighlight={job.employerName}
+                                    />
                                 </Link>
                             }
                             action={
