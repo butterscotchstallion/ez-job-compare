@@ -36,6 +36,7 @@ def handle_exception(e):
     response.content_type = "application/json"
     return response
 
+
 def get_access_denied_response():
     return jsonify({
         'status': 'ERROR',
@@ -53,6 +54,7 @@ def get_access_denied_response():
 @app.route("/api/v1/employers", methods=['GET'])
 def list_employers():
     return jsonify(get_employers())
+
 
 @cross_origin()
 @app.route("/api/v1/employer/<slug>", methods=['GET'])
@@ -658,41 +660,41 @@ def get_verified_employees(slug):
 @cross_origin()
 @app.route("/api/v1/employer/reviews", methods=['POST'])
 def add_employer_review_route():
+    req_json = request.json
+    employer_id = req_json['employerId']
+    body = req_json['body']
+    return jsonify(add_employer_review(employer_id, body))
+
+
+def add_employer_review(employer_id, body):
     token = get_token_from_header()
     user = None
+
     if token:
         user = get_user_by_token(token)
-
-        if user is not None:
-            req_json = request.json
-            employer_id = req_json['employerId']
-            body = req_json['body']
-            return jsonify(add_employer_review(employer_id, body, user['id']))
+        if user:
+            try:
+                conn = db.connect_db(DB_PATH)
+                query = '''
+                    INSERT INTO reviews(user_id, employer_id, body)
+                    VALUES(?, ? , ?)
+                '''
+                cursor = conn.execute(query, (user['id'], employer_id, body))
+                conn.commit()
+                log.info('Added review for employer {} from user {}'.format(
+                    employer_id, user_id))
+                return {
+                    'status': 'OK'
+                }
+            except sqlite3.Error as er:
+                log.error('add_employer_review error: %s' %
+                          (' '.join(er.args)))
+            finally:
+                db.close_connection(conn)
         else:
-            log.error('Could not find user with token')
             return get_access_denied_response()
     else:
-        log.error('No token supplied')
         return get_access_denied_response()
-
-
-def add_employer_review(employer_id, body, user_id):
-    try:
-        conn = db.connect_db(DB_PATH)
-        query = '''
-            INSERT INTO reviews(user_id, employer_id, body)
-            VALUES(?, ? , ?)
-        '''
-        cursor = conn.execute(query, (user_id, employer_id, body))
-        conn.commit()
-        log.info('Added review for employer {} from user {}'.format(employer_id, user_id))
-        return {
-            'status': 'OK'
-        }
-    except sqlite3.Error as er:
-        log.error('add_employer_review error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
 
 
 @cross_origin()
@@ -700,7 +702,7 @@ def add_employer_review(employer_id, body, user_id):
 def add_job_route():
     token = get_token_from_header()
     user = None
-    
+
     if token:
         user = get_user_by_token(token)
 
@@ -718,8 +720,8 @@ def add_job_route():
                         location)
                     VALUES(?, ?, ?, ?, ?, ?)
                 '''
-                params = (req_json['title'], req_json['shortDescription'], req_json['salaryRangeStart'], \
-                    req_json['salaryRangeEnd'], req_json['employerId'], req_json['location'])
+                params = (req_json['title'], req_json['shortDescription'], req_json['salaryRangeStart'],
+                          req_json['salaryRangeEnd'], req_json['employerId'], req_json['location'])
                 cursor = conn.execute(query, params)
                 conn.commit()
                 return {
@@ -731,7 +733,47 @@ def add_job_route():
                 db.close_connection(conn)
         else:
             log.error('Could not find user with token')
-            return access_denied_response
+            return get_access_denied_response()
     else:
         log.error('No token supplied')
-        return access_denied_response
+        return get_access_denied_response()
+
+
+@cross_origin()
+@app.route("/api/v1/recruiters", methods=['GET'])
+def recruiters_route():
+    token = get_token_from_header()
+    if token:
+        user = get_user_by_token(token)
+        if user:
+            return jsonify(get_recruiters(user['id']))
+        else:
+            return get_access_denied_response()
+    else:
+        return get_access_denied_response()
+
+
+def get_recruiters(user_id):
+    try:
+        conn = db.connect_db(DB_PATH)
+        query = '''
+            SELECT  eu.user_id AS userId,
+                    eu.employer_id AS employerId
+            FROM employers_users eu
+            WHERE eu.user_id = ?
+        '''
+        cursor = conn.execute(query, (user_id,))
+        results = db.get_list_from_rows(cursor)
+        return {
+            'status': 'OK',
+            'results': results
+        }
+    except sqlite3.Error as er:
+        error = ' '.join(er.args)
+        log.error('get_recruiters error: %s' % (error))
+        return {
+            'status': 'ERROR',
+            'message': error
+        }
+    finally:
+        db.close_connection(conn)

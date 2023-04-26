@@ -49,7 +49,8 @@ const URLS = () => {
             return BASE_URL + 'employer/'+employerSlug+'/verifiedEmployees';
         },
         "addReviewAPI": BASE_URL + 'employer/reviews',
-        "addJobAPI": BASE_URL + 'employer/job'
+        "addJobAPI": BASE_URL + 'employer/job',
+        "recruitersAPI": BASE_URL + 'recruiters'
     };
 };
 export default URLS;

@@ -24,6 +24,8 @@ import './employer.scss';
 import { IJob } from "../../components/job/i-job.interface";
 import SalaryRangeSlider from "../../components/search/SalaryRangeSlider";
 import addJob from "../../components/job/addJob";
+import getRecruiters from "../../components/employer/getRecruiters";
+import getEmployersRecruitersMap from "../../components/employer/getEmployersRecruitersMap";
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -71,7 +73,8 @@ export default function EmployerListPage(props: any) {
             Promise.all([
                 getEmployers(),
                 getTags(),
-                getJobCountMap()
+                getJobCountMap(),
+                getRecruiters()
             ]).then((response: any) => {
                 // Employers - populate tags initially
                 let employersResults = response[0].data.results.map((e: any) => {
@@ -92,17 +95,28 @@ export default function EmployerListPage(props: any) {
                     setTags(tagResults);
 
                     getTagsEmployersList().then((tagsEmployersResponse: any) => {
+                        // Employer Tags
                         const tagsEmployersMap = getTagsEmployersMap(tagsEmployersResponse.data.results, tagResults);
                         const employersWithTags = employersResults.map((e: any) => {
                             e.tags = tagsEmployersMap[e.id] || [];
                             return e;
                         });
+                        // Job counts
                         const employersWithCounts = employersWithTags.map((e: IEmployer) => {
                             e.jobCount = response[2][e.id];
                             e.jobCountTitle = e.jobCount + (e.jobCount === 1 ? ' job' : ' jobs');
                             return e;
                         });
-                        setEmployers(employersWithCounts);
+                        // Employers/users map
+                        const employersUsersMap = getEmployersRecruitersMap(response[3].data.results);
+                        const employersWithUsers = employersWithCounts.map((e: IEmployer) => {
+                            e.userIds = [];
+                            if (typeof employersUsersMap[e.id] !== 'undefined') {
+                                e.userIds = employersUsersMap[e.id];
+                            }
+                            return e;
+                        });
+                        setEmployers(employersWithUsers);
                     });
                     
                     if (isFiltering) {
@@ -209,8 +223,14 @@ export default function EmployerListPage(props: any) {
         return titleValid && shortDescValid && salaryStartValid && salaryEndValid;
     }
 
+    function canPostJobs(recruiterIds: number[]) {
+        if (user) {
+            return recruiterIds.indexOf(user.id) !== -1;
+        }
+    }
+
     return (
-        <>            
+        <>  
             <Layout theme={props.theme} areaTitle="Employer List">
                 <Grid container>
                     <Grid item xs={12} rowSpacing={2}>
@@ -326,7 +346,7 @@ export default function EmployerListPage(props: any) {
                                             }
                                             action={
                                                 <> 
-                                                    {user ? (
+                                                    {canPostJobs((employer?.userIds || [])) ? (
                                                         <Button
                                                             variant="outlined"
                                                             startIcon={<NewspaperIcon />}

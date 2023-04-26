@@ -6,4 +6,5 @@ export default interface IEmployer {
     jobCount: number;
     jobCountTitle: string;
     website: string;
+    userIds: number[];
 };

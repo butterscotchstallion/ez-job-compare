@@ -29,3 +29,13 @@ VALUES(	'Initech',
 		"Office Space is a 1999 American black comedy film written and directed by Mike Judge. It satirizes the worklife of a typical 1990s software company, focusing on a handful of individuals weary of their jobs. It stars Ron Livingston, Jennifer Aniston, Gary Cole, Stephen Root, David Herman, Ajay Naidu, and Diedrich Bader.",
 		'initech.webp',
 		'initech.com');
+
+DROP TABLE IF EXISTS employers_users;
+CREATE TABLE employers_users(
+	id INTEGER PRIMARY KEY,
+	employer_id INTEGER,
+	user_id INTEGER,
+	created_at TEXT DEFAULT DATETIME('now', 'localtime'),
+	FOREIGN KEY(employer_id) REFERENCES employers(id),
+	FOREIGN KEY(user_id) REFERENCES users(id)
+);
