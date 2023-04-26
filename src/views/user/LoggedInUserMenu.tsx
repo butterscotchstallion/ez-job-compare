@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import destroySession from "../../components/user/destroySession";
 import UserAvatar from './UserAvatar';
+import URLS from '../../utils/urls';
 
 export default function LoggedInUserMenu({ user }: any) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -19,7 +20,7 @@ export default function LoggedInUserMenu({ user }: any) {
     };
     const onLogoutClicked = () => {
         destroySession();
-        navigate('/');
+        navigate(URLS().login);
     };
 
     return (

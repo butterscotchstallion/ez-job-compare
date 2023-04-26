@@ -26,6 +26,7 @@ import SalaryRangeSlider from "../../components/search/SalaryRangeSlider";
 import addJob from "../../components/job/addJob";
 import getRecruiters from "../../components/employer/getRecruiters";
 import getEmployersRecruitersMap from "../../components/employer/getEmployersRecruitersMap";
+import getUserRoles, { canPostJobs } from "../../components/user/getUserRoles";
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -223,9 +224,12 @@ export default function EmployerListPage(props: any) {
         return titleValid && shortDescValid && salaryStartValid && salaryEndValid;
     }
 
-    function canPostJobs(recruiterIds: number[]) {
+    function isRecruiterAndCanPostJobs(recruiterIds: number[]) {
         if (user) {
-            return recruiterIds.indexOf(user.id) !== -1;
+            const roles = getUserRoles();
+            const isRecruiter = recruiterIds.indexOf(user.id) !== -1;
+            const hasRecruiterRole = canPostJobs(roles);
+            return isRecruiter && hasRecruiterRole;
         }
     }
 
@@ -346,7 +350,7 @@ export default function EmployerListPage(props: any) {
                                             }
                                             action={
                                                 <> 
-                                                    {canPostJobs((employer?.userIds || [])) ? (
+                                                    {isRecruiterAndCanPostJobs((employer?.userIds || [])) ? (
                                                         <Button
                                                             variant="outlined"
                                                             startIcon={<NewspaperIcon />}

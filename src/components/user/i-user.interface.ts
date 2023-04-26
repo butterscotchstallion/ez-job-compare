@@ -4,4 +4,5 @@ export default interface IUser {
     avatarFilename: string;
     createdAt: string;
     updatedAt: string;
+    roles: string[];
 };

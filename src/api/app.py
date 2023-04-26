@@ -348,7 +348,8 @@ def is_session_active(token):
                 user = get_user_by_token(token)
 
                 if user:
-                    user['roles'] = get_roles_by_user_id(user['id'])
+                    role_response = get_roles_by_user_id(user['id'])
+                    user['roles'] = role_response['results']
 
                 update_session_token(token)
                 log.info('Updated existing token creation date')
