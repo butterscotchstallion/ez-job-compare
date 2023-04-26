@@ -226,9 +226,8 @@ export default function EmployerListPage(props: any) {
 
     function isRecruiterAndCanPostJobs(recruiterIds: number[]) {
         if (user) {
-            const roles = getUserRoles();
             const isRecruiter = recruiterIds.indexOf(user.id) !== -1;
-            const hasRecruiterRole = canPostJobs(roles);
+            const hasRecruiterRole = canPostJobs();
             return isRecruiter && hasRecruiterRole;
         }
     }

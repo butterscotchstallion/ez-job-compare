@@ -339,7 +339,6 @@ def is_session_active(token):
             '''
             cursor = conn.execute(query, (duration, token))
             results = db.get_list_from_rows(cursor)
-            log.info(results)
             is_active = len(results) > 0 and results[0]['activeSessions'] > 0
             log.info(results[0]['activeSessions'])
             user = None
@@ -347,12 +346,9 @@ def is_session_active(token):
                 log.info('Active session found')
                 user = get_user_by_token(token)
 
+                # Add roles
                 if user:
-                    role_response = get_roles_by_user_id(user['id'])
-                    user['roles'] = role_response['results']
-
-                update_session_token(token)
-                log.info('Updated existing token creation date')
+                    user['roles'] = get_roles_by_user_id(user['id'])
             else:
                 log.info('Inactive session found')
             return {
@@ -395,6 +391,9 @@ def user_login(username, password):
         if token:
             user = get_user_by_token(token)
 
+            # Add roles
+            if user:
+                user['roles'] = get_roles_by_user_id(user['id'])
         return {
             'status': 'OK',
             'results': [
@@ -811,10 +810,7 @@ def get_roles_by_user_id(user_id):
         cursor = conn.execute(query, (user_id,))
         results = db.get_list_from_rows(cursor)
         roles = [r['name'] for r in results]
-        return {
-            'status': 'OK',
-            'results': roles
-        }
+        return roles
     except sqlite3.Error as er:
         error = ' '.join(er.args)
         log.error('get_roles_by_user_id error: %s' % (error))

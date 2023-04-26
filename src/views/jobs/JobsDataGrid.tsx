@@ -22,6 +22,7 @@ import { getUser } from '../../components/user/userStorage';
 import formatDate from '../../utils/formatDate';
 import EmployerReview from '../reviews/EmployerReview';
 import addReview from '../../components/reviews/addReview';
+import { canPostReviews } from '../../components/user/getUserRoles';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
@@ -116,6 +117,10 @@ export default function JobsDataGrid(props: any) {
         setReviewEmployerId(job.employerId);
     }
 
+    function canPost() {
+        return canPostReviews();
+    }
+
     return (
         <Grid container spacing={3}>
             <Grid item xs={8}>
@@ -146,7 +151,7 @@ export default function JobsDataGrid(props: any) {
                             }
                             action={
                                 <div className="jobs-header-action-area">
-                                    {user ? (
+                                    {canPost() ? (
                                         <Button 
                                             variant="outlined"
                                             startIcon={<AddIcon />}

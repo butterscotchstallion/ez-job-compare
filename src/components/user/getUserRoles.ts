@@ -1,11 +1,13 @@
 import { UserRoles } from "./userRoles.enum";
 import { getUser } from "./userStorage";
 
-export function canPostJobs(roles: string[]) {
+export function canPostJobs() {
+    const roles = getUserRoles();
     return roles.indexOf(UserRoles.RECRUITER) !== -1;
 };
 
-export function canPostReviews(roles: string[]) {
+export function canPostReviews() {
+    const roles = getUserRoles();
     return roles.indexOf(UserRoles.REVIEWER) !== -1;
 };
 

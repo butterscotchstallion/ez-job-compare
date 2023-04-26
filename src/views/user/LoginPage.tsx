@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import URLS from "../../utils/urls";
 import { setToken } from "../../components/user/token";
 import { setUser } from "../../components/user/userStorage";
+import isLoggedIn from "../../components/user/isUserLoggedIn";
 
 export default function LoginPage(props: any) {
     const [loginError, setLoginError] = useState('');
@@ -45,7 +46,10 @@ export default function LoginPage(props: any) {
                 if (token) {
                     setToken(token);
                     setUser(response.data.results[0].user);
-                    navigate(URLS().jobsPage);
+                    // Checking session populates roles which are necessary
+                    isLoggedIn().then(() => {
+                        navigate(URLS().jobsPage);
+                    });                    
                 } else {
                     setLoginError('Invalid token returned from API!');
                 }
