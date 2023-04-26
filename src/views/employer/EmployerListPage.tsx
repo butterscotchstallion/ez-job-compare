@@ -4,7 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import ShareIcon from '@mui/icons-material/Share';
-import { Avatar, Badge, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, TextField, TextareaAutosize, Tooltip, Typography } from "@mui/material";
+import { Alert, Avatar, Badge, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, TextField, TextareaAutosize, Tooltip, Typography } from "@mui/material";
 import { filter, find } from "lodash";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -23,12 +23,14 @@ import Layout from "../Layout";
 import './employer.scss';
 import { IJob } from "../../components/job/i-job.interface";
 import SalaryRangeSlider from "../../components/search/SalaryRangeSlider";
+import addJob from "../../components/job/addJob";
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
     const [tags, setTags]: any = useState([]);
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMessage] = useState('');
     const [filterSlugName, setFilterSlugName] = useState('');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -166,7 +168,21 @@ export default function EmployerListPage(props: any) {
     }
 
     function handlePost(e: any) {
-        e.preventDefault();   
+        e.preventDefault();
+        setLoading(true);
+        addJob(job).then((response: any) => {
+            if (response.data.status === 'OK') {
+                setSuccessMessage('Job posted!');
+            } else {
+                setErrorMsg('Something went wrong.');
+            }
+        }, (error: any) => {
+            setErrorMsg(error.message);
+        }).finally(() => {
+            setLoading(false);
+        });
+
+        handleClose();
     }
 
     function handleChange(field: any, e: any) {
@@ -175,7 +191,7 @@ export default function EmployerListPage(props: any) {
 
         const isFormValid = isNewJobValid();
         if (isFormValid) {
-            setPostDisabled(true);
+            setPostDisabled(false);
         }
     }
 
@@ -219,6 +235,9 @@ export default function EmployerListPage(props: any) {
                         >
                         <DialogTitle>Post Job for {job.employerName}</DialogTitle>
                         <DialogContent>
+                            {errorMsg ? (
+                                <Alert severity="error">{errorMsg}</Alert>
+                            ) : ''}
                             <Grid container>
                                 <Grid item xs={6}>
                                     <div>
@@ -282,7 +301,12 @@ export default function EmployerListPage(props: any) {
                         ) : ''}
 
                         <Grid container spacing={3}>
-                            {errorMsg && <p>Error! {errorMsg}</p>}
+                            {errorMsg ? (
+                                <Alert severity="error">{errorMsg}</Alert>
+                            ) : ''}
+                            {successMsg ? (
+                                <Alert severity="success">{successMsg}</Alert>
+                            ) : ''}
 
                             {employers.map((employer: any, index: number) => (
                                 <Grid item xs={4} key={index}>
