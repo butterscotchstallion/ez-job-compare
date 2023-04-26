@@ -346,6 +346,10 @@ def is_session_active(token):
             if is_active:
                 log.info('Active session found')
                 user = get_user_by_token(token)
+
+                if user:
+                    user['roles'] = get_roles_by_user_id(user['id'])
+
                 update_session_token(token)
                 log.info('Updated existing token creation date')
             else:
@@ -777,3 +781,47 @@ def get_recruiters(user_id):
         }
     finally:
         db.close_connection(conn)
+
+@cross_origin()
+@app.route("/api/v1/user/roles", methods=['GET'])
+def roles_route():
+    token = get_token_from_header()
+    if token:
+        user = get_user_by_token(token)
+        if user:
+            return jsonify(get_roles_by_user_id(user['id']))
+        else:
+            return get_access_denied_response()
+    else:
+        return get_access_denied_response()
+
+
+def get_roles_by_user_id(user_id):
+    try:
+        conn = db.connect_db(DB_PATH)
+        query = '''
+            SELECT  r.name
+            FROM roles r
+            JOIN users_roles ur ON ur.role_id = r.id
+            LEFT JOIN users u ON u.id = ur.user_id
+            WHERE 1=1
+            AND u.id = ?
+        '''
+        cursor = conn.execute(query, (user_id,))
+        results = db.get_list_from_rows(cursor)
+        roles = [r['name'] for r in results]
+        return {
+            'status': 'OK',
+            'results': roles
+        }
+    except sqlite3.Error as er:
+        error = ' '.join(er.args)
+        log.error('get_roles_by_user_id error: %s' % (error))
+        return {
+            'status': 'ERROR',
+            'message': error
+        }
+    finally:
+        db.close_connection(conn)
+
+
