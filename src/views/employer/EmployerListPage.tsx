@@ -212,11 +212,22 @@ export default function EmployerListPage(props: any) {
     return (
         <>            
             <Layout theme={props.theme} areaTitle="Employer List">
-                {loading ? <CircularProgress /> : ''}
+                <Grid container>
+                    <Grid item xs={12} rowSpacing={2}>
+                        {loading ? <CircularProgress /> : ''}
                 
-                {isFiltering && employers && employers.length === 0 ? (
-                    <p>No results using that filter</p>
-                ) : null}
+                        {isFiltering && employers && employers.length === 0 ? (
+                            <p>No results using that filter</p>
+                        ) : null}
+
+                        {errorMsg ? (
+                            <Alert severity="error">{errorMsg}</Alert>
+                        ) : ''}
+                        {successMsg ? (
+                            <Alert severity="success">{successMsg}</Alert>
+                        ) : ''}
+                    </Grid>
+                </Grid>
 
                 <Dialog 
                     open={isOpen}
@@ -301,13 +312,6 @@ export default function EmployerListPage(props: any) {
                         ) : ''}
 
                         <Grid container spacing={3}>
-                            {errorMsg ? (
-                                <Alert severity="error">{errorMsg}</Alert>
-                            ) : ''}
-                            {successMsg ? (
-                                <Alert severity="success">{successMsg}</Alert>
-                            ) : ''}
-
                             {employers.map((employer: any, index: number) => (
                                 <Grid item xs={4} key={index}>
                                     <Card
