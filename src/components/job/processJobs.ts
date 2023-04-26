@@ -20,8 +20,8 @@ export default function processJobs(jobs: IJob[], tags: ITag[], reviewCountList:
                 return j;
             });
             const jobsWithSalaryRangeFormatted = jobsWithTags.map((j: IJob) => {
-                j.salaryRangeStart = formatMoney(Number(j.salaryRangeStart));
-                j.salaryRangeEnd = formatMoney(Number(j.salaryRangeEnd));
+                j.salaryRangeStartFormatted = formatMoney(Number(j.salaryRangeStart));
+                j.salaryRangeEndFormatted = formatMoney(Number(j.salaryRangeEnd));
                 return j;
             });
             const jobsWithReviewCounts = jobsWithSalaryRangeFormatted.map((j: IJob) => {

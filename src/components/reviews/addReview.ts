@@ -1,7 +1,5 @@
 import axios from "axios";
 import URLS from "../../utils/urls";
-import { getUser } from "../user/userStorage";
-import IUser from "../user/i-user.interface";
 import { getToken } from "../user/token";
 
 export default function addReview(employerId: number | null, body: string) {

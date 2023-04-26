@@ -2,8 +2,9 @@ import { ContentCut } from "@mui/icons-material";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
 import ShareIcon from '@mui/icons-material/Share';
-import { Avatar, Badge, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, ClickAwayListener, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Tooltip, Typography } from "@mui/material";
+import { Avatar, Badge, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, TextField, TextareaAutosize, Tooltip, Typography } from "@mui/material";
 import { filter, find } from "lodash";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -17,11 +18,11 @@ import getTags from "../../components/tag/getTags";
 import getTagsEmployersList from "../../components/tag/getTagsEmployersList";
 import getTagsEmployersMap from "../../components/tag/getTagsEmployersMap";
 import { ITag } from "../../components/tag/i-tag.interface";
-import NewspaperIcon from '@mui/icons-material/Newspaper';
+import { getUser } from "../../components/user/userStorage";
 import Layout from "../Layout";
 import './employer.scss';
-import { getUser } from "../../components/user/userStorage";
-import AddJobDialog from "../jobs/AddJobDialog";
+import { IJob } from "../../components/job/i-job.interface";
+import SalaryRangeSlider from "../../components/search/SalaryRangeSlider";
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -30,7 +31,29 @@ export default function EmployerListPage(props: any) {
     const [errorMsg, setErrorMsg] = useState('');
     const [filterSlugName, setFilterSlugName] = useState('');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [addReviewOpen, setAddReviewOpen] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [postDisabled, setPostDisabled] = useState<boolean>(true);
+    const [job, setJob] = useState<IJob>({
+        id: 0,
+        employerId: 0,
+        title: '',
+        shortDescription: '',
+        longDescription: '',
+        salaryRangeStart: 0,
+        salaryRangeEnd: 0,
+        employerName: '',
+        employerSlug: '',
+        employerWebsite: '',
+        slug: '',
+        formattedDate: '',
+        formattedDateRelative: '',
+        companySize: '',
+        reviewCount: 0,
+        location: '',
+        createdAt: '',
+        updatedAt: '',
+        tags: []
+    });
     const isSettingsMenuOpen = !!anchorEl;
     const {tagSlug} = useParams();
     const user = getUser();
@@ -131,18 +154,121 @@ export default function EmployerListPage(props: any) {
         setAnchorEl(null);
     }
 
-    function onPostJobClicked() {
-        setAddReviewOpen(true);
+    function onPostJobClicked(employer: IEmployer) {
+        job.employerId = employer.id;
+        job.employerName = employer.name;
+        setJob(job);
+        setIsOpen(true);
+    }
+
+    function handleClose() {
+        setIsOpen(false);
+    }
+
+    function handlePost(e: any) {
+        e.preventDefault();   
+    }
+
+    function handleChange(field: any, e: any) {
+        job[field] = e.target.value;
+        setJob(job);
+
+        const isFormValid = isNewJobValid();
+        if (isFormValid) {
+            setPostDisabled(true);
+        }
+    }
+
+    function onSalaryRangeChanged(range: number[]) {
+        job.salaryRangeStart = range[0];
+        job.salaryRangeEnd = range[1];
+        setJob(job);
+    }
+
+    function isNewJobValid() {
+        const titleValid = job.title.trim().length > 0;
+        const shortDescValid = job.shortDescription.trim().length > 0;
+        const salaryStartValid = job.salaryRangeStart> 0;
+        const salaryEndValid = job.salaryRangeEnd > 0;
+        return titleValid && shortDescValid && salaryStartValid && salaryEndValid;
     }
 
     return (
-        <>
-            <AddJobDialog open={addReviewOpen} />
+        <>            
             <Layout theme={props.theme} areaTitle="Employer List">
                 {loading ? <CircularProgress /> : ''}
+                
                 {isFiltering && employers && employers.length === 0 ? (
                     <p>No results using that filter</p>
                 ) : null}
+
+                <Dialog 
+                    open={isOpen}
+                    onClose={handleClose}
+                    scroll="paper"
+                    fullWidth={true}
+                    className="post-new-job-dialog">
+                    <Box
+                        component="form"
+                        sx={{
+                            '& .MuiTextField-root': { m: 1, width: '25ch' }
+                        }}
+                        noValidate
+                        autoComplete="off"
+                        onSubmit={handlePost}
+                        >
+                        <DialogTitle>Post Job for {job.employerName}</DialogTitle>
+                        <DialogContent>
+                            <Grid container>
+                                <Grid item xs={6}>
+                                    <div>
+                                        <TextField
+                                            id="outlined-error"
+                                            label="Title"
+                                            required
+                                            fullWidth
+                                            onChange={(e) => handleChange('title', e)}
+                                            />
+                                    </div>
+                                    <div>
+                                        <TextField
+                                            id="outlined-multiline-static"
+                                            label="Short description"
+                                            multiline
+                                            className="new-job-post-descriptions"
+                                            rows={4}
+                                            required
+                                            fullWidth
+                                            onChange={(e) => handleChange('shortDescription', e)}
+                                            />
+                                    </div>
+                                    <div>
+                                        <TextField
+                                            id="outlined-error"
+                                            label="Location"
+                                            fullWidth
+                                            onChange={(e) => handleChange('location', e)}
+                                            />
+                                    </div>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <div>
+                                        <label>Salary range</label>
+                                        <SalaryRangeSlider onChange={onSalaryRangeChanged} />
+                                    </div>
+                                </Grid>
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose} variant="outlined">Cancel</Button>
+                            <Button 
+                                onClick={handlePost}
+                                disabled={postDisabled}
+                                variant="outlined">Post</Button>
+                        </DialogActions>
+                    </Box>
+                </Dialog>
+
                 {employers ? (
                     <>                    
                         {filterSlugName ? (
@@ -177,7 +303,7 @@ export default function EmployerListPage(props: any) {
                                                             variant="outlined"
                                                             startIcon={<NewspaperIcon />}
                                                             className="post-new-job-button"
-                                                            onClick={onPostJobClicked}
+                                                            onClick={() => onPostJobClicked(employer) }
                                                             >
                                                             Post Job
                                                         </Button>

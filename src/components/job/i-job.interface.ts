@@ -1,12 +1,13 @@
 import { ITag } from "../tag/i-tag.interface";
 
 export interface IJob {
+    [index: string]: any;
     id: number;
     title: string;
     shortDescription: string;
     longDescription: string;
-    salaryRangeStart: number | string;
-    salaryRangeEnd: number | string;
+    salaryRangeStart: number;
+    salaryRangeEnd: number;
     employerName: string;
     employerSlug: string;
     location: string;

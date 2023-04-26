@@ -204,9 +204,9 @@ export default function JobsDataGrid(props: any) {
                                                     </TableCell>
                                                     <TableCell>
                                                         {isFilteringBySalary ? (
-                                                                <mark>{job.salaryRangeStart} - {job.salaryRangeEnd}</mark>
+                                                                <mark>{job.salaryRangeStartFormatted} - {job.salaryRangeEndFormatted}</mark>
                                                             ) : 
-                                                                <>{job.salaryRangeStart} - {job.salaryRangeEnd}</>
+                                                                <>{job.salaryRangeStartFormatted} - {job.salaryRangeEndFormatted}</>
                                                         }
                                                     </TableCell>
                                                 </TableRow>                                                
