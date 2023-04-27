@@ -20,7 +20,6 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 db = DbUtils()
-pw_utils = PasswordUtils()
 
 
 @app.errorhandler(HTTPException)
@@ -313,66 +312,9 @@ def user_login_route():
 @app.route("/api/v1/user/session", methods=['GET'])
 def user_session_route():
     token = db.get_token_from_header()
+    user_model = User()
     log.info('Checking token: {}'.format(token))
-    return jsonify(is_session_active(token))
-
-
-
-
-def is_session_active(token):
-    '''Checks if session exists in the last day'''
-    if token:
-        try:            
-            conn = db.connect_db()
-            duration = db.get_duration_clause()
-            query = '''
-                SELECT COUNT(*) as activeSessions
-                FROM user_tokens
-                WHERE 1=1
-                AND created_at >= DATETIME('now', 'localtime', ?)
-                AND token = ?
-            '''
-            cursor = conn.execute(query, (duration, token))
-            results = db.get_list_from_rows(cursor)
-            is_active = len(results) > 0 and results[0]['activeSessions'] > 0
-            user = None
-            if is_active:
-                log.info('Active session found')
-                user_model = User()
-                user = user_model.get_user_by_token(token)
-
-                # Add roles
-                if user:
-                    role = Role()
-                    user['roles'] = role.get_roles_by_user_id(user['id'])
-            else:
-                log.info('Inactive session found')
-            return {
-                'status': 'OK',
-                'results': [
-                    {
-                        'active': is_active,
-                        'user': user
-                    }
-                ]
-            }
-        except sqlite3.Error as er:
-            log.error('is_session_active error: %s' % (' '.join(er.args)))
-            return {
-                'status': 'ERROR',
-                'message': 'Error checking session'
-            }
-        finally:
-            db.close_connection(conn)
-    else:
-        return {
-            'status': 'ERROR',
-            'results': [
-                {
-                    'active': false
-                }
-            ]
-        }
+    return jsonify(user_model.is_session_active(token))
 
 
 def user_login(username, password):
@@ -407,7 +349,6 @@ def user_login(username, password):
             'status': 'ERROR',
             'message': 'Invalid credentials'
         }
-
 
 
 # Reviews
@@ -599,8 +540,14 @@ def add_job_route():
                         location)
                     VALUES(?, ?, ?, ?, ?, ?)
                 '''
-                params = (req_json['title'], req_json['shortDescription'], req_json['salaryRangeStart'],
-                          req_json['salaryRangeEnd'], req_json['employerId'], req_json['location'])
+                params = (
+                    req_json['title'],
+                    req_json['shortDescription'],
+                    req_json['salaryRangeStart'],
+                    req_json['salaryRangeEnd'],
+                    req_json['employerId'],
+                    req_json['location']
+                )
                 cursor = conn.execute(query, params)
                 conn.commit()
                 return {
@@ -658,6 +605,7 @@ def get_recruiters(user_id):
     finally:
         db.close_connection(conn)
 
+
 @cross_origin()
 @app.route("/api/v1/user/roles", methods=['GET'])
 def roles_route():
@@ -672,8 +620,3 @@ def roles_route():
             return get_access_denied_response()
     else:
         return get_access_denied_response()
-
-
-
-
-
