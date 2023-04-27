@@ -10,6 +10,7 @@ from flask_cors import CORS, cross_origin
 from util import DbUtils
 from util import PasswordUtils
 from models.user import User
+from models.employer import Employer
 from util import SecurityUtils
 
 
@@ -22,6 +23,8 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 db = DbUtils()
 security_utils = SecurityUtils()
 user_model = User()
+employer_model = Employer()
+
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
@@ -48,46 +51,14 @@ def handle_exception(e):
 @cross_origin()
 @app.route("/api/v1/employers", methods=['GET'])
 def list_employers():
-    return jsonify(get_employers())
+    return jsonify(employer_model.get_employers())
 
 
 @cross_origin()
 @app.route("/api/v1/employer/<slug>", methods=['GET'])
 def get_employer_by_slug_route(slug):
-    return jsonify(get_employers(slug))
+    return jsonify(employer_model.get_employers(slug))
 
-
-def get_employers(slug=None):
-    try:
-        conn = db.connect_db()
-        params = ()
-        where_and_order_clause = '''
-            ORDER BY e.name
-        '''
-        if slug is not None:
-            params = (slug,)
-            where_and_order_clause = '''
-                WHERE e.slug = ?
-            '''
-        query = '''
-            SELECT  e.id,
-                    e.name,
-                    e.image,
-                    e.description,
-                    es.name AS companySize
-            FROM employers e
-            JOIN employer_sizes es ON es.id = e.employer_size_id
-        ''' + where_and_order_clause
-        cursor = conn.execute(query, params)
-        results = db.get_list_from_rows(cursor)
-        return {
-            'status': 'OK',
-            'results': results
-        }
-    except sqlite3.Error as er:
-        log.error('get_employers error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
 
 # Tags
 
@@ -404,22 +375,32 @@ def get_employer_reviews(slug):
 @cross_origin()
 @app.route("/api/v1/employer/reviewCountList", methods=['GET'])
 def employer_review_count_list_route():
-    return jsonify(get_employer_review_counts())
+    user_id = request.args.get('userId')
+    return jsonify(get_employer_review_counts(user_id))
 
 
-def get_employer_review_counts():
+def get_employer_review_counts(user_id=None):
     '''Retrieves list of review counts for each employer'''
     try:
         conn = db.connect_db()
+        params = ()
+
+        if user_id:
+            user_id_where_clause = ' AND r.user_id = ? '
+            params = (user_id,)
+
         query = '''
             SELECT  employer_id AS employerId,
+                    e.name AS employerName,
                     COUNT(*) AS reviewCount
             FROM reviews r
+            JOIN employers e ON e.id = r.employer_id
             WHERE 1=1
             AND r.active = 1
+            ''' + user_id_where_clause + '''
             GROUP BY employer_id
         '''
-        cursor = conn.execute(query)
+        cursor = conn.execute(query, params)
         results = db.get_list_from_rows(cursor)
         return {
             'status': 'OK',
