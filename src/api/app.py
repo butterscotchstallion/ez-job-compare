@@ -9,6 +9,7 @@ import json
 from flask_cors import CORS, cross_origin
 from util import DbUtils
 from util import PasswordUtils
+from models.role import Role
 
 log.basicConfig(level=log.INFO)
 
@@ -328,6 +329,7 @@ def is_session_active(token):
     '''Checks if session exists in the last day'''
     if token:
         try:
+            role = Role()
             conn = db.connect_db(DB_PATH)
             duration = get_duration_clause()
             query = '''
@@ -340,7 +342,6 @@ def is_session_active(token):
             cursor = conn.execute(query, (duration, token))
             results = db.get_list_from_rows(cursor)
             is_active = len(results) > 0 and results[0]['activeSessions'] > 0
-            log.info(results[0]['activeSessions'])
             user = None
             if is_active:
                 log.info('Active session found')
@@ -348,7 +349,7 @@ def is_session_active(token):
 
                 # Add roles
                 if user:
-                    user['roles'] = get_roles_by_user_id(user['id'])
+                    user['roles'] = role.get_roles_by_user_id(user['id'])
             else:
                 log.info('Inactive session found')
             return {
@@ -393,7 +394,8 @@ def user_login(username, password):
 
             # Add roles
             if user:
-                user['roles'] = get_roles_by_user_id(user['id'])
+                role = Role()
+                user['roles'] = role.get_roles_by_user_id(user['id'])
         return {
             'status': 'OK',
             'results': [
@@ -789,36 +791,14 @@ def roles_route():
     if token:
         user = get_user_by_token(token)
         if user:
-            return jsonify(get_roles_by_user_id(user['id']))
+            role = Role()
+            return jsonify(role.get_roles_by_user_id(user['id']))
         else:
             return get_access_denied_response()
     else:
         return get_access_denied_response()
 
 
-def get_roles_by_user_id(user_id):
-    try:
-        conn = db.connect_db(DB_PATH)
-        query = '''
-            SELECT  r.name
-            FROM roles r
-            JOIN users_roles ur ON ur.role_id = r.id
-            LEFT JOIN users u ON u.id = ur.user_id
-            WHERE 1=1
-            AND u.id = ?
-        '''
-        cursor = conn.execute(query, (user_id,))
-        results = db.get_list_from_rows(cursor)
-        roles = [r['name'] for r in results]
-        return roles
-    except sqlite3.Error as er:
-        error = ' '.join(er.args)
-        log.error('get_roles_by_user_id error: %s' % (error))
-        return {
-            'status': 'ERROR',
-            'message': error
-        }
-    finally:
-        db.close_connection(conn)
+
 
 

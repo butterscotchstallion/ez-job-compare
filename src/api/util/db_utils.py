@@ -3,7 +3,7 @@ import logging as log
 
 class DbUtils:
 
-    def connect_db(self, dbPath):
+    def connect_db(self, dbPath = 'database.db'):
         try:
             with sqlite3.connect(dbPath) as conn:
                 if conn:
