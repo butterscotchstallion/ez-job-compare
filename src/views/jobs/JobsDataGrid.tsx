@@ -15,14 +15,14 @@ import ReactTimeAgo from 'react-time-ago';
 import getVerifiedEmployees from '../../components/employer/getVerifiedEmployees';
 import getVerifiedEmployeesMap, { IVerifiedEmployeesMap } from '../../components/employer/getVerifiedEmployeesMap';
 import { IJob } from '../../components/job/i-job.interface';
+import addReview from '../../components/reviews/addReview';
 import getReviewsByEmployerSlug from '../../components/reviews/getReviewsByEmployerSlug';
 import { IReview } from '../../components/reviews/i-review.interface';
 import TagList from '../../components/tag/TagList';
+import { canPostReviews } from '../../components/user/getUserRoles';
 import { getUser } from '../../components/user/userStorage';
 import formatDate from '../../utils/formatDate';
 import EmployerReview from '../reviews/EmployerReview';
-import addReview from '../../components/reviews/addReview';
-import { canPostReviews } from '../../components/user/getUserRoles';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
@@ -43,7 +43,6 @@ export default function JobsDataGrid(props: any) {
     const [loading, setLoading] = useState<boolean>(false);
     const [reviewFormValid, setReviewFormValid] = useState<boolean>(false);
     const [addReviewError, setAddReviewError] = useState<string>('');
-    const user = getUser();
 
     useEffect(() => {
         if (isOpen) {

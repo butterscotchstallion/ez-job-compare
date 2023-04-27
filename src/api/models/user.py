@@ -188,13 +188,16 @@ class User:
         finally:
             db.close_connection(conn)
 
-    def get_user_with_roles(self):
+    def get_user_from_token_header(self):
         token = db.get_token_from_header()
         if token:
-            user = self.get_user_by_token(token)
-            if user:
-                user['roles'] = self.get_roles_by_user_id(user['id'])
-                return user
+            return self.get_user_by_token(token)
+
+    def get_user_with_roles(self):
+        user = self.get_user_from_token_header()
+        if user:
+            user['roles'] = self.get_roles_by_user_id(user['id'])
+            return user
 
     def get_roles_by_user_id(self, user_id):
         try:
@@ -235,7 +238,7 @@ class User:
         else:
             return False
 
-    def is_recruiter(self, roles):
+    def is_recruiter(self):
         user = self.get_user_with_roles()
         if user:
             has_role = self.has_role('Recruiter', user['roles'])

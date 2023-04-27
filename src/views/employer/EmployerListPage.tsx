@@ -4,13 +4,18 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import ShareIcon from '@mui/icons-material/Share';
-import { Alert, Avatar, Badge, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, TextField, TextareaAutosize, Tooltip, Typography } from "@mui/material";
+import { Alert, Avatar, Badge, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, TextField, Tooltip, Typography } from "@mui/material";
 import { filter, find } from "lodash";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import getEmployers from "../../components/employer/getEmployers";
+import getEmployersRecruitersMap from "../../components/employer/getEmployersRecruitersMap";
+import getRecruiters from "../../components/employer/getRecruiters";
 import IEmployer from "../../components/employer/i-employer.interface";
+import addJob from "../../components/job/addJob";
 import getJobCountMap from "../../components/job/getJobCountMap";
+import { IJob } from "../../components/job/i-job.interface";
+import SalaryRangeSlider from "../../components/search/SalaryRangeSlider";
 import TagFilterList from "../../components/tag/TagFilterList";
 import TagList from "../../components/tag/TagList";
 import getTagSlugMap from "../../components/tag/getTagSlugMap";
@@ -18,15 +23,10 @@ import getTags from "../../components/tag/getTags";
 import getTagsEmployersList from "../../components/tag/getTagsEmployersList";
 import getTagsEmployersMap from "../../components/tag/getTagsEmployersMap";
 import { ITag } from "../../components/tag/i-tag.interface";
+import { canPostJobs } from "../../components/user/getUserRoles";
 import { getUser } from "../../components/user/userStorage";
 import Layout from "../Layout";
 import './employer.scss';
-import { IJob } from "../../components/job/i-job.interface";
-import SalaryRangeSlider from "../../components/search/SalaryRangeSlider";
-import addJob from "../../components/job/addJob";
-import getRecruiters from "../../components/employer/getRecruiters";
-import getEmployersRecruitersMap from "../../components/employer/getEmployersRecruitersMap";
-import getUserRoles, { canPostJobs } from "../../components/user/getUserRoles";
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -188,6 +188,7 @@ export default function EmployerListPage(props: any) {
         addJob(job).then((response: any) => {
             if (response.data.status === 'OK') {
                 setSuccessMessage('Job posted!');
+                handleClose();
             } else {
                 setErrorMsg('Something went wrong.');
             }
@@ -196,8 +197,6 @@ export default function EmployerListPage(props: any) {
         }).finally(() => {
             setLoading(false);
         });
-
-        handleClose();
     }
 
     function handleChange(field: any, e: any) {

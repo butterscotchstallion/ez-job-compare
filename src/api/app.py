@@ -462,7 +462,12 @@ def get_verified_employees(slug):
             'results': results
         }
     except sqlite3.Error as er:
-        log.error('get_verified_employees error: %s' % (' '.join(er.args)))
+        error = ' '.join(er.args)
+        log.error('get_verified_employees error: %s' % (error))
+        return {
+            'status': 'ERROR',
+            'message': error
+        }
     finally:
         db.close_connection(conn)
 
@@ -506,64 +511,50 @@ def add_employer_review(employer_id, body):
 @cross_origin()
 @app.route("/api/v1/employer/job", methods=['POST'])
 def add_job_route():
-    token = db.get_token_from_header()
-    user = None
+    user = user_model.is_recruiter()
 
-    if token:
-        user = user_model.get_user_by_token(token)
-
-        if user is not None:
+    if user:
+        try:
             req_json = request.json
-            try:
-                conn = db.connect_db()
-                query = '''
-                    INSERT INTO jobs(
-                        title, 
-                        short_description,
-                        salary_range_start,
-                        salary_range_end,
-                        employer_id,
-                        location)
-                    VALUES(?, ?, ?, ?, ?, ?)
-                '''
-                params = (
-                    req_json['title'],
-                    req_json['shortDescription'],
-                    req_json['salaryRangeStart'],
-                    req_json['salaryRangeEnd'],
-                    req_json['employerId'],
-                    req_json['location']
-                )
-                cursor = conn.execute(query, params)
-                conn.commit()
-                return {
-                    'status': 'OK'
-                }
-            except sqlite3.Error as er:
-                log.error('add_job_route error: %s' % (' '.join(er.args)))
-            finally:
-                db.close_connection(conn)
-        else:
-            log.error('Could not find user with token')
-            return security_utils.get_access_denied_response()
+            conn = db.connect_db()
+            query = '''
+                INSERT INTO jobs(
+                    title, 
+                    short_description,
+                    salary_range_start,
+                    salary_range_end,
+                    employer_id,
+                    location)
+                VALUES(?, ?, ?, ?, ?, ?)
+            '''
+            params = (
+                req_json['title'],
+                req_json['shortDescription'],
+                req_json['salaryRangeStart'],
+                req_json['salaryRangeEnd'],
+                req_json['employerId'],
+                req_json['location']
+            )
+            cursor = conn.execute(query, params)
+            conn.commit()
+            return {
+                'status': 'OK'
+            }
+        except sqlite3.Error as er:
+            log.error('add_job_route error: %s' % (' '.join(er.args)))
+        finally:
+            db.close_connection(conn)
     else:
-        log.error('No token supplied')
         return security_utils.get_access_denied_response()
-
 
 @cross_origin()
 @app.route("/api/v1/recruiters", methods=['GET'])
 def recruiters_route():
-    token = db.get_token_from_header()
-    if token:
-        user = user_model.get_user_by_token(token)
-        if user:
-            return jsonify(get_recruiters(user['id']))
-        else:
-            return security_utils.get_access_denied_response()
+    user = user_model.get_user_from_token_header()
+    if user:
+        return jsonify(get_recruiters(user['id']))
     else:
         return security_utils.get_access_denied_response()
-
 
 def get_recruiters(user_id):
     try:
@@ -590,17 +581,3 @@ def get_recruiters(user_id):
     finally:
         db.close_connection(conn)
 
-
-@cross_origin()
-@app.route("/api/v1/user/roles", methods=['GET'])
-def roles_route():
-    token = db.get_token_from_header()
-    if token:
-        user = user_model.get_user_by_token(token)
-        if user:
-            role = Role()
-            return jsonify(role.get_roles_by_user_id(user['id']))
-        else:
-            return security_utils.get_access_denied_response()
-    else:
-        return security_utils.get_access_denied_response()
