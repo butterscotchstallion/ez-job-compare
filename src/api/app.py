@@ -10,6 +10,8 @@ from flask_cors import CORS, cross_origin
 from util import DbUtils
 from util import PasswordUtils
 from models.role import Role
+from models.user import User
+
 
 log.basicConfig(level=log.INFO)
 
@@ -19,8 +21,6 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 db = DbUtils()
 pw_utils = PasswordUtils()
-DB_PATH = 'database.db'
-SESSION_DURATION = '-7 day'
 
 
 @app.errorhandler(HTTPException)
@@ -65,7 +65,7 @@ def get_employer_by_slug_route(slug):
 
 def get_employers(slug=None):
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         params = ()
         where_and_order_clause = '''
             ORDER BY e.name
@@ -106,7 +106,7 @@ def list_tags():
 
 def get_tags():
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         query = '''
             SELECT  t.id,
                     t.name,
@@ -137,7 +137,7 @@ def list_employer_tags_map():
 
 def get_employers_tags():
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         query = '''
             SELECT  et.employer_id AS employerId,
                     et.tag_id AS tagId
@@ -174,7 +174,7 @@ def list_jobs():
 
 def get_jobs(**kwargs):
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         queryClause = ''
         params = []
         tagJoinClause = ''
@@ -247,7 +247,7 @@ def list_jobs_tags_map():
 
 def get_jobs_tags():
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         query = '''
             SELECT  jt.job_id AS jobId,
                     jt.tag_id AS tagId
@@ -277,7 +277,7 @@ def list_job_count():
 
 def get_job_count():
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         query = '''
             SELECT  e.id AS employerId,
                     e.name AS employerName,
@@ -312,26 +312,19 @@ def user_login_route():
 @cross_origin()
 @app.route("/api/v1/user/session", methods=['GET'])
 def user_session_route():
-    token = get_token_from_header()
+    token = db.get_token_from_header()
     log.info('Checking token: {}'.format(token))
     return jsonify(is_session_active(token))
 
 
-def get_token_from_header():
-    return request.headers.get('x-ezjobcompare-session-token')
-
-
-def get_duration_clause():
-    return '{}'.format(SESSION_DURATION)
 
 
 def is_session_active(token):
     '''Checks if session exists in the last day'''
     if token:
-        try:
-            role = Role()
-            conn = db.connect_db(DB_PATH)
-            duration = get_duration_clause()
+        try:            
+            conn = db.connect_db()
+            duration = db.get_duration_clause()
             query = '''
                 SELECT COUNT(*) as activeSessions
                 FROM user_tokens
@@ -345,10 +338,12 @@ def is_session_active(token):
             user = None
             if is_active:
                 log.info('Active session found')
-                user = get_user_by_token(token)
+                user_model = User()
+                user = user_model.get_user_by_token(token)
 
                 # Add roles
                 if user:
+                    role = Role()
                     user['roles'] = role.get_roles_by_user_id(user['id'])
             else:
                 log.info('Inactive session found')
@@ -386,11 +381,12 @@ def user_login(username, password):
     2. Check if a session token exists already that we can update
     3. Create session token if not
     '''
-    if check_credentials(username, password):
-        token = get_or_create_session_token(username)
+    user_model = User()
+    if user_model.check_credentials(username, password):
+        token = user_model.get_or_create_session_token(username)
         user = None
         if token:
-            user = get_user_by_token(token)
+            user = user_model.get_user_by_token(token)
 
             # Add roles
             if user:
@@ -413,131 +409,6 @@ def user_login(username, password):
         }
 
 
-def check_credentials(username, password):
-    '''Checks if supplied username and password matches'''
-    try:
-        conn = db.connect_db(DB_PATH)
-        query = '''
-            SELECT password
-            FROM users
-            WHERE name = ?
-        '''
-        cursor = conn.execute(query, (username,))
-        results = db.get_list_from_rows(cursor)
-
-        if results:
-            hashed_pw = results[0]['password']
-            return pw_utils.check_password(password, hashed_pw)
-        else:
-            log.info('No results for password with username {}'.format(username))
-            return False
-    except sqlite3.Error as er:
-        log.error('check_credentials error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
-
-
-def get_user_by_token(token):
-    '''Retrieve user info based on session token'''
-    try:
-        conn = db.connect_db(DB_PATH)
-        query = '''
-            SELECT  u.id,
-                    u.name,
-                    u.avatar_filename AS avatarFilename,
-                    u.created_at AS createdAt,
-                    u.updated_at AS updatedAt
-            FROM users u
-            JOIN user_tokens ut ON ut.user_id = u.id
-            WHERE u.active = 1
-            AND ut.token = ?
-        '''
-        cursor = conn.execute(query, (token,))
-        results = db.get_list_from_rows(cursor)
-        if results:
-            return results[0]
-    except sqlite3.Error as er:
-        log.error('check_credentials error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
-
-
-def get_or_create_session_token(username):
-    '''Returns session token if exists, creates if not'''
-    try:
-        conn = db.connect_db(DB_PATH)
-        query = '''
-            SELECT  ut.token
-            FROM user_tokens ut
-            JOIN users u ON u.id = ut.user_id
-            WHERE 1=1
-            AND u.name = ?
-            AND u.active = 1
-            AND ut.created_at > DATE('now', 'localtime', ?)
-        '''
-        duration = get_duration_clause()
-        cursor = conn.execute(query, (username, duration))
-        results = db.get_list_from_rows(cursor)
-        if results:
-            token = results[0]['token']
-            log.info('Found existing token for user {}: {}'.format(
-                username, token))
-            return token
-        else:
-            user_id = get_user_id_by_username(username)
-            if user_id:
-                token = pw_utils.generate_password(255)
-                query = '''
-                    REPLACE INTO user_tokens(user_id, token, created_at)
-                    VALUES(?, ?, DATE('now', 'localtime'))
-                '''
-                cursor = conn.execute(query, (user_id, token))
-                conn.commit()
-                log.info('Created new token for user {}:{}'.format(
-                    username, token))
-                return token
-            else:
-                log.error('Failed to get user id for user {}'.format(username))
-    except sqlite3.Error as er:
-        log.error('get_login_token_by_user_id error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
-
-
-def get_user_id_by_username(username):
-    try:
-        conn = db.connect_db(DB_PATH)
-        query = '''
-            SELECT id
-            FROM users
-            WHERE name = ?
-        '''
-        cursor = conn.execute(query, (username,))
-        results = db.get_list_from_rows(cursor)
-        if results:
-            return results[0]['id']
-    except sqlite3.Error as er:
-        log.error('get_user_id_by_username error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
-
-
-def update_session_token(token):
-    try:
-        conn = db.connect_db(DB_PATH)
-        query = '''
-            UPDATE user_tokens
-            SET updated_at = DATETIME('now', 'localtime'),
-            created_at = DATETIME('now', 'localtime')
-            WHERE token = ?
-        '''
-        cursor = conn.execute(query, (token,))
-        conn.commit()
-        return True
-    except sqlite3.Error as er:
-        log.error('update_session_token error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
 
 # Reviews
 
@@ -550,7 +421,7 @@ def employer_reviews_route(slug):
 
 def get_employer_id_by_slug(slug):
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         query = '''
             SELECT  e.id
             FROM employers e 
@@ -568,7 +439,7 @@ def get_employer_id_by_slug(slug):
 
 def get_employer_reviews(slug):
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         employer_id = get_employer_id_by_slug(slug)
         results = []
         if employer_id:
@@ -606,7 +477,7 @@ def employer_review_count_list_route():
 def get_employer_review_counts():
     '''Retrieves list of review counts for each employer'''
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         query = '''
             SELECT  employer_id AS employerId,
                     COUNT(*) AS reviewCount
@@ -635,7 +506,7 @@ def verified_employees_route(slug):
 
 def get_verified_employees(slug):
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         query = '''
             SELECT  ve.start_date AS startDate,
                     ve.end_date AS endDate,
@@ -673,14 +544,15 @@ def add_employer_review_route():
 
 
 def add_employer_review(employer_id, body):
-    token = get_token_from_header()
+    token = db.get_token_from_header()
     user = None
 
     if token:
-        user = get_user_by_token(token)
+        user_model = User()
+        user = user_model.get_user_by_token(token)
         if user:
             try:
-                conn = db.connect_db(DB_PATH)
+                conn = db.connect_db()
                 query = '''
                     INSERT INTO reviews(user_id, employer_id, body)
                     VALUES(?, ? , ?)
@@ -706,16 +578,17 @@ def add_employer_review(employer_id, body):
 @cross_origin()
 @app.route("/api/v1/employer/job", methods=['POST'])
 def add_job_route():
-    token = get_token_from_header()
+    token = db.get_token_from_header()
     user = None
 
     if token:
-        user = get_user_by_token(token)
+        user_model = User()
+        user = user_model.get_user_by_token(token)
 
         if user is not None:
             req_json = request.json
             try:
-                conn = db.connect_db(DB_PATH)
+                conn = db.connect_db()
                 query = '''
                     INSERT INTO jobs(
                         title, 
@@ -748,9 +621,10 @@ def add_job_route():
 @cross_origin()
 @app.route("/api/v1/recruiters", methods=['GET'])
 def recruiters_route():
-    token = get_token_from_header()
+    token = db.get_token_from_header()
     if token:
-        user = get_user_by_token(token)
+        user_model = User()
+        user = user_model.get_user_by_token(token)
         if user:
             return jsonify(get_recruiters(user['id']))
         else:
@@ -761,7 +635,7 @@ def recruiters_route():
 
 def get_recruiters(user_id):
     try:
-        conn = db.connect_db(DB_PATH)
+        conn = db.connect_db()
         query = '''
             SELECT  eu.user_id AS userId,
                     eu.employer_id AS employerId
@@ -787,9 +661,10 @@ def get_recruiters(user_id):
 @cross_origin()
 @app.route("/api/v1/user/roles", methods=['GET'])
 def roles_route():
-    token = get_token_from_header()
+    token = db.get_token_from_header()
     if token:
-        user = get_user_by_token(token)
+        user_model = User()
+        user = user_model.get_user_by_token(token)
         if user:
             role = Role()
             return jsonify(role.get_roles_by_user_id(user['id']))

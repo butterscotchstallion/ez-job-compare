@@ -1,5 +1,8 @@
 import sqlite3
 import logging as log
+from flask import request
+
+SESSION_DURATION = '-7 day'
 
 class DbUtils:
 
@@ -32,3 +35,9 @@ class DbUtils:
             log.error('Error in get_list_from_rows')
         finally:
             return results
+
+    def get_duration_clause(self):
+        return '{}'.format(SESSION_DURATION)
+
+    def get_token_from_header(self):
+        return request.headers.get('x-ezjobcompare-session-token')
