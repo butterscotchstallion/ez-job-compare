@@ -211,9 +211,7 @@ class User:
                 AND u.id = ?
             '''
             cursor = conn.execute(query, (user_id,))
-            results = db.get_list_from_rows(cursor)
-            roles = [r['name'] for r in results]
-            return roles
+            return db.get_list_from_rows(cursor)
         except sqlite3.Error as er:
             error = ' '.join(er.args)
             log.error('get_roles_by_user_id error: %s' % (error))
@@ -225,7 +223,9 @@ class User:
             db.close_connection(conn)
 
     def has_role(self, role, roles):
-        return role in roles
+        for r in roles:
+            if r.name == role:
+                return True
 
     def is_reviewer(self):
         '''Returns user object if true'''

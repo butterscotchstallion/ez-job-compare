@@ -1,23 +1,29 @@
+import { IRole } from "../../views/user/i-role.interface";
 import { UserRoles } from "./userRoles.enum";
 import { getUser } from "./userStorage";
 
+function hasRole(roleName: string) {
+    const roles: IRole[] = getUserRoles();
+    for (let r of roles) {
+        if (r.name === roleName) {
+            return true;
+        }
+    }
+}
+
 export function canPostJobs() {
-    const roles = getUserRoles();
-    return roles.indexOf(UserRoles.RECRUITER) !== -1;
+    return hasRole(UserRoles.RECRUITER);
 };
 
 export function canPostReviews() {
-    const roles = getUserRoles();
-    return roles.indexOf(UserRoles.REVIEWER) !== -1;
+    return hasRole(UserRoles.REVIEWER);
 };
 
-export default function getUserRoles(): string[] {
-    let roles: string[] = [];
+export default function getUserRoles(): IRole[] {
+    let roles: IRole[] = [];
     const user = getUser();
-
     if (user) {
         return user.roles;
     }
-
     return roles;
 };

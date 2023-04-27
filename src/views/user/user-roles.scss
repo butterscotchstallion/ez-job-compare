@@ -1,0 +1,10 @@
+.user-roles-wrapper {
+    margin-top: .5rem;
+
+    .MuiChip-root {
+        margin-right: .5rem;
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}

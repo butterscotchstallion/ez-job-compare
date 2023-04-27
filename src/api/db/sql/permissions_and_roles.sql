@@ -1,31 +1,33 @@
 DROP TABLE IF EXISTS roles;
 CREATE TABLE roles (
-	id INTEGER PRIMARY KEY,
-	name VARCHAR(50),
-	created_at TEXT DEFAULT((DATETIME('now', 'localtime')))
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50),
+    created_at TEXT DEFAULT((DATETIME('now', 'localtime'))),
+    color VARCHAR(50),
+    icon VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS permissions;
 CREATE TABLE permissions (
-	id INTEGER PRIMARY KEY,
-	name VARCHAR(50)
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS roles_permissions;
 CREATE TABLE roles_permissions (
-	id INTEGER PRIMARY KEY,
-	role_id INTEGER,
-	permission_id INTEGER,
-	created_at TEXT DEFAULT((DATETIME('now', 'localtime'))),
-	updated_at TEXT
+    id INTEGER PRIMARY KEY,
+    role_id INTEGER,
+    permission_id INTEGER,
+    created_at TEXT DEFAULT((DATETIME('now', 'localtime'))),
+    updated_at TEXT
 );
 
 DROP TABLE IF EXISTS users_roles;
 CREATE TABLE users_roles(
-	id INTEGER PRIMARY KEY,
-	role_id INTEGER,
-	user_id INTEGER,
-	created_at TEXT DEFAULT((DATETIME('now', 'localtime')))
+    id INTEGER PRIMARY KEY,
+    role_id INTEGER,
+    user_id INTEGER,
+    created_at TEXT DEFAULT((DATETIME('now', 'localtime')))
 );
 
 -- Default roles/permissions
