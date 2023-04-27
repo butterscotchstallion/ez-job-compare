@@ -1,12 +1,13 @@
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import destroySession from "../../components/user/destroySession";
 import URLS from '../../utils/urls';
 import UserAvatar from './UserAvatar';
 import UserProfile from './UserProfile';
+import './logged-in-user-menu.scss';
 
 export default function LoggedInUserMenu({ user }: any) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -19,6 +20,7 @@ export default function LoggedInUserMenu({ user }: any) {
     };
     const onProfileMenuItemClicked = (e: any) => {
         setProfileModalOpen(true);
+        setMenuOpen(false);
     };
     const onClose = () => {
         setMenuOpen(false);
@@ -70,7 +72,7 @@ export default function LoggedInUserMenu({ user }: any) {
                 <UserAvatar user={user} title={"Logged in as "+user.name} />
             </Button>
             <Menu
-                id="user-menu"
+                className="logged-in-user-menu"
                 anchorEl={anchorEl}
                 open={isMenuOpen}
                 onClose={onClose}
@@ -84,6 +86,9 @@ export default function LoggedInUserMenu({ user }: any) {
                     </ListItemIcon>
                     <ListItemText>Profile</ListItemText>    
                 </MenuItem>
+                
+                <Divider />
+
                 <MenuItem onClick={onLogoutClicked}>
                     <ListItemIcon>
                         <LogoutIcon fontSize="small" />
