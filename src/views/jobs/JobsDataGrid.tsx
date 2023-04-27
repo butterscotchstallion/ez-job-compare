@@ -72,6 +72,8 @@ export default function JobsDataGrid(props: any) {
             } else {
                 setAddReviewError(response.data.message);
             }            
+        }, (error: any) => {
+            setAddReviewError(error.message)
         }).finally(() => {
             setLoading(false);
         });

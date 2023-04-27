@@ -1,16 +1,16 @@
-from flask import Flask
-from flask import Flask, jsonify, request
-from werkzeug.exceptions import HTTPException
 import sqlite3
 import logging as log
 import sys
 import traceback
 import json
+from flask import Flask
+from flask import Flask, jsonify, request
+from werkzeug.exceptions import HTTPException
 from flask_cors import CORS, cross_origin
 from util import DbUtils
 from util import PasswordUtils
-from models.role import Role
 from models.user import User
+from util import SecurityUtils
 
 
 log.basicConfig(level=log.INFO)
@@ -20,7 +20,8 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 db = DbUtils()
-
+security_utils = SecurityUtils()
+user_model = User()
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
@@ -36,12 +37,6 @@ def handle_exception(e):
     response.content_type = "application/json"
     return response
 
-
-def get_access_denied_response():
-    return jsonify({
-        'status': 'ERROR',
-        'message': 'Access denied'
-    })
 
 ##############
 ### Routes ###
@@ -312,7 +307,6 @@ def user_login_route():
 @app.route("/api/v1/user/session", methods=['GET'])
 def user_session_route():
     token = db.get_token_from_header()
-    user_model = User()
     log.info('Checking token: {}'.format(token))
     return jsonify(user_model.is_session_active(token))
 
@@ -323,7 +317,6 @@ def user_login(username, password):
     2. Check if a session token exists already that we can update
     3. Create session token if not
     '''
-    user_model = User()
     if user_model.check_credentials(username, password):
         token = user_model.get_or_create_session_token(username)
         user = None
@@ -332,8 +325,7 @@ def user_login(username, password):
 
             # Add roles
             if user:
-                role = Role()
-                user['roles'] = role.get_roles_by_user_id(user['id'])
+                user['roles'] = user_model.get_roles_by_user_id(user['id'])
         return {
             'status': 'OK',
             'results': [
@@ -485,35 +477,30 @@ def add_employer_review_route():
 
 
 def add_employer_review(employer_id, body):
-    token = db.get_token_from_header()
-    user = None
-
-    if token:
-        user_model = User()
-        user = user_model.get_user_by_token(token)
-        if user:
-            try:
-                conn = db.connect_db()
-                query = '''
-                    INSERT INTO reviews(user_id, employer_id, body)
-                    VALUES(?, ? , ?)
-                '''
-                cursor = conn.execute(query, (user['id'], employer_id, body))
-                conn.commit()
-                log.info('Added review for employer {} from user {}'.format(
-                    employer_id, user_id))
-                return {
-                    'status': 'OK'
-                }
-            except sqlite3.Error as er:
-                log.error('add_employer_review error: %s' %
-                          (' '.join(er.args)))
-            finally:
-                db.close_connection(conn)
-        else:
-            return get_access_denied_response()
+    user = user_model.is_reviewer()
+    if user:
+        try:
+            conn = db.connect_db()
+            user_id = user['id']
+            query = '''
+                INSERT INTO reviews(user_id, employer_id, body)
+                VALUES(?, ? , ?)
+            '''
+            cursor = conn.execute(query, (user['id'], employer_id, body))
+            conn.commit()
+            log.info('Added review for employer {} from user {}'.format(
+                employer_id, user_id))
+            return {
+                'status': 'OK'
+            }
+        except sqlite3.Error as er:
+            log.error('add_employer_review error: %s' %
+                      (' '.join(er.args)))
+        finally:
+            db.close_connection(conn)
     else:
-        return get_access_denied_response()
+        log.error('access denied to post review!')
+        return security_utils.get_access_denied_response()
 
 
 @cross_origin()
@@ -523,7 +510,6 @@ def add_job_route():
     user = None
 
     if token:
-        user_model = User()
         user = user_model.get_user_by_token(token)
 
         if user is not None:
@@ -559,10 +545,10 @@ def add_job_route():
                 db.close_connection(conn)
         else:
             log.error('Could not find user with token')
-            return get_access_denied_response()
+            return security_utils.get_access_denied_response()
     else:
         log.error('No token supplied')
-        return get_access_denied_response()
+        return security_utils.get_access_denied_response()
 
 
 @cross_origin()
@@ -570,14 +556,13 @@ def add_job_route():
 def recruiters_route():
     token = db.get_token_from_header()
     if token:
-        user_model = User()
         user = user_model.get_user_by_token(token)
         if user:
             return jsonify(get_recruiters(user['id']))
         else:
-            return get_access_denied_response()
+            return security_utils.get_access_denied_response()
     else:
-        return get_access_denied_response()
+        return security_utils.get_access_denied_response()
 
 
 def get_recruiters(user_id):
@@ -611,12 +596,11 @@ def get_recruiters(user_id):
 def roles_route():
     token = db.get_token_from_header()
     if token:
-        user_model = User()
         user = user_model.get_user_by_token(token)
         if user:
             role = Role()
             return jsonify(role.get_roles_by_user_id(user['id']))
         else:
-            return get_access_denied_response()
+            return security_utils.get_access_denied_response()
     else:
-        return get_access_denied_response()
+        return security_utils.get_access_denied_response()
