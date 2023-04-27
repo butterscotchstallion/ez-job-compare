@@ -6,21 +6,43 @@ import getReviewsCountList from "../../components/reviews/getReviewsCountList";
 import UserAvatar from "./UserAvatar";
 import UserRoles from "./UserRoles";
 import './user-profile.scss';
+import getVerifiedEmployees from "../../components/employer/getVerifiedEmployees";
+import { IVerifiedEmployeesMap } from "../../components/employer/getVerifiedEmployeesMap";
+import getEmployersVerifiedMap, { IEmployersVerifiedMap } from "../../components/employer/getEmployersVerifiedMap";
+import { extend } from "lodash";
+import VerifiedTitle from "./VerifiedTitle";
 
 export default function UserProfile({ user }: any) {
     const [loading, setLoading] = useState(false);
     const [reviewCounts, setReviewCounts] = useState<IReviewCountList[]>([]);
     
     useEffect(() => {
+        getProfileData();
+    }, []);
+
+    function getProfileData() {
         setLoading(true);
-        getReviewsCountList(user.id).then((response: any) => {
-            setReviewCounts(response.data.results);
+
+        Promise.all([
+            getReviewsCountList(user.id),
+            getVerifiedEmployees()
+        ])
+        .then((response: any) => {
+            const verifiedMap: IEmployersVerifiedMap = getEmployersVerifiedMap(response[1].data.results);
+            const results = response[0].data.results.map((reviewCounts: any) => {
+                reviewCounts.verificationInfo = null;
+                if (typeof verifiedMap[reviewCounts.employerId] !== 'undefined') {
+                    reviewCounts.verificationInfo = verifiedMap[reviewCounts.employerId];
+                }
+                return reviewCounts;
+            });
+            setReviewCounts(results);
         }, (error) => {
             console.error(error);
         }).finally(() => {
             setLoading(false);
         });
-    }, []);
+    }
     
     return (
         <Card>
@@ -61,10 +83,11 @@ export default function UserProfile({ user }: any) {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell className="employer-tbl-header">Employer</TableCell>
+                                            <TableCell className="employer-tbl-header">Status</TableCell>
                                             <TableCell className="employer-tbl-header">Reviews</TableCell>
                                         </TableRow>
                                     </TableHead>
-                                    <TableBody>                                    
+                                    <TableBody>
                                         {reviewCounts.map((rc: any) => (
                                             <TableRow
                                                 key={rc.employerId}
@@ -72,6 +95,9 @@ export default function UserProfile({ user }: any) {
                                             >
                                                 <TableCell component="th" scope="row">
                                                     {rc.employerName}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <VerifiedTitle verifiedInfo={rc.verificationInfo} />
                                                 </TableCell>
                                                 <TableCell>{rc.reviewCount}</TableCell>
                                             </TableRow>

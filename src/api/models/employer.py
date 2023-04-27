@@ -64,3 +64,51 @@ class Employer:
             log.error('get_employers error: %s' % (' '.join(er.args)))
         finally:
             db.close_connection(conn)
+
+    def get_verified_employees(self, slug=None, user_id=None):
+        try:
+            conn = db.connect_db()
+            where_clause = ''
+            group_clause = ''
+            params = ()
+            if slug:
+                where_clause = ' AND e.slug = ? '
+                params = (slug,)
+
+            if user_id:
+                where_clause = ' AND ve.user_id = ? '
+                params = (user_id,)
+
+            if not slug and not user_id:
+                group_clause = ' GROUP BY employer_id '
+
+            query = '''
+                SELECT  ve.start_date AS startDate,
+                        ve.end_date AS endDate,
+                        ve.user_id AS userId,
+                        ve.employer_id AS employerId,
+                        DATETIME(ve.created_at, 'localtime') AS createdAt,
+                        CASE WHEN ve.end_date IS NULL
+                        THEN 1
+                        ELSE 0
+                        END AS isCurrentEmployee
+                FROM verified_employees ve
+                JOIN users u ON u.id = ve.user_id
+                JOIN employers e ON e.id = ve.employer_id
+                WHERE 1=1
+            ''' + where_clause + group_clause
+            cursor = conn.execute(query, params)
+            results = db.get_list_from_rows(cursor)
+            return {
+                'status': 'OK',
+                'results': results
+            }
+        except sqlite3.Error as er:
+            error = ' '.join(er.args)
+            log.error('get_verified_employees error: %s' % (error))
+            return {
+                'status': 'ERROR',
+                'message': error
+            }
+        finally:
+            db.close_connection(conn)

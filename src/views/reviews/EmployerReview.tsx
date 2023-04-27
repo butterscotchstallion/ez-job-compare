@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, IconButton, Typography } from "@mui/mate
 import ReactTimeAgo from "react-time-ago";
 import UserAvatar from "../user/UserAvatar";
 import './reviews.scss';
+import VerifiedTitle from '../user/VerifiedTitle';
 
 export default function EmployerReview({ review, verifiedEmployeesMap, userId }: any) {
     const user = {
@@ -12,12 +13,6 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
     const isVerified = typeof verifiedEmployeesMap[userId] !== 'undefined';
     const verifiedInfo = isVerified ? verifiedEmployeesMap[userId] : null;
     const avatarTitle = isVerified ? 'Verified employee' : 'Submitted by '+user.name;
-    let verifiedTitle = 'Verified ';
-    if (verifiedInfo && verifiedInfo.isCurrentEmployee) {
-        verifiedTitle+= ' Current Employee';
-    } else if (verifiedInfo && !verifiedInfo.isCurrentEmployee) {
-        verifiedTitle += ' Alumni';
-    }
     return (
         <Card className="employer-review-card">
             <CardHeader
@@ -43,7 +38,7 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
                     <>
                         {isVerified ? (
                             <div className="verified-employee-subheader verified-text">
-                                {verifiedTitle}
+                                <VerifiedTitle verifiedInfo={verifiedInfo} />
                             </div>
                         ): ''}
                         <ReactTimeAgo

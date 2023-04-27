@@ -385,7 +385,7 @@ def get_employer_review_counts(user_id=None):
         conn = db.connect_db()
         params = ()
         user_id_where_clause = ''
-        
+
         if user_id:
             user_id_where_clause = ' AND r.user_id = ? '
             params = (user_id,)
@@ -416,43 +416,18 @@ def get_employer_review_counts(user_id=None):
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/verifiedEmployees", methods=['GET'])
 def verified_employees_route(slug):
-    return jsonify(get_verified_employees(slug))
+    '''Verified employees for a specific employer'''
+    return jsonify(employer_model.get_verified_employees(slug))
 
 
-def get_verified_employees(slug):
-    try:
-        conn = db.connect_db()
-        query = '''
-            SELECT  ve.start_date AS startDate,
-                    ve.end_date AS endDate,
-                    ve.user_id AS userId,
-                    ve.employer_id AS employerId,
-                    DATETIME(ve.created_at, 'localtime') AS createdAt,
-                    CASE WHEN ve.end_date IS NULL OR DATE(ve.end_date) > DATE('now', 'localtime')
-                    THEN 1
-                    ELSE 0
-                    END AS isCurrentEmployee
-            FROM verified_employees ve
-            JOIN users u ON u.id = ve.user_id
-            JOIN employers e ON e.id = ve.employer_id
-            WHERE e.slug = ?
-        '''
-        cursor = conn.execute(query, (slug,))
-        results = db.get_list_from_rows(cursor)
-        return {
-            'status': 'OK',
-            'results': results
-        }
-    except sqlite3.Error as er:
-        error = ' '.join(er.args)
-        log.error('get_verified_employees error: %s' % (error))
-        return {
-            'status': 'ERROR',
-            'message': error
-        }
-    finally:
-        db.close_connection(conn)
-
+@cross_origin()
+@app.route("/api/v1/employer/verifiedEmployees", methods=['GET'])
+def all_verified_employees_route():
+    '''
+    Get employee status for each employer which will be mapped
+    and used in the user profile summary.
+    '''
+    return jsonify(employer_model.get_verified_employees())
 
 @cross_origin()
 @app.route("/api/v1/employer/reviews", methods=['POST'])
