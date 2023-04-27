@@ -384,7 +384,8 @@ def get_employer_review_counts(user_id=None):
     try:
         conn = db.connect_db()
         params = ()
-
+        user_id_where_clause = ''
+        
         if user_id:
             user_id_where_clause = ' AND r.user_id = ? '
             params = (user_id,)
