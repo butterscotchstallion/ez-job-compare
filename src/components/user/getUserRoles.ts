@@ -19,6 +19,10 @@ export function canPostReviews() {
     return hasRole(UserRoles.REVIEWER);
 };
 
+export function isVerifier() {
+    return hasRole(UserRoles.VERIFIER);
+}
+
 export default function getUserRoles(): IRole[] {
     let roles: IRole[] = [];
     const user = getUser();

@@ -1,4 +1,5 @@
 export enum UserRoles {
     REVIEWER = 'Reviewer',
-    RECRUITER = 'Recruiter'
+    RECRUITER = 'Recruiter',
+    VERIFIER = 'Verifier'
 };

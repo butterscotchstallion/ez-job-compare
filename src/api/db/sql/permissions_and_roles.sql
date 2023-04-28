@@ -33,13 +33,15 @@ CREATE TABLE users_roles(
 -- Default roles/permissions
 INSERT INTO permissions(name) VALUES('Post employer reviews');
 INSERT INTO permissions(name) VALUES('Post employer jobs');
+INSERT INTO permissions(name) VALUES('Verify users');
 
-
-INSERT INTO roles(name) VALUES('Reviewer');
-INSERT INTO roles(name) VALUES('Recruiter');
+INSERT INTO roles(name, color) VALUES('Reviewer', 'purple');
+INSERT INTO roles(name, color) VALUES('Recruiter', 'green');
+INSERT INTO roles(name, color) VALUES('Verifier', 'maroon');
 
 INSERT INTO roles_permissions(role_id, permission_id) VALUES(1, 1);
 INSERT INTO roles_permissions(role_id, permission_id) VALUES(2, 2);
+INSERT INTO roles_permissinos(role_id, permission_id) VALUES(3, 3);
 
 -- User role defaults
 INSERT INTO users_roles(role_id, user_id) VALUES(1, 1);

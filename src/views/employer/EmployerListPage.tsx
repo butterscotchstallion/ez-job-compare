@@ -23,7 +23,7 @@ import getTags from "../../components/tag/getTags";
 import getTagsEmployersList from "../../components/tag/getTagsEmployersList";
 import getTagsEmployersMap from "../../components/tag/getTagsEmployersMap";
 import { ITag } from "../../components/tag/i-tag.interface";
-import { canPostJobs } from "../../components/user/getUserRoles";
+import { canPostJobs, isVerifier } from "../../components/user/getUserRoles";
 import { getUser } from "../../components/user/userStorage";
 import Layout from "../Layout";
 import UserAutocomplete from '../user/UserAutocomplete';
@@ -467,16 +467,6 @@ export default function EmployerListPage(props: any) {
                                             }
                                             action={
                                                 <> 
-                                                    {isRecruiterAndCanPostJobs((employer?.userIds || [])) ? (
-                                                        <Button
-                                                            variant="outlined"
-                                                            startIcon={<NewspaperIcon />}
-                                                            className="post-new-job-button"
-                                                            onClick={() => onPostJobClicked(employer) }
-                                                            >
-                                                            Post Job
-                                                        </Button>
-                                                    ): ''}
                                                     {employer.jobCount > 0 ? (
                                                         <Tooltip title={employer.jobCountTitle} arrow>
                                                             <Badge
@@ -501,12 +491,22 @@ export default function EmployerListPage(props: any) {
                                                         anchorEl={anchorEl}
                                                         >
                                                         <MenuList autoFocusItem={isSettingsMenuOpen}>
-                                                            <MenuItem onClick={onVerifyMenuClicked}>
-                                                                <ListItemIcon>
-                                                                    <AddBoxIcon />
-                                                                </ListItemIcon>
-                                                                <ListItemText>Verify employee</ListItemText>
-                                                            </MenuItem>
+                                                            {isVerifier() ? (
+                                                                <MenuItem onClick={onVerifyMenuClicked}>
+                                                                    <ListItemIcon>
+                                                                        <AddBoxIcon />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText>Verify employee</ListItemText>
+                                                                </MenuItem>
+                                                            ) : ''}                                                            
+                                                            {isRecruiterAndCanPostJobs((employer?.userIds || [])) ? (
+                                                                <MenuItem onClick={() => onPostJobClicked(employer) }>
+                                                                    <ListItemIcon>
+                                                                    <NewspaperIcon />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText>Post Job</ListItemText>
+                                                                </MenuItem>
+                                                            ): ''}                                                
                                                         </MenuList>
                                                     </Menu>
                                                 </>
