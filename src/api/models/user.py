@@ -253,7 +253,7 @@ class User:
 
     def has_role(self, role, roles):
         for r in roles:
-            if r.name == role:
+            if r['name'] == role:
                 return True
 
     def is_reviewer(self):
