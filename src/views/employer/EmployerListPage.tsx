@@ -23,7 +23,7 @@ import getTags from "../../components/tag/getTags";
 import getTagsEmployersList from "../../components/tag/getTagsEmployersList";
 import getTagsEmployersMap from "../../components/tag/getTagsEmployersMap";
 import { ITag } from "../../components/tag/i-tag.interface";
-import { canPostJobs, isVerifier } from "../../components/user/getUserRoles";
+import getUserRoles, { canPostJobs, isVerifier } from "../../components/user/getUserRoles";
 import { getUser } from "../../components/user/userStorage";
 import Layout from "../Layout";
 import UserAutocomplete from '../user/UserAutocomplete';
@@ -73,6 +73,7 @@ export default function EmployerListPage(props: any) {
     const isSettingsMenuOpen = !!anchorEl;
     const {tagSlug} = useParams();
     const user = getUser();
+    const hasRoles = getUserRoles().length > 0;
     let isFiltering = tagSlug && tagSlug.length > 0;
 
     useEffect(() => {
@@ -245,8 +246,8 @@ export default function EmployerListPage(props: any) {
     }
 
     function onEmployerSettingsClicked(event: React.MouseEvent<HTMLButtonElement>, employer: IEmployer) {
-        setAnchorEl(event.currentTarget);
         setSelectedEmployer(employer);
+        setAnchorEl(event.currentTarget);
     }
 
     function onUserChanged(e: any, user: IUser) {
@@ -478,14 +479,15 @@ export default function EmployerListPage(props: any) {
                                                                 <AccountBoxIcon />
                                                             </Badge>
                                                         </Tooltip>
-                                                    ) : ''}
-                                                    
-                                                    <IconButton 
-                                                        aria-label="settings"
-                                                        onClick={(e) => onEmployerSettingsClicked(e, employer)}
-                                                        >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
+                                                    ) : ''}                                                    
+                                                    {hasRoles ? (
+                                                        <IconButton 
+                                                            aria-label="settings"
+                                                            onClick={(e) => onEmployerSettingsClicked(e, employer)}
+                                                            >
+                                                            <MoreVertIcon />
+                                                        </IconButton>
+                                                    ) : ''}                                                    
                                                     <Menu
                                                         open={isSettingsMenuOpen}
                                                         onClose={onClose}
@@ -503,7 +505,7 @@ export default function EmployerListPage(props: any) {
                                                             {isRecruiterAndCanPostJobs((employer?.userIds || [])) ? (
                                                                 <MenuItem onClick={() => onPostJobClicked(employer) }>
                                                                     <ListItemIcon>
-                                                                    <NewspaperIcon />
+                                                                        <NewspaperIcon />
                                                                     </ListItemIcon>
                                                                     <ListItemText>Post Job</ListItemText>
                                                                 </MenuItem>
