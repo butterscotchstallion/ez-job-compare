@@ -20,8 +20,14 @@ export default function UserAutocomplete({ onChange, employerSlug }: any) {
             getVerifiedEmployees(employerSlug)
         ]).then((response: any) => {
             verifiedUsersMap = getVerifiedEmployeesMap(response[1].data.results);
-            const users = response[0].data.results.map((user: IUser) => {
-                user.verified =  typeof verifiedUsersMap[user.id] !== 'undefined';
+            const users = response[0].data.results.map((user: any) => {
+                if (typeof verifiedUsersMap[user.id] !== 'undefined') {
+                    user.verified = true;
+                    user.startDate = verifiedUsersMap[user.id].startDate;
+                    user.endDate = verifiedUsersMap[user.id].endDate;
+                } else {
+                    user.verified = false;
+                }                
                 return user;
             });
             setUsers(users);
@@ -36,7 +42,6 @@ export default function UserAutocomplete({ onChange, employerSlug }: any) {
         <Autocomplete
             disablePortal
             options={users}
-            sx={{ width: 300 }}
             onChange={onChange}
             loading={loading}
             getOptionLabel={(user: IUser) => user.name}

@@ -8,4 +8,6 @@ export default interface IUser {
     updatedAt: string;
     roles: IRole[];
     verified?: boolean;
+    startDate?: string;
+    endDate?: string;
 };

@@ -230,7 +230,9 @@ class User:
         try:
             conn = db.connect_db()
             query = '''
-                SELECT  r.name
+                SELECT  r.name,
+                        r.color,
+                        r.icon
                 FROM roles r
                 JOIN users_roles ur ON ur.role_id = r.id
                 LEFT JOIN users u ON u.id = ur.user_id

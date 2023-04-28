@@ -16,6 +16,8 @@ import ErrorPage from './views/Error';
 import Home from './views/Home';
 import JobsPage from './views/jobs/JobsPage';
 import LoginPage from './views/user/LoginPage';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 TimeAgo.addDefaultLocale(en);
 
@@ -73,7 +75,9 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <RouterProvider router={router} />
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <RouterProvider router={router} />
+  </LocalizationProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

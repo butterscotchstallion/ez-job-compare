@@ -26,10 +26,14 @@ import { ITag } from "../../components/tag/i-tag.interface";
 import { canPostJobs } from "../../components/user/getUserRoles";
 import { getUser } from "../../components/user/userStorage";
 import Layout from "../Layout";
-import './employer.scss';
 import UserAutocomplete from '../user/UserAutocomplete';
 import { IVerifyUser } from '../../components/user/i-verify-user.interface';
 import IUser from '../../components/user/i-user.interface';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from "dayjs";
+import './employer.scss';
+import '../../styles/form.scss';
+import { DateField } from '@mui/x-date-pickers';
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -245,19 +249,38 @@ export default function EmployerListPage(props: any) {
     }
 
     function onUserChanged(e: any, user: IUser) {
-        if (user) {
-            setSelectedUser(user);
-            verifyUserPayload.userId = user.id;
-            verifyUserPayload.employerId = selectedEmployer?.id;
-            verifyUserPayload.employerSlug = selectedEmployer?.slug;
-            if (verifyUserPayload.userId && verifyUserPayload.employerSlug) {
-                setSubmitDisabled(false);
-            }
+        setSelectedUser(user);
+        verifyUserPayload.userId = user.id;
+        verifyUserPayload.employerId = selectedEmployer?.id;
+        verifyUserPayload.employerSlug = selectedEmployer?.slug;
+        
+        if (isVerificationValid()) {
+            setVerifyUserPayload(verifyUserPayload);
+            setSubmitDisabled(false);
+        }
+    }
+
+    function isVerificationValid() {
+        const validUserId = verifyUserPayload.userId;
+        const validEmployerId = verifyUserPayload.employerId;
+        const validEmployerSlug = verifyUserPayload.employerSlug;
+
+        // TODO: validate end date if entered here
+        return validUserId && validEmployerId && validEmployerSlug;
+    }
+
+    function onVerifyDateChanged(day: any, field: string) {
+        const formattedDate = day.format('YYYY-MM-DD');
+        verifyUserPayload[field] = formattedDate;
+
+        if (isVerificationValid()) {
+            setSubmitDisabled(false);
         }
     }
 
     function onVerifyMenuClicked() {
         setIsVerifyModalOpen(true);
+        onClose();
     }
 
     return (
@@ -364,8 +387,8 @@ export default function EmployerListPage(props: any) {
                         >
                         <DialogTitle>Verification status</DialogTitle>
                         <DialogContent className="verify-dialog-content">                            
-                            <Grid container>
-                                <Grid item xs={12}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
                                     {errorMsg ? (
                                         <Alert severity="error">{errorMsg}</Alert>
                                     ) : ''}
@@ -380,13 +403,30 @@ export default function EmployerListPage(props: any) {
                                         control={(
                                             <Switch 
                                                 color="primary"
-                                                checked={selectedUser?.verified}
-                                                inputProps={{ 'aria-label': 'controlled' }} 
+                                                checked={!!selectedUser?.verified}
                                                 />
                                         )}
                                         label="Verified"
                                         labelPlacement="top"
                                         />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <div className="form-area">
+                                        <DateField 
+                                            label="Start Date*"
+                                            value={selectedUser?.startDate}
+                                            onChange={(e: any) => onVerifyDateChanged(e, 'startDate')}
+                                            format="LL"
+                                        />
+                                    </div>
+                                    <div>
+                                        <DateField 
+                                            label="End Date"
+                                            value={selectedUser?.endDate}
+                                            onChange={(e: any) => onVerifyDateChanged(e, 'endDate')}
+                                            format="LL"
+                                        />
+                                    </div>
                                 </Grid>
                             </Grid>
                         </DialogContent>
