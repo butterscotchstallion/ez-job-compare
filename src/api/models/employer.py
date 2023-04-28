@@ -50,7 +50,8 @@ class Employer:
                         e.name,
                         e.image,
                         e.description,
-                        es.name AS companySize
+                        es.name AS companySize,
+                        e.slug
                 FROM employers e
                 JOIN employer_sizes es ON es.id = e.employer_size_id
             ''' + where_and_order_clause

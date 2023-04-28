@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { IRole } from "./i-role.interface";
+import { IRole } from "../../components/user/i-role.interface";
 import './user-roles.scss';
 
 export default function UserRoles({ roles }: any) {

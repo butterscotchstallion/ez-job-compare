@@ -538,3 +538,9 @@ def get_recruiters(user_id):
     finally:
         db.close_connection(conn)
 
+### Users
+
+@cross_origin()
+@app.route("/api/v1/users", methods=['GET'])
+def user_list_route():
+    return jsonify(user_model.get_users())

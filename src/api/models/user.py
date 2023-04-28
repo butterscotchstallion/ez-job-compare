@@ -59,6 +59,33 @@ class User:
         finally:
             db.close_connection(conn)
 
+    def get_users(self):
+        try:
+            conn = db.connect_db()
+            query = '''
+                SELECT  u.name,
+                        u.id
+                FROM users u
+                WHERE 1=1
+                AND u.active = 1
+                ORDER BY u.name
+            '''
+            cursor = conn.execute(query)
+            results = db.get_list_from_rows(cursor)
+            return {
+                'status': 'OK',
+                'results': results
+            }
+        except sqlite3.Error as er:
+            error = ' '.join(er.args)
+            log.error('get_users error: %s' % (error))
+            return {
+                'status': 'ERROR',
+                'message': error
+            }
+        finally:
+            db.close_connection(conn)
+
     def get_or_create_session_token(self, username):
         '''Returns session token if exists, creates if not'''
         try:

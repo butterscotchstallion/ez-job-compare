@@ -1,4 +1,4 @@
-import { IRole } from "../../views/user/i-role.interface";
+import { IRole } from "../../components/user/i-role.interface";
 
 export default interface IUser {
     id: number;
@@ -7,4 +7,5 @@ export default interface IUser {
     createdAt: string;
     updatedAt: string;
     roles: IRole[];
+    verified?: boolean;
 };

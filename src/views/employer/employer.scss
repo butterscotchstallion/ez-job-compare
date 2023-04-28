@@ -17,3 +17,21 @@
     width: 700px;
     margin: 0 auto;
 }
+
+.verify-dialog {
+    .verify-dialog-content {
+        height: 200px;
+        /* Override MaterialUI */
+        padding-top: 1rem !important;
+
+        .MuiFormControlLabel-root {
+            margin: 0;
+        }
+    }
+}
+
+.autocomplete-wrapper {
+    margin-bottom: 1rem;
+
+    
+}

@@ -1,4 +1,4 @@
-import { IRole } from "../../views/user/i-role.interface";
+import { IRole } from "./i-role.interface";
 import { UserRoles } from "./userRoles.enum";
 import { getUser } from "./userStorage";
 

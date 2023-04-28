@@ -1,10 +1,10 @@
-import { ContentCut } from "@mui/icons-material";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import ShareIcon from '@mui/icons-material/Share';
-import { Alert, Avatar, Badge, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, TextField, Tooltip, Typography } from "@mui/material";
+import { Alert, Avatar, Badge, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { filter, find } from "lodash";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -27,6 +27,9 @@ import { canPostJobs } from "../../components/user/getUserRoles";
 import { getUser } from "../../components/user/userStorage";
 import Layout from "../Layout";
 import './employer.scss';
+import UserAutocomplete from '../user/UserAutocomplete';
+import { IVerifyUser } from '../../components/user/i-verify-user.interface';
+import IUser from '../../components/user/i-user.interface';
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);
@@ -37,7 +40,11 @@ export default function EmployerListPage(props: any) {
     const [filterSlugName, setFilterSlugName] = useState('');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [postDisabled, setPostDisabled] = useState<boolean>(true);
+    const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
+    const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
+    const [verifyUserPayload, setVerifyUserPayload] = useState<IVerifyUser | any>({});
+    const [selectedEmployer, setSelectedEmployer] = useState<IEmployer>();
+    const [selectedUser, setSelectedUser] = useState<IUser>();
     const [job, setJob] = useState<IJob>({
         id: 0,
         employerId: 0,
@@ -163,10 +170,6 @@ export default function EmployerListPage(props: any) {
         return filtered;
     }
 
-    function onEmployerSettingsClicked(event: React.MouseEvent<HTMLButtonElement>) {
-        setAnchorEl(event.currentTarget);
-    }
-
     function onClose() {
         setAnchorEl(null);
     }
@@ -180,6 +183,7 @@ export default function EmployerListPage(props: any) {
 
     function handleClose() {
         setIsOpen(false);
+        setIsVerifyModalOpen(false);
     }
 
     function handlePost(e: any) {
@@ -205,7 +209,7 @@ export default function EmployerListPage(props: any) {
 
         const isFormValid = isNewJobValid();
         if (isFormValid) {
-            setPostDisabled(false);
+            setSubmitDisabled(false);
         }
     }
 
@@ -229,6 +233,31 @@ export default function EmployerListPage(props: any) {
             const hasRecruiterRole = canPostJobs();
             return isRecruiter && hasRecruiterRole;
         }
+    }
+
+    function onVerifySubmitted(e: any) {
+        e.preventDefault();
+    }
+
+    function onEmployerSettingsClicked(event: React.MouseEvent<HTMLButtonElement>, employer: IEmployer) {
+        setAnchorEl(event.currentTarget);
+        setSelectedEmployer(employer);
+    }
+
+    function onUserChanged(e: any, user: IUser) {
+        if (user) {
+            setSelectedUser(user);
+            verifyUserPayload.userId = user.id;
+            verifyUserPayload.employerId = selectedEmployer?.id;
+            verifyUserPayload.employerSlug = selectedEmployer?.slug;
+            if (verifyUserPayload.userId && verifyUserPayload.employerSlug) {
+                setSubmitDisabled(false);
+            }
+        }
+    }
+
+    function onVerifyMenuClicked() {
+        setIsVerifyModalOpen(true);
     }
 
     return (
@@ -315,8 +344,58 @@ export default function EmployerListPage(props: any) {
                             <Button onClick={handleClose} variant="outlined">Cancel</Button>
                             <Button 
                                 onClick={handlePost}
-                                disabled={postDisabled}
+                                disabled={submitDisabled}
                                 variant="outlined">Post</Button>
+                        </DialogActions>
+                    </Box>
+                </Dialog>
+
+                <Dialog 
+                    open={isVerifyModalOpen}
+                    onClose={handleClose}
+                    scroll="paper"
+                    fullWidth={true}
+                    className="verify-dialog">
+                    <Box
+                        component="form"
+                        noValidate
+                        autoComplete="off"
+                        onSubmit={onVerifySubmitted}
+                        >
+                        <DialogTitle>Verification status</DialogTitle>
+                        <DialogContent className="verify-dialog-content">                            
+                            <Grid container>
+                                <Grid item xs={12}>
+                                    {errorMsg ? (
+                                        <Alert severity="error">{errorMsg}</Alert>
+                                    ) : ''}
+                                    <div className="autocomplete-wrapper">
+                                        <UserAutocomplete 
+                                            onChange={onUserChanged}
+                                            employerSlug={selectedEmployer?.slug}
+                                            />
+                                    </div>
+                                    <FormControlLabel
+                                        value="top"
+                                        control={(
+                                            <Switch 
+                                                color="primary"
+                                                checked={selectedUser?.verified}
+                                                inputProps={{ 'aria-label': 'controlled' }} 
+                                                />
+                                        )}
+                                        label="Verified"
+                                        labelPlacement="top"
+                                        />
+                                </Grid>
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose} variant="outlined">Cancel</Button>
+                            <Button 
+                                type="submit"
+                                disabled={submitDisabled}
+                                variant="outlined">Save</Button>
                         </DialogActions>
                     </Box>
                 </Dialog>
@@ -372,26 +451,24 @@ export default function EmployerListPage(props: any) {
                                                     
                                                     <IconButton 
                                                         aria-label="settings"
-                                                        onClick={onEmployerSettingsClicked}
+                                                        onClick={(e) => onEmployerSettingsClicked(e, employer)}
                                                         >
                                                         <MoreVertIcon />
-                                                        <ClickAwayListener onClickAway={onClose}>
-                                                            <Menu 
-                                                                open={isSettingsMenuOpen}
-                                                                onClose={onClose}
-                                                                anchorEl={anchorEl}
-                                                                >
-                                                                <MenuList autoFocusItem={isSettingsMenuOpen}>
-                                                                    <MenuItem>
-                                                                        <ListItemIcon>
-                                                                            <ContentCut fontSize="small" />
-                                                                        </ListItemIcon>
-                                                                        <ListItemText>Add job</ListItemText>
-                                                                    </MenuItem>
-                                                                </MenuList>
-                                                            </Menu>
-                                                        </ClickAwayListener>
                                                     </IconButton>
+                                                    <Menu
+                                                        open={isSettingsMenuOpen}
+                                                        onClose={onClose}
+                                                        anchorEl={anchorEl}
+                                                        >
+                                                        <MenuList autoFocusItem={isSettingsMenuOpen}>
+                                                            <MenuItem onClick={onVerifyMenuClicked}>
+                                                                <ListItemIcon>
+                                                                    <AddBoxIcon />
+                                                                </ListItemIcon>
+                                                                <ListItemText>Verify employee</ListItemText>
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
                                                 </>
                                             }
                                             title={
