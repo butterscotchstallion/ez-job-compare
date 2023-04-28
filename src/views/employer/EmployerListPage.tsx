@@ -183,6 +183,7 @@ export default function EmployerListPage(props: any) {
         job.employerName = employer.name;
         setJob(job);
         setIsOpen(true);
+        setAnchorEl(null);
     }
 
     function handleClose() {
