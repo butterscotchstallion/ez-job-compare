@@ -17,10 +17,10 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 db = DbUtils()
 security_utils = SecurityUtils()
-user_model = User()
+karma_model = Karma()
+user_model = User(karma_model=karma_model)
 employer_model = Employer()
 review_votes_model = HelpfulReviewVotes()
-karma_model = Karma()
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
@@ -595,5 +595,14 @@ def user_karma_route(guid):
     user = user_model.get_user_from_token_header()
     if user:
         return jsonify(karma_model.get_karma_by_user_id(user['id']))
+    else:
+        return security_utils.get_access_denied_response()
+
+@cross_origin()
+@app.route("/api/v1/topKarmaUser", methods=['GET'])
+def top_karma_user_route():
+    user = user_model.get_user_from_token_header()
+    if user:
+        return jsonify(karma_model.get_top_karma_user())
     else:
         return security_utils.get_access_denied_response()

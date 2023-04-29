@@ -10,4 +10,5 @@ export default interface IUser {
     verified?: boolean;
     startDate?: string;
     endDate?: string;
+    isKarmaCaptain: boolean;
 };

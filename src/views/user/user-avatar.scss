@@ -1,0 +1,12 @@
+.user-avatar-wrapper {
+    position: relative;
+}
+
+.avatar-crown {
+    width: 50px;
+    height: 25px;
+    position: absolute;
+    top: -14px;
+    left: -6px;
+    z-index: 999;
+}

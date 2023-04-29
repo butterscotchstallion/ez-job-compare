@@ -7,9 +7,11 @@ db = DbUtils()
 pw_utils = PasswordUtils()
 log.basicConfig(level=log.INFO)
 
-
 class User:
     '''User/session model'''
+
+    def __init__(self, **kwargs):
+        self.karma_model = kwargs['karma_model']
 
     def check_credentials(self, username, password):
         '''Checks if supplied username and password matches'''
@@ -56,7 +58,7 @@ class User:
             if results:
                 return results[0]
         except sqlite3.Error as er:
-            log.error('check_credentials error: %s' % (' '.join(er.args)))
+            log.error('get_user_by_token error: %s' % (' '.join(er.args)))
         finally:
             db.close_connection(conn)
 
@@ -150,6 +152,10 @@ class User:
                 if is_active:
                     log.info('Active session found')
                     user = self.get_user_with_roles()
+                    user['isKarmaCaptain'] = False
+                    karma_captain = self.karma_model.get_top_karma_user()
+                    if karma_captain and karma_captain['results']:
+                        user['isKarmaCaptain'] = user['id'] == karma_captain['results'][0]['userId']
                 else:
                     log.info('Inactive session found')
                 return {
