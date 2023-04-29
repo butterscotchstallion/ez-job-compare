@@ -79,7 +79,7 @@ export default function LoggedInUserMenu({ user }: any) {
                 MenuListProps={{
                     'aria-labelledby': 'basic-button',
                 }}
-            >
+                >
                 <MenuItem onClick={onProfileMenuItemClicked}>
                     <ListItemIcon>
                         <PersonIcon fontSize="small" />

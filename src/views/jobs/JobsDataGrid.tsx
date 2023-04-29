@@ -12,11 +12,11 @@ import { useEffect, useRef, useState } from 'react';
 import Highlighter from "react-highlight-words";
 import { Link } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
-import getVerifiedEmployees from '../../components/employer/getVerifiedEmployees';
 import getVerifiedEmployeesMap, { IVerifiedEmployeesMap } from '../../components/employer/getVerifiedEmployeesMap';
 import { IJob } from '../../components/job/i-job.interface';
 import addReview from '../../components/reviews/addReview';
-import getReviewsByEmployerSlug from '../../components/reviews/getReviewsByEmployerSlug';
+import { getHasVotedMap, getReviewVotesMap } from '../../components/reviews/getHelpfulReviewVotes';
+import getReviewData from '../../components/reviews/getReviewData';
 import { IReview } from '../../components/reviews/i-review.interface';
 import TagList from '../../components/tag/TagList';
 import { canPostReviews } from '../../components/user/getUserRoles';
@@ -43,7 +43,8 @@ export default function JobsDataGrid(props: any) {
     const [loading, setLoading] = useState<boolean>(false);
     const [reviewFormValid, setReviewFormValid] = useState<boolean>(false);
     const [addReviewError, setAddReviewError] = useState<string>('');
-
+    const currentUser = getUser();
+    
     useEffect(() => {
         if (isOpen) {
             const { current: descriptionElement } = descriptionElementRef;
@@ -97,19 +98,34 @@ export default function JobsDataGrid(props: any) {
         setReviewEmployerName(job.employerName);
         setReviewEmployerSlug(job.employerSlug);
         setLoadingReviews(true);
-        getReviewsByEmployerSlug(job.employerSlug).then((response: any) => {
-            setReviews(response.data.results);
-        }, (error) => {
-            console.error(error);
-        }).finally(() => {
-            setLoadingReviews(false);
-        });
-        getVerifiedEmployees(job.employerSlug).then((response: any) => {
-            setVerifiedEmployeesMap(getVerifiedEmployeesMap(response.data.results));
-        }, (error) => {
-            console.error(error);
-        });
         setIsOpen(true);
+        getReviewData(job).then((response: any) => {            
+            setVerifiedEmployeesMap(getVerifiedEmployeesMap(response[1].data.results));
+            const reviews = response[0].data.results
+            const helpfulVotes = response[2].data.results;
+            const reviewVotesMap = getReviewVotesMap(helpfulVotes);
+            const hasVotedMap = getHasVotedMap(helpfulVotes);
+            const reviewsWithVotes = reviews.map((review: IReview) => {
+                review.helpfulVoteCount = 0;
+                review.currentUserHasVoted = false;
+                review.hasVotedClass = '';
+                if (typeof reviewVotesMap[review.id] !== 'undefined') {
+                    review.helpfulVoteCount = reviewVotesMap[review.id].length;
+                    review.currentUserHasVoted = currentUser ? !!hasVotedMap[currentUser.id] : false;
+                    review.hasVotedClass = review.currentUserHasVoted ? 'review-has-voted' : '';
+                }
+                return review;
+            });
+            setReviews(reviewsWithVotes);
+        }, errorHandler)
+        .catch(errorHandler)
+        .finally(() => {
+            setLoadingReviews(false);
+        });        
+    }
+
+    function errorHandler(error: any) {
+        console.error(error);
     }
 
     function onAddReviewButtonClicked(job: IJob) {

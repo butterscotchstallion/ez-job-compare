@@ -19,3 +19,13 @@ $verified-color: lightblue;
 .verified-text {
     color: $verified-color;
 }
+
+.employer-review-card .review-has-voted {
+    color: red;
+    cursor: default;
+}
+
+.review-is-helpful-button {
+    cursor: pointer;
+    color: #666;
+}

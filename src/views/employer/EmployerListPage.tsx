@@ -487,7 +487,7 @@ export default function EmployerListPage(props: any) {
                                                             >
                                                             <MoreVertIcon />
                                                         </IconButton>
-                                                    ) : ''}                                                    
+                                                    ) : ''}
                                                     <Menu
                                                         open={isSettingsMenuOpen}
                                                         onClose={onClose}

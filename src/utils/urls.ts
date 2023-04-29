@@ -63,7 +63,10 @@ const URLS = () => {
         "addReviewAPI": BASE_URL + 'employer/reviews',
         "addJobAPI": BASE_URL + 'employer/job',
         "recruitersAPI": BASE_URL + 'recruiters',
-        'usersAPI': BASE_URL + 'users'
+        'usersAPI': BASE_URL + 'users',
+        'helpfulReviewVotesAPI': (employerSlug: string) => {
+            return BASE_URL + 'employer/'+employerSlug+'/helpfulReviewVotes'
+        }
     };
 };
 export default URLS;

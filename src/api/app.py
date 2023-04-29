@@ -3,16 +3,11 @@ import logging as log
 import sys
 import traceback
 import json
-from flask import Flask
 from flask import Flask, jsonify, request
-from werkzeug.exceptions import HTTPException
 from flask_cors import CORS, cross_origin
-from util import DbUtils
-from util import PasswordUtils
-from models.user import User
-from models.employer import Employer
-from util import SecurityUtils
-
+from werkzeug.exceptions import HTTPException
+from util import DbUtils, PasswordUtils, SecurityUtils
+from models import User, Employer, HelpfulReviewVotes
 
 log.basicConfig(level=log.INFO)
 
@@ -24,7 +19,7 @@ db = DbUtils()
 security_utils = SecurityUtils()
 user_model = User()
 employer_model = Employer()
-
+review_votes_model = HelpfulReviewVotes()
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
@@ -348,13 +343,16 @@ def get_employer_reviews(slug):
         results = []
         if employer_id:
             query = '''
-                SELECT  r.body,
+                SELECT  r.id,
+                        r.body,
                         DATETIME(r.created_at, 'localtime') AS createdAt,
                         u.name AS reviewAuthor,
                         u.avatar_filename AS avatarFilename,
-                        u.id AS reviewAuthorUserId
+                        u.id AS reviewAuthorUserId,
+                        e.slug as employerSlug
                 FROM reviews r
                 JOIN users u ON u.id = r.user_id
+                JOIN employers e on e.id = r.employer_id
                 WHERE r.active = 1
                 AND r.employer_id = ?
                 ORDER BY r.created_at DESC
@@ -412,6 +410,51 @@ def get_employer_review_counts(user_id=None):
     finally:
         db.close_connection(conn)
 
+@cross_origin()
+@app.route("/api/v1/employer/<slug>/helpfulReviewVotes", methods=['GET'])
+def helpful_review_votes_route(slug):
+    return jsonify(review_votes_model.get_votes_by_employer_slug(slug))
+
+
+@cross_origin()
+@app.route("/api/v1/employer/<slug>/helpfulReviewVotes", methods=['POST'])
+def add_helpful_review_votes_route(slug):
+    '''
+    1. Check that we have a valid session user
+    2. Get votes for employer and map it up
+    3. Check if current user has voted on this review before
+    4. Send back access denied where necessary
+    '''
+    user = user_model.is_voter()
+    review_id = request.json['reviewId']
+    user_has_voted = False
+    if user and review_id:
+        '''
+        Two scenarios are possible here:
+        1. Employer has reviews
+        2. Employer has no reviews
+        '''
+        response = review_votes_model.get_votes_by_employer_slug(slug)
+        votes = response['results']
+        if votes:
+            review_votes_map = review_votes_model.get_review_votes_map(votes)
+
+            if review_id in review_votes_map:
+                review_votes = review_votes_map[review_id]
+                has_voted_map = review_votes_model.get_has_voted_map(review_votes)
+                user_has_voted = user['id'] in has_voted_map
+
+        if not user_has_voted:
+            log.info('Adding vote for review {} from user {} ({})'.format(
+                review_id,
+                user['name'],
+                user['id']
+            ))
+            return jsonify(review_votes_model.add_helpful_vote(review_id, user['id']))
+        else:
+            log.error('User {} has voted on review {} already'.format(user['name'], review_id))
+    else:
+        return get_access_denied_response()
 
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/verifiedEmployees", methods=['GET'])

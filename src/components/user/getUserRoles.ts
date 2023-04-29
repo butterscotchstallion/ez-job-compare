@@ -21,7 +21,11 @@ export function canPostReviews() {
 
 export function isVerifier() {
     return hasRole(UserRoles.VERIFIER);
-}
+};
+
+export function isVoter() {
+    return hasRole(UserRoles.VOTER);
+};
 
 export default function getUserRoles(): IRole[] {
     let roles: IRole[] = [];

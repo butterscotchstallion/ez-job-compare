@@ -256,6 +256,16 @@ class User:
             if r['name'] == role:
                 return True
 
+    def is_voter(self):
+        user = self.get_user_with_roles()
+        if user:
+            has_role = self.has_role('Voter', user['roles'])
+
+            if has_role:
+                return user
+        else:
+            return False
+
     def is_reviewer(self):
         '''Returns user object if true'''
         user = self.get_user_with_roles()
