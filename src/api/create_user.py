@@ -6,6 +6,8 @@ import logging as log
 import sqlite3
 from util import PasswordUtils
 from util import DbUtils
+from uuid import uuid4
+
 
 log.basicConfig(level=log.INFO)
 pw_utils = PasswordUtils()
@@ -37,14 +39,14 @@ def create_user(username):
         conn = db.connect_db(DB_PATH)
         if not user_exists(username):
             query = '''
-                INSERT INTO users(name, password)
-                VALUES(?, ?)
+                INSERT INTO users(name, password, guid)
+                VALUES(?, ?, ?)
             '''
             generated_password = pw_utils.generate_password()
             hashed = pw_utils.get_hashed_password(generated_password)
-            cursor = conn.execute(query, (username, hashed))
+            guid = str(uuid4())
+            cursor = conn.execute(query, (username, hashed, guid))
             conn.commit()
-
             log.info('User created!')
             log.info('Password: {}'.format(generated_password))
             return True
@@ -62,9 +64,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("username", type=str)
     args = parser.parse_args()
-
     create_user(args.username)
-
 
 if __name__ == "__main__":
     main()

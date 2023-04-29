@@ -18,6 +18,8 @@ import JobsPage from './views/jobs/JobsPage';
 import LoginPage from './views/user/LoginPage';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import axios from "axios";
+import { getToken } from "./components/user/token";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -26,6 +28,9 @@ const theme = createTheme({
         mode: 'dark'
     }
 });
+
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.headers.common['x-ezjobcompare-session-token'] = getToken();
 
 // Check user token
 isLoggedIn().then((response: any) => {

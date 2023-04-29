@@ -66,6 +66,9 @@ const URLS = () => {
         'usersAPI': BASE_URL + 'users',
         'helpfulReviewVotesAPI': (employerSlug: string) => {
             return BASE_URL + 'employer/'+employerSlug+'/helpfulReviewVotes'
+        },
+        'karmaAPI': (guid: string) => {
+            return BASE_URL + 'users/'+guid+'/karma';
         }
     };
 };

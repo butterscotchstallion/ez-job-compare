@@ -78,7 +78,8 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
             </CardContent>
             <CardActions disableSpacing>
                 <IconButton 
-                    aria-label="add to favorites"
+                    aria-label="This review is helpful"
+                    title="Indicates this review is helpful"
                     onClick={() => handleVoteClick(review)}>
                     <Badge badgeContent={review.helpfulVoteCount} color="secondary">
                         <FavoriteIcon 

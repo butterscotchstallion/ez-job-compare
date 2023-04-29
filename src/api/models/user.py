@@ -42,6 +42,7 @@ class User:
             query = '''
                 SELECT  u.id,
                         u.name,
+                        u.guid,
                         u.avatar_filename AS avatarFilename,
                         u.created_at AS createdAt,
                         u.updated_at AS updatedAt

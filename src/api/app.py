@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from werkzeug.exceptions import HTTPException
 from util import DbUtils, PasswordUtils, SecurityUtils
-from models import User, Employer, HelpfulReviewVotes
+from models import User, Employer, HelpfulReviewVotes, Karma
 
 log.basicConfig(level=log.INFO)
 
@@ -20,6 +20,7 @@ security_utils = SecurityUtils()
 user_model = User()
 employer_model = Employer()
 review_votes_model = HelpfulReviewVotes()
+karma_model = Karma()
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):
@@ -587,3 +588,12 @@ def get_recruiters(user_id):
 @app.route("/api/v1/users", methods=['GET'])
 def user_list_route():
     return jsonify(user_model.get_users())
+
+@cross_origin()
+@app.route("/api/v1/users/<guid>/karma", methods=['GET'])
+def user_karma_route(guid):
+    user = user_model.get_user_from_token_header()
+    if user:
+        return jsonify(karma_model.get_karma_by_user_id(user['id']))
+    else:
+        return security_utils.get_access_denied_response()
