@@ -1,16 +1,16 @@
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Badge, Card, CardActions, CardContent, CardHeader, CircularProgress, IconButton, Typography } from "@mui/material";
-import ReactTimeAgo from "react-time-ago";
-import UserAvatar from "../user/UserAvatar";
-import './reviews.scss';
-import VerifiedTitle from '../user/VerifiedTitle';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useState } from 'react';
-import { IReview } from '../../components/reviews/i-review.interface';
+import ReactTimeAgo from "react-time-ago";
 import addHelpfulReviewVote from '../../components/reviews/addHelpfulReviewVote';
+import { IReview } from '../../components/reviews/i-review.interface';
 import { isVoter } from '../../components/user/getUserRoles';
+import UserAvatar from "../user/UserAvatar";
+import VerifiedTitle from '../user/VerifiedTitle';
+import './reviews.scss';
 
-export default function EmployerReview({ review, verifiedEmployeesMap, userId }: any) {
+export default function EmployerReview({ review, verifiedEmployeesMap, userId, currentUserId }: any) {
     const user = {
         name: review.reviewAuthor,
         avatarFilename: review.avatarFilename
@@ -21,7 +21,8 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId }:
     const [loading, setLoading] = useState<boolean>(false);
 
     function handleVoteClick(review: IReview) {
-        if (!review.currentUserHasVoted && !loading && isVoter()) {
+        const isOwnReview = review.reviewAuthorUserId === currentUserId;
+        if (!review.currentUserHasVoted && !loading && isVoter() && !isOwnReview) {
             setLoading(true);
             addHelpfulReviewVote(review).then((response: any) => {
                 if (response.data.status === 'OK') {

@@ -306,7 +306,8 @@ export default function JobsDataGrid(props: any) {
                                 review={review}
                                 userId={review.reviewAuthorUserId}
                                 verifiedEmployeesMap={verifiedEmployeesMap}
-                                key={index} 
+                                key={index}
+                                currentUserId={currentUser ? currentUser.id : -1}
                             />
                         ))}
                     </DialogContent>
