@@ -23,6 +23,8 @@ import { canPostReviews } from '../../components/user/getUserRoles';
 import { getUser } from '../../components/user/userStorage';
 import formatDate from '../../utils/formatDate';
 import EmployerReview from '../reviews/EmployerReview';
+import getUserIdMap, { IUserIdMap } from '../../components/user/getUserIdMap';
+import IUser from '../../components/user/i-user.interface';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
@@ -34,9 +36,16 @@ export default function JobsDataGrid(props: any) {
     });
     const [reviews, setReviews] = useState<IReview[]>([]);
     const [loadingReviews, setLoadingReviews] = useState<boolean>(false);
+
+    /** 
+     * TODO: refactor this into selectedEmployer. Unfortunately we'll need
+     * to implement an employerId -> employer map because the we only get some
+     * of the employer properties from the job object.
+    */
     const [reviewEmployerName, setReviewEmployerName] = useState<string>('');
     const [reviewEmployerSlug, setReviewEmployerSlug] = useState<string>('');
     const [reviewEmployerId, setReviewEmployerId] = useState<number | null>(null);
+
     const [verifiedEmployeesMap, setVerifiedEmployeesMap] = useState<IVerifiedEmployeesMap>({});
     const [isAddReviewModalOpen, setisAddReviewModalOpen] = useState<boolean>(false);
     const [reviewBody, setReviewBody] = useState('');
@@ -44,6 +53,8 @@ export default function JobsDataGrid(props: any) {
     const [reviewFormValid, setReviewFormValid] = useState<boolean>(false);
     const [addReviewError, setAddReviewError] = useState<string>('');
     const currentUser = getUser();
+    const [userIdMap, setUserIdMap] = useState<IUserIdMap>();
+    const [karmaCaptainUserId, setKarmaCaptainUserId] = useState<number>();
     
     useEffect(() => {
         if (isOpen) {
@@ -71,7 +82,7 @@ export default function JobsDataGrid(props: any) {
                 props.onReviewSubmitted();
             } else {
                 setAddReviewError(response.data.message);
-            }            
+            }
         }, (error: any) => {
             setAddReviewError(error.message)
         }).finally(() => {
@@ -99,9 +110,12 @@ export default function JobsDataGrid(props: any) {
         setReviewEmployerSlug(job.employerSlug);
         setLoadingReviews(true);
         setIsOpen(true);
-        getReviewData(job).then((response: any) => {            
+        getReviewData(job).then((response: any) => {      
             setVerifiedEmployeesMap(getVerifiedEmployeesMap(response[1].data.results));
-            const reviews = response[0].data.results
+            const userMap: IUserIdMap = getUserIdMap(response[3].data.results);
+            setUserIdMap(userMap);
+            setKarmaCaptainUserId(response[4].data.results[0].userId);
+            const reviews = response[0].data.results;
             const helpfulVotes = response[2].data.results;
             const reviewVotesMap = getReviewVotesMap(helpfulVotes);
             const hasVotedMap = getHasVotedMap(helpfulVotes);
@@ -307,7 +321,9 @@ export default function JobsDataGrid(props: any) {
                                 userId={review.reviewAuthorUserId}
                                 verifiedEmployeesMap={verifiedEmployeesMap}
                                 key={index}
-                                currentUserId={currentUser ? currentUser.id : -1}
+                                currentUser={currentUser ? currentUser.id : null}
+                                userIdMap={userIdMap}
+                                karmaCaptainUserId={karmaCaptainUserId}
                             />
                         ))}
                     </DialogContent>

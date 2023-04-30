@@ -66,8 +66,12 @@ class User:
         try:
             conn = db.connect_db()
             query = '''
-                SELECT  u.name,
-                        u.id
+                SELECT  u.id,
+                        u.name,
+                        u.guid,
+                        u.avatar_filename AS avatarFilename,
+                        u.created_at AS createdAt,
+                        u.updated_at AS updatedAt
                 FROM users u
                 WHERE 1=1
                 AND u.active = 1

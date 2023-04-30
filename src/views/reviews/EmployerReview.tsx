@@ -9,19 +9,25 @@ import { isVoter } from '../../components/user/getUserRoles';
 import UserAvatar from "../user/UserAvatar";
 import VerifiedTitle from '../user/VerifiedTitle';
 import './reviews.scss';
+import IUser from '../../components/user/i-user.interface';
 
-export default function EmployerReview({ review, verifiedEmployeesMap, userId, currentUserId }: any) {
-    const user = {
-        name: review.reviewAuthor,
-        avatarFilename: review.avatarFilename
-    };
+export default function EmployerReview({ 
+        review,
+        verifiedEmployeesMap,
+        userId,
+        currentUser,
+        userIdMap,
+        karmaCaptainUserId
+    }: any) {
+    const reviewUser: IUser = userIdMap[review.reviewAuthorUserId];
+    reviewUser.isKarmaCaptain = reviewUser.id === karmaCaptainUserId;
     const isVerified = typeof verifiedEmployeesMap[userId] !== 'undefined';
     const verifiedInfo = isVerified ? verifiedEmployeesMap[userId] : null;
-    const avatarTitle = isVerified ? 'Verified employee' : 'Submitted by '+user.name;
+    const avatarTitle = isVerified ? 'Verified employee' : 'Submitted by '+reviewUser.name;
     const [loading, setLoading] = useState<boolean>(false);
 
     function handleVoteClick(review: IReview) {
-        const isOwnReview = review.reviewAuthorUserId === currentUserId;
+        const isOwnReview = review.reviewAuthorUserId === currentUser.id;
         if (!review.currentUserHasVoted && !loading && isVoter() && !isOwnReview) {
             setLoading(true);
             addHelpfulReviewVote(review).then((response: any) => {
@@ -42,8 +48,8 @@ export default function EmployerReview({ review, verifiedEmployeesMap, userId, c
             <CardHeader
                 className="employer-review-card-header"
                 avatar={
-                    <UserAvatar 
-                        user={user}
+                    <UserAvatar
+                        user={reviewUser}
                         title={avatarTitle}
                         className={isVerified ? 'verified' : ''}
                     />
