@@ -14,20 +14,20 @@ import IUser from '../../components/user/i-user.interface';
 export default function EmployerReview({ 
         review,
         verifiedEmployeesMap,
-        userId,
         currentUser,
         userIdMap,
         karmaCaptainUserId
     }: any) {
     const reviewUser: IUser = userIdMap[review.reviewAuthorUserId];
     reviewUser.isKarmaCaptain = reviewUser.id === karmaCaptainUserId;
-    const isVerified = typeof verifiedEmployeesMap[userId] !== 'undefined';
-    const verifiedInfo = isVerified ? verifiedEmployeesMap[userId] : null;
+    const reviewUserId = review.reviewAuthorUserId;
+    const isVerified = typeof verifiedEmployeesMap[reviewUserId] !== 'undefined';
+    const verifiedInfo = isVerified ? verifiedEmployeesMap[reviewUserId] : null;
     const avatarTitle = isVerified ? 'Verified employee' : 'Submitted by '+reviewUser.name;
     const [loading, setLoading] = useState<boolean>(false);
 
     function handleVoteClick(review: IReview) {
-        const isOwnReview = review.reviewAuthorUserId === currentUser.id;
+        const isOwnReview = reviewUserId === currentUser.id;
         if (!review.currentUserHasVoted && !loading && isVoter() && !isOwnReview) {
             setLoading(true);
             addHelpfulReviewVote(review).then((response: any) => {

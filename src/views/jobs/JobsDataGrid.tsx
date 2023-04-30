@@ -19,12 +19,11 @@ import { getHasVotedMap, getReviewVotesMap } from '../../components/reviews/getH
 import getReviewData from '../../components/reviews/getReviewData';
 import { IReview } from '../../components/reviews/i-review.interface';
 import TagList from '../../components/tag/TagList';
+import getUserIdMap, { IUserIdMap } from '../../components/user/getUserIdMap';
 import { canPostReviews } from '../../components/user/getUserRoles';
 import { getUser } from '../../components/user/userStorage';
 import formatDate from '../../utils/formatDate';
 import EmployerReview from '../reviews/EmployerReview';
-import getUserIdMap, { IUserIdMap } from '../../components/user/getUserIdMap';
-import IUser from '../../components/user/i-user.interface';
 
 export default function JobsDataGrid(props: any) {
     const isFilteringBySalary = props.isSearching && props.salaryRangeMin && props.salaryRangeMax;
@@ -318,10 +317,9 @@ export default function JobsDataGrid(props: any) {
                         ) : reviews.map((review: IReview, index: number) => (
                             <EmployerReview 
                                 review={review}
-                                userId={review.reviewAuthorUserId}
                                 verifiedEmployeesMap={verifiedEmployeesMap}
                                 key={index}
-                                currentUser={currentUser ? currentUser.id : null}
+                                currentUser={currentUser ? currentUser : null}
                                 userIdMap={userIdMap}
                                 karmaCaptainUserId={karmaCaptainUserId}
                             />
