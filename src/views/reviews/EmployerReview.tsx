@@ -5,7 +5,7 @@ import { useState } from 'react';
 import ReactTimeAgo from "react-time-ago";
 import addHelpfulReviewVote from '../../components/reviews/addHelpfulReviewVote';
 import { IReview } from '../../components/reviews/i-review.interface';
-import { isVoter } from '../../components/user/getUserRoles';
+import { isReviewAdmin, isVoter } from '../../components/user/getUserRoles';
 import UserAvatar from "../user/UserAvatar";
 import VerifiedTitle from '../user/VerifiedTitle';
 import './reviews.scss';
@@ -25,6 +25,7 @@ export default function EmployerReview({
     const verifiedInfo = isVerified ? verifiedEmployeesMap[reviewUserId] : null;
     const avatarTitle = isVerified ? 'Verified employee' : 'Submitted by '+reviewUser.name;
     const [loading, setLoading] = useState<boolean>(false);
+    const isAdmin = isReviewAdmin();
 
     function handleVoteClick(review: IReview) {
         const isOwnReview = reviewUserId === currentUser.id;
@@ -55,9 +56,11 @@ export default function EmployerReview({
                     />
                 }
                 action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                    </IconButton>
+                    isAdmin ? (
+                        <IconButton aria-label="settings">
+                            <MoreVertIcon />
+                        </IconButton>
+                    ) : ''
                 }
                 title={
                     <span className={isVerified ? 'verified-text' : ''}>

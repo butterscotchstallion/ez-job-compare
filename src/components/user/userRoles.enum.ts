@@ -2,5 +2,6 @@ export enum UserRoles {
     REVIEWER = 'Reviewer',
     RECRUITER = 'Recruiter',
     VERIFIER = 'Verifier',
-    VOTER = 'Voter'
+    VOTER = 'Voter',
+    REVIEW_ADMIN = 'Review Admin'
 };

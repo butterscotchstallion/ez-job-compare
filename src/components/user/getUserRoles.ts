@@ -27,6 +27,10 @@ export function isVoter() {
     return hasRole(UserRoles.VOTER);
 };
 
+export function isReviewAdmin() {
+    return hasRole(UserRoles.REVIEW_ADMIN);
+};
+
 export default function getUserRoles(): IRole[] {
     let roles: IRole[] = [];
     const user = getUser();

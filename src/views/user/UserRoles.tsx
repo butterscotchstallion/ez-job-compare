@@ -13,9 +13,7 @@ export default function UserRoles({ roles }: any) {
                 {processedRoles.map((role: any) => (
                     <Chip 
                         key={role.name} 
-                        style={{
-                            backgroundColor: role.color || ''
-                        }}
+                        color="primary"
                         label={role.name} />
                 ))}
             </div>
