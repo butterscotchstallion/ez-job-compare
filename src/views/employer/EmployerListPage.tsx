@@ -5,6 +5,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import ShareIcon from '@mui/icons-material/Share';
 import { Alert, Avatar, Badge, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Switch, TextField, Tooltip, Typography } from "@mui/material";
+import { DateField } from '@mui/x-date-pickers';
 import { filter, find } from "lodash";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -24,16 +25,13 @@ import getTagsEmployersList from "../../components/tag/getTagsEmployersList";
 import getTagsEmployersMap from "../../components/tag/getTagsEmployersMap";
 import { ITag } from "../../components/tag/i-tag.interface";
 import getUserRoles, { canPostJobs, isVerifier } from "../../components/user/getUserRoles";
+import IUser from '../../components/user/i-user.interface';
+import { IVerifyUser } from '../../components/user/i-verify-user.interface';
 import { getUser } from "../../components/user/userStorage";
+import '../../styles/form.scss';
 import Layout from "../Layout";
 import UserAutocomplete from '../user/UserAutocomplete';
-import { IVerifyUser } from '../../components/user/i-verify-user.interface';
-import IUser from '../../components/user/i-user.interface';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs from "dayjs";
 import './employer.scss';
-import '../../styles/form.scss';
-import { DateField } from '@mui/x-date-pickers';
 
 export default function EmployerListPage(props: any) {
     const [employers, setEmployers]: any = useState([]);

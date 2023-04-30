@@ -1,17 +1,15 @@
 import { Badge, Card, CardContent, CardHeader, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useEffect, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
+import getEmployersVerifiedMap, { IEmployersVerifiedMap } from "../../components/employer/getEmployersVerifiedMap";
+import getVerifiedEmployees from "../../components/employer/getVerifiedEmployees";
 import { IReviewCountList } from "../../components/reviews/getReviewCountMap";
 import getReviewsCountList from "../../components/reviews/getReviewsCountList";
+import getKarma from "../../components/user/getKarma";
 import UserAvatar from "./UserAvatar";
 import UserRoles from "./UserRoles";
-import './user-profile.scss';
-import getVerifiedEmployees from "../../components/employer/getVerifiedEmployees";
-import { IVerifiedEmployeesMap } from "../../components/employer/getVerifiedEmployeesMap";
-import getEmployersVerifiedMap, { IEmployersVerifiedMap } from "../../components/employer/getEmployersVerifiedMap";
-import { extend } from "lodash";
 import VerifiedTitle from "./VerifiedTitle";
-import getKarma from "../../components/user/getKarma";
+import './user-profile.scss';
 
 export default function UserProfile({ user }: any) {
     const [loading, setLoading] = useState(false);

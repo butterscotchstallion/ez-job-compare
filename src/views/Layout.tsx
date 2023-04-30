@@ -1,6 +1,6 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Avatar, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -14,10 +14,10 @@ import Typography from '@mui/material/Typography';
 import { ThemeProvider, styled } from '@mui/material/styles';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getUser } from '../components/user/userStorage';
 import '../styles/App.scss';
 import URLS from '../utils/urls';
 import { mainListItems, secondaryListItems } from './navItems';
-import { getUser } from '../components/user/userStorage';
 import LoggedInUserMenu from './user/LoggedInUserMenu';
 
 const drawerWidth: number = 240;

@@ -1,6 +1,6 @@
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import destroySession from "../../components/user/destroySession";
@@ -68,7 +68,7 @@ export default function LoggedInUserMenu({ user }: any) {
             <Button aria-controls={isMenuOpen ? 'user-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={isMenuOpen ? 'true' : undefined}
-                    onClick={onClick}>
+                    onClick={onClick}>                    
                 <UserAvatar 
                     user={user}
                     className="logged-in-menu-avatar"

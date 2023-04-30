@@ -1,7 +1,7 @@
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Badge, Card, CardActions, CardContent, CardHeader, CircularProgress, IconButton, Typography } from "@mui/material";
-import { useState } from 'react';
+import { Badge, Card, CardActions, CardContent, CardHeader, CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Typography } from "@mui/material";
+import { useRef, useState } from 'react';
 import ReactTimeAgo from "react-time-ago";
 import addHelpfulReviewVote from '../../components/reviews/addHelpfulReviewVote';
 import { IReview } from '../../components/reviews/i-review.interface';
@@ -10,6 +10,7 @@ import UserAvatar from "../user/UserAvatar";
 import VerifiedTitle from '../user/VerifiedTitle';
 import './reviews.scss';
 import IUser from '../../components/user/i-user.interface';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function EmployerReview({ 
         review,
@@ -25,6 +26,8 @@ export default function EmployerReview({
     const verifiedInfo = isVerified ? verifiedEmployeesMap[reviewUserId] : null;
     const avatarTitle = isVerified ? 'Verified employee' : 'Submitted by '+reviewUser.name;
     const [loading, setLoading] = useState<boolean>(false);
+    const [isReviewAdminMenuOpen, setIsReviewAdminMenuOpen] = useState<boolean>(false);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const isAdmin = isReviewAdmin();
 
     function handleVoteClick(review: IReview) {
@@ -44,6 +47,15 @@ export default function EmployerReview({
         }
     }
 
+    function onClose() {
+        setAnchorEl(null);
+    }
+
+    function onDeleteReviewClicked(event: React.MouseEvent<HTMLButtonElement>, reviewId: number) {
+        setAnchorEl(event.currentTarget);
+        setIsReviewAdminMenuOpen(true);
+    }
+
     return (
         <Card className="employer-review-card">
             <CardHeader
@@ -57,9 +69,25 @@ export default function EmployerReview({
                 }
                 action={
                     isAdmin ? (
-                        <IconButton aria-label="settings">
-                            <MoreVertIcon />
-                        </IconButton>
+                        <>
+                            <IconButton aria-label="settings">
+                                <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                                open={isReviewAdminMenuOpen}
+                                onClose={onClose}
+                                anchorEl={anchorEl}
+                                >
+                                <MenuList autoFocusItem={isReviewAdminMenuOpen}>
+                                    <MenuItem onClick={(e: any) => onDeleteReviewClicked(e, review.id)}>
+                                        <ListItemIcon>
+                                            <DeleteIcon />
+                                        </ListItemIcon>
+                                        <ListItemText>Delete review</ListItemText>
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
+                        </>
                     ) : ''
                 }
                 title={
