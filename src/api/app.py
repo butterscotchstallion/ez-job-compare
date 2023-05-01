@@ -277,7 +277,6 @@ def user_session_route():
     log.info('Checking token: {}'.format(token))
     return jsonify(user_model.is_session_active(token))
 
-
 def user_login(username, password):
     '''
     1. Check credentials
@@ -316,106 +315,18 @@ def user_login(username, password):
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/reviews", methods=['GET'])
 def employer_reviews_route(slug):
-    return jsonify(get_employer_reviews(slug))
-
-
-def get_employer_id_by_slug(slug):
-    try:
-        conn = db.connect_db()
-        query = '''
-            SELECT  e.id
-            FROM employers e 
-            WHERE e.slug = ?
-        '''
-        cursor = conn.execute(query, (slug,))
-        results = db.get_list_from_rows(cursor)
-        if results:
-            return results[0]['id']
-    except sqlite3.Error as er:
-        log.error('get_employer_id_by_slug error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
-
-
-def get_employer_reviews(slug):
-    try:
-        conn = db.connect_db()
-        employer_id = get_employer_id_by_slug(slug)
-        results = []
-        if employer_id:
-            query = '''
-                SELECT  r.id,
-                        r.body,
-                        DATETIME(r.created_at, 'localtime') AS createdAt,
-                        u.name AS reviewAuthor,
-                        u.avatar_filename AS avatarFilename,
-                        u.id AS reviewAuthorUserId,
-                        e.slug as employerSlug
-                FROM reviews r
-                JOIN users u ON u.id = r.user_id
-                JOIN employers e on e.id = r.employer_id
-                WHERE r.active = 1
-                AND r.employer_id = ?
-                ORDER BY r.created_at DESC
-            '''
-            cursor = conn.execute(query, (employer_id,))
-            results = db.get_list_from_rows(cursor)
-
-        return {
-            'status': 'OK',
-            'results': results
-        }
-    except sqlite3.Error as er:
-        log.error('get_employer_reviews error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
-
+    return jsonify(employer_model.get_employer_reviews(slug))
 
 @cross_origin()
 @app.route("/api/v1/employer/reviewCountList", methods=['GET'])
 def employer_review_count_list_route():
     user_id = request.args.get('userId')
-    return jsonify(get_employer_review_counts(user_id))
-
-
-def get_employer_review_counts(user_id=None):
-    '''Retrieves list of review counts for each employer'''
-    try:
-        conn = db.connect_db()
-        params = ()
-        user_id_where_clause = ''
-
-        if user_id:
-            user_id_where_clause = ' AND r.user_id = ? '
-            params = (user_id,)
-
-        query = '''
-            SELECT  employer_id AS employerId,
-                    e.name AS employerName,
-                    COUNT(*) AS reviewCount
-            FROM reviews r
-            JOIN employers e ON e.id = r.employer_id
-            WHERE 1=1
-            AND r.active = 1
-            ''' + user_id_where_clause + '''
-            GROUP BY employer_id
-        '''
-        cursor = conn.execute(query, params)
-        results = db.get_list_from_rows(cursor)
-        return {
-            'status': 'OK',
-            'results': results
-        }
-    except sqlite3.Error as er:
-        log.error('get_employer_review_count error: %s' % (' '.join(er.args)))
-    finally:
-        db.close_connection(conn)
+    return jsonify(employer_model.get_employer_review_counts(user_id))
 
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/helpfulReviewVotes", methods=['GET'])
 def helpful_review_votes_route(slug):
     return jsonify(review_votes_model.get_votes_by_employer_slug(slug))
-
 
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/helpfulReviewVotes", methods=['POST'])
@@ -453,9 +364,9 @@ def add_helpful_review_votes_route(slug):
             ))
             return jsonify(review_votes_model.add_helpful_vote(review_id, user['id']))
         else:
-            log.error('User {} has voted on review {} already'.format(user['name'], review_id))
+            log.error('User {} has already voted on review {}'.format(user['name'], review_id))
     else:
-        return get_access_denied_response()
+        return security_utils.get_access_denied_response()
 
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/verifiedEmployees", methods=['GET'])
@@ -476,38 +387,14 @@ def all_verified_employees_route():
 @cross_origin()
 @app.route("/api/v1/employer/reviews", methods=['POST'])
 def add_employer_review_route():
-    req_json = request.json
-    employer_id = req_json['employerId']
-    body = req_json['body']
-    return jsonify(add_employer_review(employer_id, body))
-
-
-def add_employer_review(employer_id, body):
-    user = user_model.is_reviewer()
+    user = user_model.get_user_by_token()
     if user:
-        try:
-            conn = db.connect_db()
-            user_id = user['id']
-            query = '''
-                INSERT INTO reviews(user_id, employer_id, body)
-                VALUES(?, ? , ?)
-            '''
-            cursor = conn.execute(query, (user['id'], employer_id, body))
-            conn.commit()
-            log.info('Added review for employer {} from user {}'.format(
-                employer_id, user_id))
-            return {
-                'status': 'OK'
-            }
-        except sqlite3.Error as er:
-            log.error('add_employer_review error: %s' %
-                      (' '.join(er.args)))
-        finally:
-            db.close_connection(conn)
+        req_json = request.json
+        employer_id = req_json['employerId']
+        body = req_json['body']
+        return jsonify(employer_model.add_employer_review(employer_id, body))
     else:
-        log.error('access denied to post review!')
         return security_utils.get_access_denied_response()
-
 
 @cross_origin()
 @app.route("/api/v1/employer/job", methods=['POST'])
