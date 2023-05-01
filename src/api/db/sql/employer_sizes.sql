@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS employer_sizes;
 CREATE TABLE employer_sizes (
-	id INTEGER PRIMARY KEY,
-	name VARCHAR(50)
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50)
 );
 
 INSERT INTO employer_sizes(name) VALUES('Tiny (1-25 employees)');

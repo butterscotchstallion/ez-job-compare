@@ -51,7 +51,6 @@ INSERT INTO roles_permissions(role_id, permission_id) VALUES(3, 3);
 INSERT INTO roles_permissions(role_id, permission_id) VALUES(4, 4);
 INSERT INTO roles_permissions(role_id, permission_id) VALUES(5, 5);
 
-
 -- User role defaults
 INSERT INTO users_roles(role_id, user_id) VALUES(1, 1);
 INSERT INTO users_roles(role_id, user_id) VALUES(2, 1);

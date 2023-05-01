@@ -1,11 +1,16 @@
 import logging as log
 import sqlite3
 from util import DbUtils
+from . import User
 
 db = DbUtils()
 log.basicConfig(level=log.INFO)
 
+
 class Employer:
+
+    def __init__(self, **kwargs):
+        self.user_model = kwargs['user_model']
 
     def get_recruiter_employers_by_user_id(self, user_id):
         try:
@@ -196,7 +201,7 @@ class Employer:
             db.close_connection(conn)
 
     def add_employer_review(self, employer_id, body):
-        user = user_model.is_reviewer()
+        user = self.user_model.is_reviewer()
         if user:
             try:
                 conn = db.connect_db()

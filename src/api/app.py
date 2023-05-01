@@ -19,7 +19,7 @@ db = DbUtils()
 security_utils = SecurityUtils()
 karma_model = Karma()
 user_model = User(karma_model=karma_model)
-employer_model = Employer()
+employer_model = Employer(user_model=user_model)
 review_votes_model = HelpfulReviewVotes()
 
 @app.errorhandler(HTTPException)
@@ -387,7 +387,7 @@ def all_verified_employees_route():
 @cross_origin()
 @app.route("/api/v1/employer/reviews", methods=['POST'])
 def add_employer_review_route():
-    user = user_model.get_user_by_token()
+    user = user_model.get_user_from_token_header()
     if user:
         req_json = request.json
         employer_id = req_json['employerId']

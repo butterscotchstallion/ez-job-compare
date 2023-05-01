@@ -1,17 +1,17 @@
 DROP TABLE IF EXISTS jobs;
 CREATE TABLE jobs (
-	id INTEGER PRIMARY KEY,
-	employer_id INTEGER,
-	title VARCHAR(255),
-	short_description VARCHAR(255),
-	long_description TEXT,
-	salary_range_start INTEGER,
-	salary_range_end INTEGER,
-	location VARCHAR(255),
-	created_at TEXT DEFAULT (DATETIME('now', 'localtime')),
-	updated_at TEXT,
-	slug VARCHAR(255),
-	FOREIGN KEY(employer_id) REFERENCES employers(id)
+    id INTEGER PRIMARY KEY,
+    employer_id INTEGER,
+    title VARCHAR(255),
+    short_description VARCHAR(255),
+    long_description TEXT,
+    salary_range_start INTEGER,
+    salary_range_end INTEGER,
+    location VARCHAR(255),
+    created_at TEXT DEFAULT (DATETIME('now', 'localtime')),
+    updated_at TEXT,
+    slug VARCHAR(255),
+    FOREIGN KEY(employer_id) REFERENCES employers(id)
 );
 
 -- Massive Dynamic
@@ -39,12 +39,12 @@ VALUES(2, 'General Manager', 'Manages store and its employees', 30000, 60000, 'l
 -- jobs_tags
 DROP TABLE IF EXISTS jobs_tags;
 CREATE TABLE jobs_tags(
-	id INTEGER PRIMARY KEY,
-	job_id INTEGER,
-	tag_id INTEGER,
-	created_at TEXT DEFAULT (DATETIME('now', 'localtime')),
-	FOREIGN KEY(job_id) REFERENCES jobs(id)
-	FOREIGN KEY(tag_id) REFERENCES tags(id)
+    id INTEGER PRIMARY KEY,
+    job_id INTEGER,
+    tag_id INTEGER,
+    created_at TEXT DEFAULT (DATETIME('now', 'localtime')),
+    FOREIGN KEY(job_id) REFERENCES jobs(id)
+    FOREIGN KEY(tag_id) REFERENCES tags(id)
 );
 
 INSERT INTO jobs_tags(job_id, tag_id) VALUES(1, 3);
