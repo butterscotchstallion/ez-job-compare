@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Layout from "./Layout";
-import Dashboard from "./Dashboard";
+import Dashboard from "./dashboard/Dashboard";
 
 export default function Home({ theme }: any) {
     useEffect(() => {

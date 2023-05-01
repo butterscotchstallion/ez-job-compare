@@ -5,14 +5,14 @@
  */
 import getJobCount from "./getJobCount";
 
-interface IJobCountMap {
+export interface IJobCountMap {
     [employerId: number]: number;
 };
-interface IJobMapListItem {
+export interface IJobMapListItem {
     employerName: string;
     employerId: number;
     jobCount: number;
-}
+};
 
 export default function getJobCountMap(): Promise<IJobCountMap> {
     return new Promise((resolve, reject) => {
