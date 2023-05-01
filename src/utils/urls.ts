@@ -70,7 +70,8 @@ const URLS = () => {
         'karmaAPI': (guid: string) => {
             return BASE_URL + 'users/'+guid+'/karma';
         },
-        'topKarmaAPI': BASE_URL + 'topKarmaUser'
+        'topKarmaAPI': BASE_URL + 'topKarmaUser',
+        'karmaSummary': BASE_URL + 'karmaSummary'
     };
 };
 export default URLS;

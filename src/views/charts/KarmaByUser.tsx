@@ -1,7 +1,6 @@
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-export default function JobsPerEmployerChart({ data }: any) {
-
+export default function KarmaByUser({ data }: any) {
     return (
         <BarChart 
             width={800}
@@ -9,11 +8,11 @@ export default function JobsPerEmployerChart({ data }: any) {
             data={data}
             >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="employerName" />
-            <YAxis dataKey="jobCount" />
+            <XAxis dataKey="name" />
+            <YAxis dataKey="karma" />
             <Legend />
             <Tooltip cursor={{fill: 'transparent'}} />
-            <Bar dataKey="jobCount" fill="#8884d8" />
+            <Bar dataKey="karma" fill="#8884d8" />
         </BarChart>
     );
 };

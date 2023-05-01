@@ -590,6 +590,15 @@ def user_list_route():
     return jsonify(user_model.get_users())
 
 @cross_origin()
+@app.route("/api/v1/karmaSummary", methods=['GET'])
+def karma_summary_route():
+    user = user_model.get_user_from_token_header()
+    if user:
+        return jsonify(karma_model.get_karma_summary())
+    else:
+        return security_utils.get_access_denied_response()
+
+@cross_origin()
 @app.route("/api/v1/users/<guid>/karma", methods=['GET'])
 def user_karma_route(guid):
     user = user_model.get_user_from_token_header()
