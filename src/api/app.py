@@ -215,6 +215,7 @@ def get_jobs_tags():
             FROM jobs_tags jt
             JOIN jobs j ON j.id = jt.job_id
             JOIN tags t ON t.id = jt.tag_id
+            ORDER BY t.name
         '''
         cursor = conn.execute(query)
         results = db.get_list_from_rows(cursor)
