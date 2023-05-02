@@ -6,9 +6,8 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import destroySession from './components/user/destroySession';
 import isLoggedIn from './components/user/isUserLoggedIn';
-import { setUser } from './components/user/userStorage';
+import { destroySession, getToken, setUser } from './components/user/userStorage';
 import reportWebVitals from './reportWebVitals';
 import EmployerListPage from './views/employer/EmployerListPage';
 import EmployerPage from './views/employer/EmployerPage';
@@ -19,7 +18,6 @@ import LoginPage from './views/user/LoginPage';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import axios from "axios";
-import { getToken } from "./components/user/token";
 
 TimeAgo.addDefaultLocale(en);
 

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import URLS from "../../utils/urls";
-import { getToken } from "./token";
+import { getToken } from "./userStorage";
 
 function isSessionActive() {
     return axios.get(URLS().isSessionActive);

@@ -3,11 +3,11 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import destroySession from "../../components/user/destroySession";
 import URLS from '../../utils/urls';
 import UserAvatar from './UserAvatar';
 import UserProfile from './UserProfile';
 import './logged-in-user-menu.scss';
+import { destroySession } from '../../components/user/userStorage';
 
 export default function LoggedInUserMenu({ user }: any) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

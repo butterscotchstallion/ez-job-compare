@@ -185,7 +185,7 @@ class User:
                 'status': 'ERROR',
                 'results': [
                     {
-                        'active': false
+                        'active': False
                     }
                 ]
             }

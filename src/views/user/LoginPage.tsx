@@ -5,8 +5,7 @@ import './login.scss';
 import login from "../../components/user/login";
 import { useNavigate } from "react-router-dom";
 import URLS from "../../utils/urls";
-import { setToken } from "../../components/user/token";
-import { setUser } from "../../components/user/userStorage";
+import { setToken, setUser } from "../../components/user/userStorage";
 import isLoggedIn from "../../components/user/isUserLoggedIn";
 
 export default function LoginPage(props: any) {

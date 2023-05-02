@@ -10,7 +10,7 @@ import { filter, find } from "lodash";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import getEmployers from "../../components/employer/getEmployers";
-import getEmployersRecruitersMap from "../../components/employer/getEmployersRecruitersMap";
+import getEmployersRecruitersMap, { IEmployersRecruitersMap } from "../../components/employer/getEmployersRecruitersMap";
 import getRecruiters from "../../components/employer/getRecruiters";
 import IEmployer from "../../components/employer/i-employer.interface";
 import addJob from "../../components/job/addJob";
@@ -119,6 +119,9 @@ export default function EmployerListPage(props: any) {
                             return e;
                         });
                         // Employers/users map
+                        if (response[3].data.status === 'ERROR') {
+                            throw new Error(response[3].data.message);
+                        }
                         const employersUsersMap = getEmployersRecruitersMap(response[3].data.results);
                         const employersWithUsers = employersWithCounts.map((e: IEmployer) => {
                             e.userIds = [];
@@ -127,6 +130,7 @@ export default function EmployerListPage(props: any) {
                             }
                             return e;
                         });
+                        
                         setEmployers(employersWithUsers);
                     });
                     
