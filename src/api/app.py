@@ -224,7 +224,12 @@ def get_jobs_tags():
             'results': results
         }
     except sqlite3.Error as er:
-        log.error('get_jobs_tags error: %s' % (' '.join(er.args)))
+        error = ' '.join(er.args)
+        log.error('get_jobs_tags error: %s' % (error))
+        return {
+            'status': 'ERROR',
+            'message': error
+        }
     finally:
         db.close_connection(conn)
 
