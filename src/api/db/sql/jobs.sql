@@ -22,7 +22,7 @@ VALUES(1, 'Dark Matter Specialist', 'Responsible for innovation in the dark matt
 
 INSERT INTO jobs(employer_id, title, short_description, salary_range_start, salary_range_end, long_description,
 slug, location)
-VALUES(1, 'Chronotech II', 'Responsible for technology that interacts with time', 250000, 550000, 'long description!',
+VALUES(1, 'Orange Goo Manager', 'Responsible for operations involving that orange goo.', 250000, 550000, 'long description!',
 '3-chronotech-ii', null);
 
 -- Los Pollos Hermanos

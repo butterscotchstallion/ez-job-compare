@@ -1,13 +1,12 @@
+import { CircularProgress } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
-import { ResponsiveContainer } from 'recharts';
 import getJobCount from '../../components/job/getJobCount';
 import getReviewsCountList from '../../components/reviews/getReviewsCountList';
 import { getKarmaSummary } from '../../components/user/getKarma';
 import JobsPerEmployerChart from '../charts/JobsPerEmployerChart';
 import KarmaByUser from '../charts/KarmaByUser';
 import ReviewsByEmployer from '../charts/ReviewsByEmployer';
-import { CircularProgress } from '@mui/material';
 
 export default function Dashboard() {
     const [loading, setLoading] = useState(false);

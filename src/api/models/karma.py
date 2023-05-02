@@ -43,7 +43,7 @@ class Karma:
                 JOIN reviews r ON r.id = v.review_id
                 WHERE 1=1
                 AND r.user_id = ?
-                GROUP BY v.user_id
+                GROUP BY r.user_id
             '''
             cursor = conn.execute(query, (user_id,))
             results = db.get_list_from_rows(cursor)

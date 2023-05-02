@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import getJobs from "../../components/job/getJobs";
 import { IJob } from "../../components/job/i-job.interface";
 import processJobs from "../../components/job/processJobs";
+import { IReviewCountList } from "../../components/reviews/getReviewCountMap";
+import getReviewsCountList from "../../components/reviews/getReviewsCountList";
 import Search from "../../components/search/Search";
 import getTags from "../../components/tag/getTags";
 import { ITag } from "../../components/tag/i-tag.interface";
 import Layout from "../Layout";
 import JobsDataGrid from "./JobsDataGrid";
 import './jobs.scss';
-import getReviewsCountList from "../../components/reviews/getReviewsCountList";
-import getReviewCountMap, { IReviewCountList } from "../../components/reviews/getReviewCountMap";
 
 export default function JobsPage(props: any) {
     const [loading, setLoading] = useState(false);
@@ -70,7 +70,7 @@ export default function JobsPage(props: any) {
                 setJobs(jobs);
             }).catch((error: any) => {
                 console.error(error);
-            });            
+            });
         }).catch((error) => {
             console.error(error);
         }).finally(() => {
