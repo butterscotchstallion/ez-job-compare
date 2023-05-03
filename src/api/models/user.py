@@ -237,6 +237,28 @@ class User:
             user['roles'] = self.get_roles_by_user_id(user['id'])
             return user
 
+    def add_role_id_to_user_id(self, role_id, user_id):
+        try:
+            conn = db.connect_db()
+            query = '''
+                INSERT INTO users_roles(role_id, user_id)
+                VALUES(?, ?)
+            '''
+            cursor = conn.execute(query, (role_id, user_id))
+            conn.commit()
+            return {
+                'status': 'OK'
+            }
+        except sqlite3.Error as er:
+            error = ' '.join(er.args)
+            log.error('add_role_id_to_user_id error: %s' % (error))
+            return {
+                'status': 'ERROR',
+                'message': error
+            }
+        finally:
+            db.close_connection(conn)
+
     def get_roles_by_user_id(self, user_id):
         try:
             conn = db.connect_db()
@@ -261,6 +283,24 @@ class User:
             }
         finally:
             db.close_connection(conn)
+
+    def add_voter_role_if_worthy(self, user_id, review_count):
+        '''
+        Get number of reviews for a given user id
+        and add voter role if it meets or exceeds the
+        minimum threshold
+        '''
+        REVIEW_COUNT_THRESHOLD = 5
+        if review_count >= REVIEW_COUNT_THRESHOLD:
+            log.info('Granting user {} voter role due to {} reviews'.format(user_id, review_count))
+            self.add_voter_role_to_user_id(user_id)
+        else:
+            log.info('User {} has {} reviews'.format(user_id, review_count))
+
+    def add_voter_role_to_user_id(self, user_id):
+        # Guaranteed to never changed and this is totally a good idea
+        VOTER_ROLE_ID = 4
+        self.add_role_id_to_user_id(VOTER_ROLE_ID, user_id)
 
     def has_role(self, role, roles):
         for r in roles:

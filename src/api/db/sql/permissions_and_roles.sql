@@ -29,6 +29,7 @@ CREATE TABLE users_roles(
     user_id INTEGER,
     created_at TEXT DEFAULT((DATETIME('now', 'localtime')))
 );
+CREATE UNIQUE INDEX IF NOT EXISTS UniqueUsersRolesUserId ON users_roles(user_id, role_id);
 
 -- Default roles/permissions
 INSERT INTO permissions(name) VALUES('Post employer reviews');

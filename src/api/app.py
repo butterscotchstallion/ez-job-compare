@@ -398,7 +398,12 @@ def add_employer_review_route():
         req_json = request.json
         employer_id = req_json['employerId']
         body = req_json['body']
-        return jsonify(employer_model.add_employer_review(employer_id, body))
+
+        # Check if user is eligible for Voter role
+        add_review_response = employer_model.add_employer_review(employer_id, body)
+        user_model.add_voter_role_if_worthy(user['id'], add_review_response['reviewCount'])
+        
+        return jsonify(add_review_response)
     else:
         return security_utils.get_access_denied_response()
 

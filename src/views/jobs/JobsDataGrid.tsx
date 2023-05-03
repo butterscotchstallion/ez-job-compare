@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PreviewIcon from '@mui/icons-material/Preview';
-import { Alert, Box, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, TextareaAutosize, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, TextField, TextareaAutosize, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -363,7 +363,7 @@ export default function JobsDataGrid(props: any) {
                                     required
                                     onChange={(e: any) => updateBody(e.target.value)}
                                 />
-                            </div>                          
+                            </div>
                         </DialogContent>
                         <DialogActions>
                             <Button

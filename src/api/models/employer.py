@@ -200,6 +200,32 @@ class Employer:
         finally:
             db.close_connection(conn)
 
+    def get_review_count_by_user_id(self, user_id):
+        '''Get the number of reviews authored by this user id'''
+        try:
+            conn = db.connect_db()
+            query = '''
+                SELECT COUNT(*) as reviewCount
+                FROM reviews r
+                WHERE r.user_id = ?
+            '''
+            cursor = conn.execute(query, (user_id,))
+            results = db.get_list_from_rows(cursor)
+            return {
+                'status': 'OK',
+                'results': results[0]['reviewCount']
+            }
+        except sqlite3.Error as er:
+            error = ' '.join(er.args)
+            log.error('get_review_count_by_user_id error: %s' %
+                      (error))
+            return {
+                'status': 'ERROR',
+                'message': error
+            }
+        finally:
+            db.close_connection(conn)
+
     def add_employer_review(self, employer_id, body):
         user = self.user_model.is_reviewer()
         if user:
@@ -214,8 +240,10 @@ class Employer:
                 conn.commit()
                 log.info('Added review for employer {} from user {}'.format(
                     employer_id, user_id))
+                review_count_results = self.get_review_count_by_user_id(user_id)
                 return {
-                    'status': 'OK'
+                    'status': 'OK',
+                    'reviewCount': review_count_results['results']
                 }
             except sqlite3.Error as er:
                 log.error('add_employer_review error: %s' %
