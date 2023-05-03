@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { employerApi } from './components/employer/employersSlice';
 import { setupListeners } from '@reduxjs/toolkit/dist/query';
 
-export const store = configureStore({
+export const store: any = configureStore({
   reducer: {
     [employerApi.reducerPath]: employerApi.reducer
   },

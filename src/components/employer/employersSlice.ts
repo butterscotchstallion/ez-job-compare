@@ -8,9 +8,15 @@ export const employerApi = createApi({
         fetchAll: builder.query({
             query: () => `employees`,
             transformResponse: (response: any) => {
-                
+
             }
         }),
+        jobCountByEmployer: builder.query({
+            query: () => `employers/jobCount`,
+            transformResponse: (response: any) => {
+                
+            }
+        })
     })
 });
 
