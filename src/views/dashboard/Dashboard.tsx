@@ -7,6 +7,7 @@ import { getKarmaSummary } from '../../components/user/getKarma';
 import JobsPerEmployerChart from '../charts/JobsPerEmployerChart';
 import KarmaByUser from '../charts/KarmaByUser';
 import ReviewsByEmployer from '../charts/ReviewsByEmployer';
+import { useGetJobCountsQuery } from '../../components/employer/employersSlice';
 
 export default function Dashboard() {
     const [loading, setLoading] = useState(false);
@@ -20,7 +21,8 @@ export default function Dashboard() {
     }, []);
 
     function setUpCharts() {
-        setLoading(true);
+        const { data, error, isLoading } = useGetJobCountsQuery();
+        /*setLoading(true);
         Promise.all([
             getJobCount(),
             getKarmaSummary(),
@@ -33,7 +35,7 @@ export default function Dashboard() {
             console.error(error);
         }).finally(() => {
             setLoading(false);
-        });
+        });*/
     }
 
     return (

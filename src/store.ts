@@ -1,13 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { employerApi } from './components/employer/employersSlice';
+import { employersApi } from './components/employer/employersSlice';
 import { setupListeners } from '@reduxjs/toolkit/dist/query';
+import { tagsApi } from './components/tag/tagsSlice';
+import { jobsApi } from './components/job/jobSlice';
 
 export const store: any = configureStore({
   reducer: {
-    [employerApi.reducerPath]: employerApi.reducer
+    [employersApi.reducerPath]: employersApi.reducer,
+    [tagsApi.reducerPath]: tagsApi.reducer,
+    [jobsApi.reducerPath]: jobsApi.reducer
   },
   middleware: (getDefaultMiddleware) => 
-    getDefaultMiddleware().concat(employerApi.middleware),
+    getDefaultMiddleware().concat(employersApi.middleware),
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
