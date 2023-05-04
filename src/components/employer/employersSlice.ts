@@ -13,19 +13,14 @@ export interface IJobCountMap {
 export const employersApi = createApi({
     reducerPath: 'employersApi',
     baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
-    endpoints: (builder: any) => ({
+    endpoints: (builder) => ({
         getEmployers: builder.query({
             query: () => `employers`
         }),
-        getJobCounts: builder.query({
+        getJobCounts: builder.query<IJobCountMap, void>({
             query: () => `employers/jobCount`,
             transformResponse: (response: any) => {
-                const jobMap: IJobCountMap = {};
-                const jobMapList = response.data.results;
-                jobMapList.map((item: IJobMapListItem) => {
-                    return jobMap[item.employerId] = item.jobCount;
-                });
-                return jobMap;
+                return response.results;
             }
         }),
         getRecruiters: builder.query({
