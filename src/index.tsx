@@ -1,7 +1,9 @@
 import { createTheme } from "@mui/material";
+import axios from "axios";
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en.json';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -9,17 +11,13 @@ import {
 import isLoggedIn from './components/user/isUserLoggedIn';
 import { destroySession, getToken, setUser } from './components/user/userStorage';
 import reportWebVitals from './reportWebVitals';
+import { store } from './store';
 import EmployerListPage from './views/employer/EmployerListPage';
 import EmployerPage from './views/employer/EmployerPage';
 import ErrorPage from './views/Error';
 import Home from './views/Home';
 import JobsPage from './views/jobs/JobsPage';
 import LoginPage from './views/user/LoginPage';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import axios from "axios";
-import { store } from './store'
-import { Provider } from 'react-redux'
 
 TimeAgo.addDefaultLocale(en);
 
@@ -79,11 +77,10 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+//const queryClient = new QueryClient();
 root.render(
   <Provider store={store}>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <RouterProvider router={router} />
-    </LocalizationProvider>
+        <RouterProvider router={router} />
   </Provider>
 );
 

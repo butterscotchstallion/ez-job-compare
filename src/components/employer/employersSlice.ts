@@ -17,7 +17,7 @@ export const employersApi = createApi({
         getEmployers: builder.query({
             query: () => `employers`
         }),
-        getJobCounts: builder.query<IJobCountMap, void>({
+        getJobCounts: builder.query<any, void>({
             query: () => `employers/jobCount`,
             transformResponse: (response: any) => {
                 return response.results;

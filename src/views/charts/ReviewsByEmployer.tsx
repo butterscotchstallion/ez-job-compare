@@ -26,7 +26,7 @@ export default function ReviewsByEmployer({ data }: any) {
             fill="#8884d8"
             dataKey="reviewCount"
           >
-            {data.map((entry: any, index: number) => (
+            {data?.map((entry: any, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>

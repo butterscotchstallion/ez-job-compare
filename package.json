@@ -67,6 +67,7 @@
     "@types/enzyme": "^3.10.12",
     "@types/lodash": "^4.14.192",
     "@types/react-highlight-words": "^0.16.4",
+    "@types/react-query": "^1.2.9",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.5.0",
     "enzyme": "^3.11.0",

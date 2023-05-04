@@ -1,34 +1,32 @@
 import { CircularProgress, Grid } from '@mui/material';
+import { useGetKarmaByUserQuery, useGetReviewsByEmployerQuery } from '../../components/charts/chartsSlice';
 import { useGetJobCountsQuery } from '../../components/employer/employersSlice';
-import { useEffect, useState } from 'react';
 import JobsPerEmployerChart from '../charts/JobsPerEmployerChart';
+import KarmaByUser from '../charts/KarmaByUser';
+import ReviewsByEmployer from '../charts/ReviewsByEmployer';
 
 export default function Dashboard() {
-    const [jobsPerEmployer, setJobsPerEmployer] = useState<any>();
-    const { data, error, isLoading } = useGetJobCountsQuery();
-
-    useEffect(() => {
-        if (!isLoading) {
-            setJobsPerEmployer(<JobsPerEmployerChart data={data} />);
-        }
-    }, [isLoading]);   
-
+    const {data: jobCountData, isLoading: jobCountsLoading } = useGetJobCountsQuery();
+    const {data: karmaData, isLoading: karmaLoading, isSuccess: karmaSucces, error: karmaError} = useGetKarmaByUserQuery();
+    const {data: reviewsData, isLoading: reviewsLoading} = useGetReviewsByEmployerQuery();
     return (
         <Grid container spacing={4}>
             <Grid item xs={12}>
                 <h4>Jobs by Employer</h4>
-                {isLoading ? <CircularProgress /> : ''}
-                {jobsPerEmployer}
+                {jobCountsLoading ? <CircularProgress /> : ''}
+                <JobsPerEmployerChart data={jobCountData} />
             </Grid>
             <Grid item xs={12}>
                 <h4>Karma by User</h4>
-                {isLoading ? <CircularProgress /> : ''}
-                {/*karmaSummary*/}
+                {karmaLoading ? <CircularProgress /> : ''}
+                {karmaSucces ? (
+                    <KarmaByUser data={karmaData} />
+                ) : 'Error: '+karmaError}
             </Grid>
             <Grid item xs={12}>
                 <h4>Reviews by Employer</h4>
-                {isLoading ? <CircularProgress /> : ''}
-                {/*reviewsByEmployer*/}
+                {reviewsLoading ? <CircularProgress /> : ''}
+                <ReviewsByEmployer data={reviewsData} />
             </Grid>
         </Grid> 
     );
