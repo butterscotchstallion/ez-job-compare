@@ -54,34 +54,51 @@ const router = createBrowserRouter([
   },
   {
     path: "/employers",
-    element: <EmployerListPage theme={theme} />
+    element: (
+      <Provider store={store}>
+        <EmployerListPage theme={theme} store={store} />
+      </Provider>
+    )
   },
   {
     path: '/employers/tag/:tagSlug',
-    element: <EmployerListPage theme={theme} />
+    element: (
+      <Provider store={store}>
+        <EmployerListPage theme={theme} store={store} />
+      </Provider>
+    )
   },
   {
     path: '/employers/:employerSlug',
-    element: <EmployerPage theme={theme} />
+    element: (
+      <Provider store={store}>
+        <EmployerPage theme={theme} store={store} />
+      </Provider>
+    )
   },
   {
     path: '/jobs',
-    element: <JobsPage theme={theme} />
+    element: (
+      <Provider store={store}>
+        <JobsPage theme={theme} store={store} />
+      </Provider>
+    )
   }, 
   {
     path: '/user/login',
-    element: <LoginPage theme={theme} />
+    element: (
+      <Provider store={store}>
+        <LoginPage theme={theme} store={store} />
+      </Provider>
+    )
   },
 ]);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-//const queryClient = new QueryClient();
 root.render(
-  <Provider store={store}>
-        <RouterProvider router={router} />
-  </Provider>
+  <RouterProvider router={router} />
 );
 
 // If you want to start measuring performance in your app, pass a function

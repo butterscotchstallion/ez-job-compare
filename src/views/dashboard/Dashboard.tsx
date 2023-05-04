@@ -19,9 +19,10 @@ export default function Dashboard() {
             <Grid item xs={12}>
                 <h4>Karma by User</h4>
                 {karmaLoading ? <CircularProgress /> : ''}
+                {karmaError ? 'Error: '+(karmaError as any).message : ''}
                 {karmaSucces ? (
                     <KarmaByUser data={karmaData} />
-                ) : 'Error: '+karmaError}
+                ) : ''}
             </Grid>
             <Grid item xs={12}>
                 <h4>Reviews by Employer</h4>

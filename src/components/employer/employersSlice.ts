@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BASE_URL } from '../../utils/urls';
+import { RootState } from '../../store';
 
 export interface IJobMapListItem {
     employerName: string;
@@ -10,7 +11,7 @@ export interface IJobCountMap {
     [employerId: number]: number;
 };
 
-export const employersApi = createApi({
+export const employersApi: RootState = createApi({
     reducerPath: 'employersApi',
     baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
     endpoints: (builder) => ({

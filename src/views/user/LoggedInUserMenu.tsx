@@ -1,15 +1,17 @@
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import URLS from '../../utils/urls';
 import UserAvatar from './UserAvatar';
 import UserProfile from './UserProfile';
 import './logged-in-user-menu.scss';
 import { destroySession } from '../../components/user/userStorage';
+import IUser from '../../components/user/i-user.interface';
 
 export default function LoggedInUserMenu({ user }: any) {
+    const [loggedInUser, setLoggedInUser] = useState<IUser|null>();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isMenuOpen, setMenuOpen] = useState<boolean>(false);
     const [isProfileModalOpen, setProfileModalOpen] = useState(false);
@@ -33,6 +35,10 @@ export default function LoggedInUserMenu({ user }: any) {
     const handlePost = () => {
 
     };
+
+    useEffect(() => {
+        setLoggedInUser(user);
+    }, []);
 
     return (
         <>

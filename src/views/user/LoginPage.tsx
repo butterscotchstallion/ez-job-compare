@@ -7,14 +7,17 @@ import { useNavigate } from "react-router-dom";
 import URLS from "../../utils/urls";
 import { setToken, setUser } from "../../components/user/userStorage";
 import isLoggedIn from "../../components/user/isUserLoggedIn";
+import { setCredentials } from "../../components/user/authSlice";
+import { useDispatch } from "react-redux";
 
-export default function LoginPage(props: any) {
+export default function LoginPage({ theme, store }: any) {
     const [loginError, setLoginError] = useState('');
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         document.title = 'Log in';
@@ -42,13 +45,13 @@ export default function LoginPage(props: any) {
         login(username, password).then((response: any) => {
             if (response.data.status === 'OK') {
                 const token = response.data.results[0].token;
-                if (token) {
-                    setToken(token);
-                    setUser(response.data.results[0].user);
-                    // Checking session populates roles which are necessary
-                    isLoggedIn().then(() => {
-                        navigate(URLS().jobsPage);
-                    });                    
+                const user = response.data.results[0].user;
+                if (token && user) {
+                    dispatch(setCredentials({
+                        user: user, 
+                        token: token
+                    }));
+                    navigate(URLS().jobsPage);
                 } else {
                     setLoginError('Invalid token returned from API!');
                 }
@@ -64,7 +67,7 @@ export default function LoginPage(props: any) {
     }
 
     return (
-        <Layout theme={props.theme} areaTitle="Login">
+        <Layout theme={theme} store={store} areaTitle="Login">
             <Grid container>
                 <Grid item xs={6}>
                     {loginError ? (

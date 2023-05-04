@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { setupListeners } from '@reduxjs/toolkit/dist/query';
 import { chartsApi } from './components/charts/chartsSlice';
 import { employersApi } from './components/employer/employersSlice';
 import { jobsApi } from './components/job/jobSlice';
 import { tagsApi } from './components/tag/tagsSlice';
+import { setupListeners } from '@reduxjs/toolkit/query';
 
 export const store: any = configureStore({
   reducer: {

@@ -19,6 +19,8 @@ import '../styles/App.scss';
 import URLS from '../utils/urls';
 import { mainListItems, secondaryListItems } from './navItems';
 import LoggedInUserMenu from './user/LoggedInUserMenu';
+import { selectCurrentUser } from '../components/user/authSlice';
+import { useAuth } from '../components/user/useAuth';
 
 const drawerWidth: number = 240;
 interface AppBarProps extends MuiAppBarProps {
@@ -70,12 +72,12 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
   
 function LayoutContent(props: any) {
+    const user = useAuth();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
       setOpen(!open);
     };
     const navigate = useNavigate();
-    const user = getUser();
     
     function navigateToLogin() {
         navigate(URLS().login);
@@ -167,5 +169,6 @@ export default function Layout(props: any) {
     return <LayoutContent 
                 theme={props.theme} 
                 children={props.children}
-                areaTitle={props.areaTitle} />;
+                areaTitle={props.areaTitle}
+                store={props.store} />;
 }
