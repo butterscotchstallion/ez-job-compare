@@ -20,7 +20,6 @@ class DbUtils:
         if connection:
             connection.close()
 
-
     def get_list_from_rows(self, cursor):
         results = []
 

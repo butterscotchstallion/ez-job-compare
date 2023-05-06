@@ -1,9 +1,10 @@
 import logging as log
 import sqlite3
 from util import DbUtils
-from . import User
+from util import SecurityUtils
 
 db = DbUtils()
+security_utils = SecurityUtils()
 log.basicConfig(level=log.INFO)
 
 
@@ -13,6 +14,7 @@ class Employer:
         self.user_model = kwargs['user_model']
 
     def get_recruiter_employers_by_user_id(self, user_id):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -38,6 +40,7 @@ class Employer:
 
 
     def get_employers(self, slug=None):
+        conn = None
         try:
             conn = db.connect_db()
             params = ()
@@ -72,6 +75,7 @@ class Employer:
             db.close_connection(conn)
 
     def get_verified_employees(self, slug=None, user_id=None):
+        conn = None
         try:
             conn = db.connect_db()
             where_clause = ''
@@ -111,7 +115,7 @@ class Employer:
             }
         except sqlite3.Error as er:
             error = ' '.join(er.args)
-            log.error('get_verified_employees error: %s' % (error))
+            log.error('get_verified_employees error: %s' % error)
             return {
                 'status': 'ERROR',
                 'message': error
@@ -120,6 +124,7 @@ class Employer:
             db.close_connection(conn)
 
     def get_employer_id_by_slug(self, slug):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -137,9 +142,9 @@ class Employer:
             db.close_connection(conn)
 
     def get_employer_reviews(self, slug):
+        conn = None
         try:
             conn = db.connect_db()
-            results = []
             query = '''
                 SELECT  r.id,
                         r.body,
@@ -168,7 +173,8 @@ class Employer:
             db.close_connection(conn)
 
     def get_employer_review_counts(self, user_id=None):
-        '''Retrieves list of review counts for each employer'''
+        """Retrieves list of review counts for each employer"""
+        conn = None
         try:
             conn = db.connect_db()
             params = ()
@@ -201,7 +207,8 @@ class Employer:
             db.close_connection(conn)
 
     def get_review_count_by_user_id(self, user_id):
-        '''Get the number of reviews authored by this user id'''
+        """Get the number of reviews authored by this user id"""
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -217,8 +224,7 @@ class Employer:
             }
         except sqlite3.Error as er:
             error = ' '.join(er.args)
-            log.error('get_review_count_by_user_id error: %s' %
-                      (error))
+            log.error('get_review_count_by_user_id error: %s' % error)
             return {
                 'status': 'ERROR',
                 'message': error
@@ -227,6 +233,7 @@ class Employer:
             db.close_connection(conn)
 
     def add_employer_review(self, employer_id, body):
+        conn = None
         user = self.user_model.is_reviewer()
         if user:
             try:
@@ -236,7 +243,7 @@ class Employer:
                     INSERT INTO reviews(user_id, employer_id, body)
                     VALUES(?, ? , ?)
                 '''
-                cursor = conn.execute(query, (user['id'], employer_id, body))
+                conn.execute(query, (user['id'], employer_id, body))
                 conn.commit()
                 log.info('Added review for employer {} from user {}'.format(
                     employer_id, user_id))

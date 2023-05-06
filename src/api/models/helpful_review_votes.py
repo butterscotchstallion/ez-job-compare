@@ -7,23 +7,24 @@ log.basicConfig(level=log.INFO)
 
 
 class HelpfulReviewVotes:
-    '''Handles votes on employer reviews'''
+    """Handles votes on employer reviews"""
 
     def add_helpful_vote(self, review_id, user_id):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
                 INSERT INTO helpful_review_votes(review_id, user_id)
                 VALUES(?, ?)
             '''
-            cursor = conn.execute(query, (review_id, user_id))
+            conn.execute(query, (review_id, user_id))
             conn.commit()
             return {
                 'status': 'OK',
                 'message': 'Vote recorded'
             }
         except sqlite3.Error as er:
-            log.error('add_helpful_vote error: %s' % (er))
+            log.error('add_helpful_vote error: %s' % er)
         finally:
             db.close_connection(conn)
 
@@ -50,6 +51,7 @@ class HelpfulReviewVotes:
         return vote_map
 
     def get_votes_by_employer_slug(self, employer_slug):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''

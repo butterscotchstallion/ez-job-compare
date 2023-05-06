@@ -20,9 +20,11 @@ CREATE TABLE audit_log_user (
     id INTEGER PRIMARY KEY,
     user_id INTEGER,
     action_type_id INTEGER,
+    role_id INTEGER,
     note VARCHAR(255),
     FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(action_type_id) REFERENCES action_types(id)
+    FOREIGN KEY(action_type_id) REFERENCES action_types(id),
+    FOREIGN KEY(role_id) REFERENCES roles(id)
 );
 
 DROP TABLE IF EXISTS audit_log_job;
@@ -39,8 +41,10 @@ DROP TABLE IF EXISTS audit_log_review;
 CREATE TABLE audit_log_reviews(
     id INTEGER PRIMARY KEY,
     user_id INTEGER,
+    review_id INTEGER,
     action_type_id INTEGER,
     note VARCHAR(255),
     FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(action_type_id) REFERENCES action_types(id)
+    FOREIGN KEY(action_type_id) REFERENCES action_types(id),
+    FOREIGN KEY(review_id) REFERENCES employer_reviews(id)
 );

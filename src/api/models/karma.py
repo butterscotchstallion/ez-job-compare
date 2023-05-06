@@ -9,6 +9,7 @@ log.basicConfig(level=log.INFO)
 class Karma:
 
     def get_top_karma_user(self):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -34,18 +35,20 @@ class Karma:
         finally:
             db.close_connection(conn)
 
-    def get_karma_by_user_id(self, user_id):
+    def get_karma_by_guid(self, guid):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
                 SELECT COUNT(*) as karma
                 FROM helpful_review_votes v
                 JOIN reviews r ON r.id = v.review_id
+                JOIN users u ON u.id = r.user_id
                 WHERE 1=1
-                AND r.user_id = ?
+                AND u.guid = ?
                 GROUP BY r.user_id
             '''
-            cursor = conn.execute(query, (user_id,))
+            cursor = conn.execute(query, (guid,))
             results = db.get_list_from_rows(cursor)
             return {
                 'status': 'OK',
@@ -58,6 +61,7 @@ class Karma:
             db.close_connection(conn)
 
     def get_karma_summary(self):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''

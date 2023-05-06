@@ -7,14 +7,21 @@ db = DbUtils()
 pw_utils = PasswordUtils()
 log.basicConfig(level=log.INFO)
 
+# Guaranteed to never changed and this is totally a good idea
+VOTER_ROLE_ID = 4
+REVIEW_COUNT_THRESHOLD = 5
+
 class User:
-    '''User/session model'''
+    """
+    User/session model
+    """
 
     def __init__(self, **kwargs):
         self.karma_model = kwargs['karma_model']
 
     def check_credentials(self, username, password):
-        '''Checks if supplied username and password matches'''
+        """Checks if supplied username and password matches"""
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -38,7 +45,8 @@ class User:
             db.close_connection(conn)
 
     def get_user_by_token(self, token):
-        '''Retrieve user info based on session token'''
+        """Retrieve user info based on session token"""
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -63,6 +71,7 @@ class User:
             db.close_connection(conn)
 
     def get_users(self):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -85,7 +94,7 @@ class User:
             }
         except sqlite3.Error as er:
             error = ' '.join(er.args)
-            log.error('get_users error: %s' % (error))
+            log.error('get_users error: %s' % error)
             return {
                 'status': 'ERROR',
                 'message': error
@@ -94,7 +103,8 @@ class User:
             db.close_connection(conn)
 
     def get_or_create_session_token(self, username):
-        '''Returns session token if exists, creates if not'''
+        """Returns session token if exists, creates if not"""
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -122,7 +132,7 @@ class User:
                         REPLACE INTO user_tokens(user_id, token, created_at)
                         VALUES(?, ?, DATE('now', 'localtime'))
                     '''
-                    cursor = conn.execute(query, (user_id, token))
+                    conn.execute(query, (user_id, token))
                     conn.commit()
                     log.info('Created new token for user {}:{}'.format(
                         username, token))
@@ -137,6 +147,7 @@ class User:
             db.close_connection(conn)
 
     def is_session_active(self, token):
+        conn = None
         if token:
             try:
                 conn = db.connect_db()
@@ -191,6 +202,7 @@ class User:
             }
 
     def get_user_id_by_username(self, username):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -209,6 +221,7 @@ class User:
             db.close_connection(conn)
 
     def update_session_token(self, token):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -217,7 +230,7 @@ class User:
                 created_at = DATETIME('now', 'localtime')
                 WHERE token = ?
             '''
-            cursor = conn.execute(query, (token,))
+            conn.execute(query, (token,))
             conn.commit()
             return True
         except sqlite3.Error as er:
@@ -238,20 +251,21 @@ class User:
             return user
 
     def add_role_id_to_user_id(self, role_id, user_id):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
                 INSERT INTO users_roles(role_id, user_id)
                 VALUES(?, ?)
             '''
-            cursor = conn.execute(query, (role_id, user_id))
+            conn.execute(query, (role_id, user_id))
             conn.commit()
             return {
                 'status': 'OK'
             }
         except sqlite3.Error as er:
             error = ' '.join(er.args)
-            log.error('add_role_id_to_user_id error: %s' % (error))
+            log.error('add_role_id_to_user_id error: %s' % error)
             return {
                 'status': 'ERROR',
                 'message': error
@@ -260,6 +274,7 @@ class User:
             db.close_connection(conn)
 
     def get_roles_by_user_id(self, user_id):
+        conn = None
         try:
             conn = db.connect_db()
             query = '''
@@ -276,7 +291,7 @@ class User:
             return db.get_list_from_rows(cursor)
         except sqlite3.Error as er:
             error = ' '.join(er.args)
-            log.error('get_roles_by_user_id error: %s' % (error))
+            log.error('get_roles_by_user_id error: %s' % error)
             return {
                 'status': 'ERROR',
                 'message': error
@@ -285,12 +300,11 @@ class User:
             db.close_connection(conn)
 
     def add_voter_role_if_worthy(self, user_id, review_count):
-        '''
+        """
         Get number of reviews for a given user id
         and add voter role if it meets or exceeds the
         minimum threshold
-        '''
-        REVIEW_COUNT_THRESHOLD = 5
+        """
         if review_count >= REVIEW_COUNT_THRESHOLD:
             log.info('Granting user {} voter role due to {} reviews'.format(user_id, review_count))
             self.add_voter_role_to_user_id(user_id)
@@ -298,8 +312,6 @@ class User:
             log.info('User {} has {} reviews'.format(user_id, review_count))
 
     def add_voter_role_to_user_id(self, user_id):
-        # Guaranteed to never changed and this is totally a good idea
-        VOTER_ROLE_ID = 4
         self.add_role_id_to_user_id(VOTER_ROLE_ID, user_id)
 
     def has_role(self, role, roles):
@@ -318,7 +330,7 @@ class User:
             return False
 
     def is_reviewer(self):
-        '''Returns user object if true'''
+        """Returns user object if true"""
         user = self.get_user_with_roles()
         if user:
             has_role = self.has_role('Reviewer', user['roles'])

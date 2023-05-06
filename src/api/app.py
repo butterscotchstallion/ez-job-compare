@@ -1,12 +1,10 @@
 import sqlite3
 import logging as log
-import sys
-import traceback
 import json
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from werkzeug.exceptions import HTTPException
-from util import DbUtils, PasswordUtils, SecurityUtils
+from util import DbUtils, SecurityUtils
 from models import User, Employer, HelpfulReviewVotes, Karma
 
 log.basicConfig(level=log.INFO)
@@ -66,6 +64,7 @@ def list_tags():
 
 
 def get_tags():
+    conn = None
     try:
         conn = db.connect_db()
         query = '''
@@ -97,6 +96,7 @@ def list_employer_tags_map():
 
 
 def get_employers_tags():
+    conn = None
     try:
         conn = db.connect_db()
         query = '''
@@ -134,29 +134,29 @@ def list_jobs():
 
 
 def get_jobs(**kwargs):
+    conn = None
     try:
         conn = db.connect_db()
-        queryClause = ''
+        query_clause = ''
         params = []
-        tagJoinClause = ''
 
         # Search query
         if kwargs['query']:
             param = "%{}%".format(kwargs['query'])
-            queryClause = ' AND j.title LIKE ? '
-            queryClause += ' OR j.short_description LIKE ? '
-            queryClause += ' OR j.long_description LIKE ? '
-            queryClause += ' OR e.name LIKE ? '
-            queryClause += ' OR j.location LIKE ?'
+            query_clause = ' AND j.title LIKE ? '
+            query_clause += ' OR j.short_description LIKE ? '
+            query_clause += ' OR j.long_description LIKE ? '
+            query_clause += ' OR e.name LIKE ? '
+            query_clause += ' OR j.location LIKE ?'
             params = [param, param, param, param, param]
 
         # Handle salary min/max range
         if kwargs['salary_range_min'] is not None:
-            queryClause += ' AND j.salary_range_start >= ? '
+            query_clause += ' AND j.salary_range_start >= ? '
             params.append(kwargs['salary_range_min'])
 
         if kwargs['salary_range_max'] is not None:
-            queryClause += ' AND j.salary_range_end <= ? '
+            query_clause += ' AND j.salary_range_end <= ? '
             params.append(kwargs['salary_range_max'])
 
         query = '''
@@ -179,7 +179,7 @@ def get_jobs(**kwargs):
             JOIN employers e on e.id = j.employer_id
             JOIN employer_sizes es ON e.employer_size_id = es.id
             WHERE 1=1
-            ''' + queryClause + '''
+            ''' + query_clause + '''
             ORDER BY j.created_at DESC, j.title
         '''
         cursor = conn.execute(query, params)
@@ -207,6 +207,7 @@ def list_jobs_tags_map():
 
 
 def get_jobs_tags():
+    conn = None
     try:
         conn = db.connect_db()
         query = '''
@@ -225,7 +226,7 @@ def get_jobs_tags():
         }
     except sqlite3.Error as er:
         error = ' '.join(er.args)
-        log.error('get_jobs_tags error: %s' % (error))
+        log.error('get_jobs_tags error: %s' % error)
         return {
             'status': 'ERROR',
             'message': error
@@ -243,6 +244,7 @@ def list_job_count():
 
 
 def get_job_count():
+    conn = None
     try:
         conn = db.connect_db()
         query = '''
@@ -284,11 +286,11 @@ def user_session_route():
     return jsonify(user_model.is_session_active(token))
 
 def user_login(username, password):
-    '''
+    """
     1. Check credentials
     2. Check if a session token exists already that we can update
     3. Create session token if not
-    '''
+    """
     if user_model.check_credentials(username, password):
         token = user_model.get_or_create_session_token(username)
         user = None
@@ -337,12 +339,12 @@ def helpful_review_votes_route(slug):
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/helpfulReviewVotes", methods=['POST'])
 def add_helpful_review_votes_route(slug):
-    '''
+    """
     1. Check that we have a valid session user
     2. Get votes for employer and map it up
     3. Check if current user has voted on this review before
     4. Send back access denied where necessary
-    '''
+    """
     user = user_model.is_voter()
     review_id = request.json['reviewId']
     user_has_voted = False
@@ -377,17 +379,17 @@ def add_helpful_review_votes_route(slug):
 @cross_origin()
 @app.route("/api/v1/employer/<slug>/verifiedEmployees", methods=['GET'])
 def verified_employees_route(slug):
-    '''Verified employees for a specific employer'''
+    """Verified employees for a specific employer"""
     return jsonify(employer_model.get_verified_employees(slug))
 
 
 @cross_origin()
 @app.route("/api/v1/employer/verifiedEmployees", methods=['GET'])
 def all_verified_employees_route():
-    '''
+    """
     Get employee status for each employer which will be mapped
     and used in the user profile summary.
-    '''
+    """
     return jsonify(employer_model.get_verified_employees())
 
 @cross_origin()
@@ -411,7 +413,7 @@ def add_employer_review_route():
 @app.route("/api/v1/employer/job", methods=['POST'])
 def add_job_route():
     user = user_model.is_recruiter()
-
+    conn = None
     if user:
         try:
             req_json = request.json
@@ -434,7 +436,7 @@ def add_job_route():
                 req_json['employerId'],
                 req_json['location']
             )
-            cursor = conn.execute(query, params)
+            conn.execute(query, params)
             conn.commit()
             return {
                 'status': 'OK'
@@ -456,6 +458,7 @@ def recruiters_route():
         return security_utils.get_access_denied_response()
 
 def get_recruiters(user_id):
+    conn = None
     try:
         conn = db.connect_db()
         query = '''
@@ -472,7 +475,7 @@ def get_recruiters(user_id):
         }
     except sqlite3.Error as er:
         error = ' '.join(er.args)
-        log.error('get_recruiters error: %s' % (error))
+        log.error('get_recruiters error: %s' % error)
         return {
             'status': 'ERROR',
             'message': error
@@ -501,7 +504,7 @@ def karma_summary_route():
 def user_karma_route(guid):
     user = user_model.get_user_from_token_header()
     if user:
-        return jsonify(karma_model.get_karma_by_user_id(user['id']))
+        return jsonify(karma_model.get_karma_by_guid(guid))
     else:
         return security_utils.get_access_denied_response()
 

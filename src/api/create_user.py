@@ -1,6 +1,6 @@
-'''
+"""
 CLI utility to create users
-'''
+"""
 import argparse
 import logging as log
 import sqlite3
@@ -16,7 +16,7 @@ DB_PATH = 'database.db'
 
 
 def user_exists(username):
-
+    conn = None
     try:
         conn = db.connect_db(DB_PATH)
         query = '''
@@ -35,6 +35,7 @@ def user_exists(username):
 
 
 def create_user(username):
+    conn = None
     try:
         conn = db.connect_db(DB_PATH)
         if not user_exists(username):
@@ -45,7 +46,7 @@ def create_user(username):
             generated_password = pw_utils.generate_password()
             hashed = pw_utils.get_hashed_password(generated_password)
             guid = str(uuid4())
-            cursor = conn.execute(query, (username, hashed, guid))
+            conn.execute(query, (username, hashed, guid))
             conn.commit()
             log.info('User created!')
             log.info('Password: {}'.format(generated_password))
@@ -54,8 +55,6 @@ def create_user(username):
             log.error('Username {} already exists'.format(username))
     except sqlite3.Error as er:
         log.error('create_user error: %s' % (' '.join(er.args)))
-    except:
-        log.error('Something went wrong')
     finally:
         db.close_connection(conn)
 
