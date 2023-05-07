@@ -19,7 +19,7 @@ class Karma:
                 JOIN reviews r ON r.id = v.review_id
                 JOIN users u ON u.id = v.user_id
                 WHERE 1=1
-                GROUP BY r.user_id
+                GROUP BY userId
                 ORDER BY karma DESC
                 LIMIT 1
             '''

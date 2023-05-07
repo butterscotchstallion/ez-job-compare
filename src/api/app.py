@@ -349,11 +349,11 @@ def add_helpful_review_votes_route(slug):
     review_id = request.json['reviewId']
     user_has_voted = False
     if user and review_id:
-        '''
+        """
         Two scenarios are possible here:
         1. Employer has reviews
         2. Employer has no reviews
-        '''
+        """
         response = review_votes_model.get_votes_by_employer_slug(slug)
         votes = response['results']
         if votes:
